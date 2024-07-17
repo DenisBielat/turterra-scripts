@@ -1,4 +1,4 @@
-(function() {
+(function(window) {
 // Global variables
 const mapboxToken = 'pk.eyJ1IjoiZGVuaXNiaWVsYXQiLCJhIjoiY2x4ZHM4eHBsMDltcjJqb2E4ZG9mb3FvZCJ9.XELbzaM4LAK6hdpXge9SxQ';
 let map;
@@ -30,7 +30,10 @@ window.initializeMap = function() {
         });
     };
 
-window.resetView = resetView;
+// Expose functions to the global scope
+    window.initializeMap = initializeMap;
+    window.resetView = resetView;
+    window.updateGBIFOccurrences = updateGBIFOccurrences;
 
 
 function getSpeciesFromURL() {
@@ -809,6 +812,12 @@ document.addEventListener('DOMContentLoaded', () => {
             closeButton.addEventListener('click', window.resetView);
         }
     });
-})();
+})(window);
 
-window.initializeMap();
+window.addEventListener('load', function() {
+    if (typeof window.initializeMap === 'function') {
+        window.initializeMap();
+    } else {
+        console.error('initializeMap function not found');
+    }
+});
