@@ -16,7 +16,7 @@ let popup = new mapboxgl.Popup({
 });
 
 // Initialize map
-window.initializeMap = function() {
+function initializeMap() {
         mapboxgl.accessToken = mapboxToken;
         map = new mapboxgl.Map({
             container: 'map',
@@ -26,15 +26,15 @@ window.initializeMap = function() {
         });
 
         map.on('load', () => {
+            console.log('Map loaded');
             fetchSpeciesDistributions();
         });
-    };
+    }
 
 // Expose functions to the global scope
-    window.initializeMap = initializeMap;
-    window.resetView = resetView;
-    window.updateGBIFOccurrences = updateGBIFOccurrences;
-
+window.initializeMap = initializeMap;
+window.resetView = resetView;
+window.updateGBIFOccurrences = updateGBIFOccurrences;
 
 function getSpeciesFromURL() {
   const path = window.location.pathname;
@@ -754,11 +754,11 @@ function addOccurrencesToMap(geojson) {
   ensureLayerOrder();
 }
 
-window.updateGBIFOccurrences = function() {
-  if (currentSpeciesScientificName) {
-    fetchOccurrenceData(currentSpeciesScientificName);
-  }
-};
+function updateGBIFOccurrences() {
+        if (currentSpeciesScientificName) {
+            fetchOccurrenceData(currentSpeciesScientificName);
+        }
+    }
 
 function fetchAndAddRangeData(rangeDataUrl) {
   fetch(rangeDataUrl)
