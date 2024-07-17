@@ -17,18 +17,21 @@ let popup = new mapboxgl.Popup({
 
 // Initialize map
 window.initializeMap = function() {
-  mapboxgl.accessToken = mapboxToken;
-  map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/denisbielat/clyc8jdx800zl01nzasir014p?fresh=true',
-    center: [0, 20],
-    zoom: 2
-  });
+        mapboxgl.accessToken = mapboxToken;
+        map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/denisbielat/clyc8jdx800zl01nzasir014p?fresh=true',
+            center: [0, 20],
+            zoom: 2
+        });
 
-  map.on('load', () => {
-    fetchSpeciesDistributions();
-  });
-};
+        map.on('load', () => {
+            fetchSpeciesDistributions();
+        });
+    };
+
+window.resetView = resetView;
+
 
 function getSpeciesFromURL() {
   const path = window.location.pathname;
@@ -801,11 +804,11 @@ function normalizeString(str) {
 
 // Add event listener for the close button
 document.addEventListener('DOMContentLoaded', () => {
-  const closeButton = document.querySelector('.button-close_wrapper[close-target="map-overlay-details"]');
-  if (closeButton) {
-    closeButton.addEventListener('click', resetView);
-  }
-
-  initializeMap();
-});
+        const closeButton = document.querySelector('.button-close_wrapper[close-target="map-overlay-details"]');
+        if (closeButton) {
+            closeButton.addEventListener('click', window.resetView);
+        }
+    });
 })();
+
+window.initializeMap();
