@@ -1,3 +1,4 @@
+(function() {
 // Global variables
 const mapboxToken = 'pk.eyJ1IjoiZGVuaXNiaWVsYXQiLCJhIjoiY2x4ZHM4eHBsMDltcjJqb2E4ZG9mb3FvZCJ9.XELbzaM4LAK6hdpXge9SxQ';
 let map;
@@ -15,7 +16,7 @@ let popup = new mapboxgl.Popup({
 });
 
 // Initialize map
-function initializeMap() {
+window.initializeMap = function() {
   mapboxgl.accessToken = mapboxToken;
   map = new mapboxgl.Map({
     container: 'map',
@@ -27,7 +28,7 @@ function initializeMap() {
   map.on('load', () => {
     fetchSpeciesDistributions();
   });
-}
+};
 
 function getSpeciesFromURL() {
   const path = window.location.pathname;
@@ -747,11 +748,11 @@ function addOccurrencesToMap(geojson) {
   ensureLayerOrder();
 }
 
-function updateGBIFOccurrences() {
+window.updateGBIFOccurrences = function() {
   if (currentSpeciesScientificName) {
     fetchOccurrenceData(currentSpeciesScientificName);
   }
-}
+};
 
 function fetchAndAddRangeData(rangeDataUrl) {
   fetch(rangeDataUrl)
@@ -807,3 +808,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeMap();
 });
+})();
