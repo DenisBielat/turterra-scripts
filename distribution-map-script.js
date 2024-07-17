@@ -1,4 +1,3 @@
-<script>
 // Global variables
 const mapboxToken = 'pk.eyJ1IjoiZGVuaXNiaWVsYXQiLCJhIjoiY2x4ZHM4eHBsMDltcjJqb2E4ZG9mb3FvZCJ9.XELbzaM4LAK6hdpXge9SxQ';
 let map;
@@ -808,4 +807,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeMap();
 });
-</script>
