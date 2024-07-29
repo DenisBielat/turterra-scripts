@@ -1,13 +1,14 @@
-window.addEventListener('load', async function() {
-    const cl = cloudinary.Cloudinary.new({ cloud_name: 'dyhvmivey' });
-    let allImages = [];
-    let currentCategory = 'cover-photo';
-    let currentIndex = 0;
-    let isTransitioning = false;
-    let physicalFeatureDescriptions = null;
-    
-    const TRANSITION_DURATION = 300; // in milliseconds
-    const categories = ['cover-photo', 'eyes-and-face', 'neck', 'skin-and-limbs', 'shell-top', 'shell-bottom', 'coloration', 'male-specific', 'female-specific', 'hatchling'];
+(function(window) {
+    window.addEventListener('load', async function() {
+        const cl = cloudinary.Cloudinary.new({ cloud_name: 'dyhvmivey' });
+        let allImages = [];
+        let currentCategory = 'cover-photo';
+        let currentIndex = 0;
+        let isTransitioning = false;
+        let physicalFeatureDescriptions = null;
+        
+        const TRANSITION_DURATION = 300; // in milliseconds
+        const categories = ['cover-photo', 'eyes-and-face', 'neck', 'skin-and-limbs', 'shell-top', 'shell-bottom', 'coloration', 'male-specific', 'female-specific', 'hatchling'];
 
     async function fetchImagesForSpecies(species) {
         try {
@@ -281,19 +282,19 @@ window.addEventListener('load', async function() {
     }
     
     async function init() {
-        await new Promise(resolve => {
-            const checkInterval = setInterval(() => {
-                if (window.currentTurtleCommonName) {
-                    clearInterval(checkInterval);
-                    resolve();
-                }
-            }, 100);
-        });
-    
-        const species = window.currentTurtleCommonName.toLowerCase().replace(/\s+/g, '-');
-        allImages = await fetchImagesForSpecies(species);
-        physicalFeatureDescriptions = await fetchPhysicalFeatureDescriptions(species);
-        console.log("Fetched physical feature descriptions:", physicalFeatureDescriptions);
+            await new Promise(resolve => {
+                const checkInterval = setInterval(() => {
+                    if (window.currentTurtleCommonName) {
+                        clearInterval(checkInterval);
+                        resolve();
+                    }
+                }, 100);
+            });
+
+            const species = window.currentTurtleCommonName.toLowerCase().replace(/\s+/g, '-');
+            allImages = await fetchImagesForSpecies(species);
+            physicalFeatureDescriptions = await fetchPhysicalFeatureDescriptions(species);
+            console.log("Fetched physical feature descriptions:", physicalFeatureDescriptions);
     
         const coverPhotos = getImagesForCategory('cover-photo');
         if (coverPhotos.length > 0) {
@@ -331,4 +332,5 @@ window.addEventListener('load', async function() {
     }
 
     init();
-});
+    });
+})(window);
