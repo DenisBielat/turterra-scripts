@@ -98,7 +98,7 @@
                 const category = attr.fieldData['category'];
                 if (!acc[category]) acc[category] = [];
                 acc[category].push({
-                    type: attr.fieldData['attribute-type'],
+                    type: attr.fieldData['attribute-type-text'],
                     value: attr.fieldData['specific-value']
                 });
                 return acc;
