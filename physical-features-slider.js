@@ -88,17 +88,23 @@
 
     async function fetchTurtleAttributes(species) {
         try {
-            const response = await fetch(`http://localhost:3000/turtle-attributes/${species}`);
+            const response = await fetch(`http://localhost:3000/turtle-physical-feature-attributes/${species}`);
             if (!response.ok) throw new Error('Network response was not ok');
             const attributes = await response.json();
             
-            console.log("Fetched turtle attributes:", attributes); // Add this line
+            console.log("Fetched turtle attributes:", attributes);
     
             attributesByCategory = attributes.reduce((acc, attr) => {
-                // ... existing code ...
+                const category = attr.fieldData['physical-feature'].toLowerCase().replace(/\s+/g, '-');
+                if (!acc[category]) acc[category] = [];
+                acc[category].push({
+                    type: attr.fieldData['attribute-type'],
+                    value: attr.fieldData['attribute-value']
+                });
+                return acc;
             }, {});
     
-            console.log("Organized attributes by category:", attributesByCategory); // Add this line
+            console.log("Organized attributes by category:", attributesByCategory);
         } catch (error) {
             console.error('Error fetching turtle attributes:', error);
         }
