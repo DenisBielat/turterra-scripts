@@ -6,6 +6,7 @@
         let currentIndex = 0;
         let isTransitioning = false;
         let physicalFeatureDescriptions = null;
+        let attributesByCategory = {};
         
         const TRANSITION_DURATION = 300; // in milliseconds
         const categories = ['cover-photo', 'eyes-and-face', 'neck', 'skin-and-limbs', 'shell-top', 'shell-bottom', 'coloration', 'male-specific', 'female-specific', 'hatchling'];
@@ -85,6 +86,44 @@
         }
     }
 
+    async function fetchTurtleAttributes(species) {
+        try {
+            const response = await fetch(`http://localhost:3000/turtle-attributes/${species}`);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const attributes = await response.json();
+            
+            attributesByCategory = attributes.reduce((acc, attr) => {
+                const category = attr.fieldData['physical-feature'].toLowerCase().replace(/\s+/g, '-');
+                if (!acc[category]) acc[category] = [];
+                acc[category].push({
+                    type: attr.fieldData['attribute-type'],
+                    value: attr.fieldData['attribute-value']
+                });
+                return acc;
+            }, {});
+        } catch (error) {
+            console.error('Error fetching turtle attributes:', error);
+        }
+    }
+
+    function displayAttributeTags(category) {
+        const tagContainer = document.querySelector('.attribute-tag_list-wrapper');
+        tagContainer.innerHTML = ''; // Clear existing tags
+    
+        const attributes = attributesByCategory[category] || [];
+        attributes.forEach(attr => {
+            const tagElement = document.createElement('div');
+            tagElement.className = 'attribute-tag';
+            
+            const textElement = document.createElement('div');
+            textElement.className = 'attribute-tag_text';
+            textElement.textContent = `${attr.type} - ${attr.value}`;
+            
+            tagElement.appendChild(textElement);
+            tagContainer.appendChild(tagElement);
+        });
+    }
+
     function updateNavigationButtons() {
         const prevButton = document.querySelector('.phys-features_arrow-left');
         const nextButton = document.querySelector('.phys-features_arrow-right');
@@ -141,6 +180,7 @@
             await Promise.all([textTransitionPromise, transitionPromise, imageTransitionPromise]);
             
             updateSlideCounter();
+            displayAttributeTags(newCategory);
             updateNavigationButtons();
         } else {
             console.log('No images in this category');
@@ -294,6 +334,7 @@
             const species = window.currentTurtleCommonName.toLowerCase().replace(/\s+/g, '-');
             allImages = await fetchImagesForSpecies(species);
             physicalFeatureDescriptions = await fetchPhysicalFeatureDescriptions(species);
+            await fetchTurtleAttributes(species); 
             console.log("Fetched physical feature descriptions:", physicalFeatureDescriptions);
     
         const coverPhotos = getImagesForCategory('cover-photo');
