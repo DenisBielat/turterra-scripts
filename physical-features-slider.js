@@ -87,8 +87,15 @@
     }
 
     async function fetchTurtleAttributes(species) {
+        console.log("Fetching attributes for species:", species);
         try {
-            const response = await fetch(`http://localhost:3000/turtle-physical-feature-attributes/${species}`);
+            // Use the existing window.currentTurtleCommonName
+            const speciesName = window.currentTurtleCommonName;
+            if (!speciesName) {
+                throw new Error("Current turtle species name not found");
+            }
+    
+            const response = await fetch(`http://localhost:3000/turtle-physical-feature-attributes/${encodeURIComponent(speciesName)}`);
             if (!response.ok) throw new Error('Network response was not ok');
             const attributes = await response.json();
             
