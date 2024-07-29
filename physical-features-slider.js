@@ -92,21 +92,20 @@
             if (!response.ok) throw new Error('Network response was not ok');
             const attributes = await response.json();
             
+            console.log("Fetched turtle attributes:", attributes); // Add this line
+    
             attributesByCategory = attributes.reduce((acc, attr) => {
-                const category = attr.fieldData['physical-feature'].toLowerCase().replace(/\s+/g, '-');
-                if (!acc[category]) acc[category] = [];
-                acc[category].push({
-                    type: attr.fieldData['attribute-type'],
-                    value: attr.fieldData['attribute-value']
-                });
-                return acc;
+                // ... existing code ...
             }, {});
+    
+            console.log("Organized attributes by category:", attributesByCategory); // Add this line
         } catch (error) {
             console.error('Error fetching turtle attributes:', error);
         }
     }
 
     function displayAttributeTags(category) {
+        console.log("Displaying attribute tags for category:", category);
         const tagContainer = document.querySelector('.attribute-tag_list-wrapper');
         tagContainer.innerHTML = ''; // Clear existing tags
     
@@ -186,6 +185,7 @@
             await Promise.all([textTransitionPromise, transitionPromise, imageTransitionPromise]);
             
             updateSlideCounter();
+            console.log("About to display attribute tags for category:", newCategory);
             displayAttributeTags(newCategory);
             updateNavigationButtons();
         } else {
@@ -345,13 +345,16 @@
     
         const coverPhotos = getImagesForCategory('cover-photo');
         if (coverPhotos.length > 0) {
-            await displayImage(coverPhotos[0], false, false);  // Don't update counter yet
+            await displayImage(coverPhotos[0], false, false);
             currentCategory = 'cover-photo';
             currentIndex = 0;
-            updateSlideCounter();  // Update counter after setting currentCategory and currentIndex
+            updateSlideCounter();
             updateHeadingAndDescription(currentCategory);
             document.querySelector('.phys-features_heading').classList.remove('fade-out');
             document.querySelector('.phys-features_description').classList.remove('fade-out');
+            
+            console.log("Displaying initial attribute tags for category:", currentCategory); // Add this line
+            displayAttributeTags(currentCategory); // Add this line
         }
         
         updateSelectedCategoryButton(currentCategory);
