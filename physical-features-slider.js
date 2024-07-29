@@ -110,16 +110,22 @@
         const tagContainer = document.querySelector('.attribute-tag_list-wrapper');
         tagContainer.innerHTML = ''; // Clear existing tags
     
+        const templateTag = document.querySelector('.attribute-tag.template');
+        if (!templateTag) {
+            console.error('Template tag not found');
+            return;
+        }
+    
         const attributes = attributesByCategory[category] || [];
         attributes.forEach(attr => {
-            const tagElement = document.createElement('div');
-            tagElement.className = 'attribute-tag';
+            const tagElement = templateTag.cloneNode(true);
+            tagElement.classList.remove('template');
             
-            const textElement = document.createElement('div');
-            textElement.className = 'attribute-tag_text';
-            textElement.textContent = `${attr.type} - ${attr.value}`;
+            const textElement = tagElement.querySelector('.attribute-tag_text');
+            if (textElement) {
+                textElement.textContent = `${attr.type} - ${attr.value}`;
+            }
             
-            tagElement.appendChild(textElement);
             tagContainer.appendChild(tagElement);
         });
     }
