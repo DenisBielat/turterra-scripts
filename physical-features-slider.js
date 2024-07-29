@@ -92,8 +92,9 @@
             if (!response.ok) throw new Error('Network response was not ok');
             const attributes = await response.json();
             
-            console.log("Fetched turtle attributes:", attributes);
+            console.log("Raw response from turtle attributes endpoint:", JSON.stringify(attributes, null, 2));
     
+            // Rest of the function remains the same...
             attributesByCategory = attributes.reduce((acc, attr) => {
                 const category = attr.fieldData['physical-feature'].toLowerCase().replace(/\s+/g, '-');
                 if (!acc[category]) acc[category] = [];
@@ -104,7 +105,7 @@
                 return acc;
             }, {});
     
-            console.log("Organized attributes by category:", attributesByCategory);
+            console.log("Organized attributes by category:", JSON.stringify(attributesByCategory, null, 2));
         } catch (error) {
             console.error('Error fetching turtle attributes:', error);
         }
