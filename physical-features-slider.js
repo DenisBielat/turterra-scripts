@@ -89,11 +89,8 @@
     async function fetchTurtleAttributes(species) {
         console.log("Fetching attributes for species:", species);
         try {
-            // Use the existing window.currentTurtleCommonName
             const speciesName = window.currentTurtleCommonName;
-            if (!speciesName) {
-                throw new Error("Current turtle species name not found");
-            }
+            console.log("Current turtle common name:", speciesName);
     
             const response = await fetch(`http://localhost:3000/turtle-physical-feature-attributes/${encodeURIComponent(speciesName)}`);
             if (!response.ok) throw new Error('Network response was not ok');
@@ -112,6 +109,9 @@
             }, {});
     
             console.log("Organized attributes by category:", attributesByCategory);
+    
+            // Call displayAttributeTags here to update the UI
+            displayAttributeTags(currentCategory);
         } catch (error) {
             console.error('Error fetching turtle attributes:', error);
         }
@@ -120,6 +120,10 @@
     function displayAttributeTags(category) {
         console.log("Displaying attribute tags for category:", category);
         const tagContainer = document.querySelector('.attribute-tag_list-wrapper');
+        if (!tagContainer) {
+            console.error("Tag container not found");
+            return;
+        }
         tagContainer.innerHTML = ''; // Clear existing tags
     
         const templateTag = document.querySelector('.attribute-tag.template');
@@ -128,8 +132,10 @@
             return;
         }
     
-        // Display tags for all categories for now
-        Object.values(attributesByCategory).flat().forEach(attr => {
+        const attributes = attributesByCategory[category] || [];
+        console.log(`Attributes for category ${category}:`, attributes);
+    
+        attributes.forEach(attr => {
             const tagElement = templateTag.cloneNode(true);
             tagElement.classList.remove('template');
             
