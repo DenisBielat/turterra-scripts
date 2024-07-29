@@ -86,8 +86,8 @@
     }
 
     function updateNavigationButtons() {
-        const prevButton = document.querySelector('.morph-grid_arrow-left');
-        const nextButton = document.querySelector('.morph-grid_arrow-right');
+        const prevButton = document.querySelector('.phys-features_arrow-left');
+        const nextButton = document.querySelector('.phys-features_arrow-right');
         const categoryImages = getImagesForCategory(currentCategory);
         
         if (prevButton) {
@@ -319,7 +319,7 @@
             });
         });
     
-        ['morph-grid_arrow-left', 'morph-grid_arrow-right'].forEach(className => {
+        ['phys-features_arrow-left', 'phys-features_arrow-right'].forEach(className => {
             const button = document.querySelector(`.${className}`);
             if (button) {
                 button.addEventListener('click', function() {
