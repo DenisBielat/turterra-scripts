@@ -92,20 +92,19 @@
             if (!response.ok) throw new Error('Network response was not ok');
             const attributes = await response.json();
             
-            console.log("Raw response from turtle attributes endpoint:", JSON.stringify(attributes, null, 2));
+            console.log("Fetched turtle attributes:", attributes);
     
-            // Rest of the function remains the same...
             attributesByCategory = attributes.reduce((acc, attr) => {
-                const category = attr.fieldData['physical-feature'].toLowerCase().replace(/\s+/g, '-');
+                const category = attr.fieldData['category'];
                 if (!acc[category]) acc[category] = [];
                 acc[category].push({
                     type: attr.fieldData['attribute-type'],
-                    value: attr.fieldData['attribute-value']
+                    value: attr.fieldData['specific-value']
                 });
                 return acc;
             }, {});
     
-            console.log("Organized attributes by category:", JSON.stringify(attributesByCategory, null, 2));
+            console.log("Organized attributes by category:", attributesByCategory);
         } catch (error) {
             console.error('Error fetching turtle attributes:', error);
         }
@@ -122,8 +121,8 @@
             return;
         }
     
-        const attributes = attributesByCategory[category] || [];
-        attributes.forEach(attr => {
+        // Display tags for all categories for now
+        Object.values(attributesByCategory).flat().forEach(attr => {
             const tagElement = templateTag.cloneNode(true);
             tagElement.classList.remove('template');
             
