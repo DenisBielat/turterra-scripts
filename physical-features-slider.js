@@ -87,7 +87,6 @@
     }
 
     async function fetchTurtleAttributes() {
-        console.log("Fetching attributes for species ID:", window.currentTurtleId);
         try {
             if (!window.currentTurtleId) {
                 throw new Error("Current turtle ID not found");
@@ -96,8 +95,6 @@
             const response = await fetch(`http://localhost:3000/turtle-physical-feature-attributes/${encodeURIComponent(window.currentTurtleId)}`);
             if (!response.ok) throw new Error('Network response was not ok');
             const attributes = await response.json();
-            
-            console.log("Fetched turtle attributes:", attributes);
     
             attributesByCategory = attributes.reduce((acc, attr) => {
                 const category = attr.fieldData['category'];
@@ -109,8 +106,6 @@
                 return acc;
             }, {});
     
-            console.log("Organized attributes by category:", attributesByCategory);
-    
             // Call displayAttributeTags here to update the UI
             displayAttributeTags(currentCategory);
         } catch (error) {
@@ -119,7 +114,6 @@
     }
 
     function displayAttributeTags(category) {
-        console.log("Displaying attribute tags for category:", category);
         const tagContainer = document.querySelector('.attribute-tag_list-wrapper');
         if (!tagContainer) {
             console.error("Tag container not found");
@@ -138,7 +132,6 @@
         // Convert category to the ID format used in the attributesByCategory object
         const categoryId = getCategoryId(category);
         const attributes = attributesByCategory[categoryId] || [];
-        console.log(`Attributes for category ${category}:`, attributes);
     
         attributes.forEach(attr => {
             const tagElement = templateTag.cloneNode(true);
@@ -228,7 +221,6 @@
             displayAttributeTags(newCategory);  // Add this line
             updateNavigationButtons();
         } else {
-            console.log('No images in this category');
             // Update navigation buttons even if there are no images
             updateNavigationButtons();
         }
@@ -387,7 +379,6 @@
             allImages = await fetchImagesForSpecies(species);
             physicalFeatureDescriptions = await fetchPhysicalFeatureDescriptions(species);
             await fetchTurtleAttributes(species); 
-            console.log("Fetched physical feature descriptions:", physicalFeatureDescriptions);
     
         const coverPhotos = getImagesForCategory('cover-photo');
         if (coverPhotos.length > 0) {
@@ -399,8 +390,7 @@
             document.querySelector('.phys-features_heading').classList.remove('fade-out');
             document.querySelector('.phys-features_description').classList.remove('fade-out');
             
-            console.log("Displaying initial attribute tags for category:", currentCategory); // Add this line
-            displayAttributeTags(currentCategory); // Add this line
+            displayAttributeTags(currentCategory);
         }
         
         updateSelectedCategoryButton(currentCategory);
