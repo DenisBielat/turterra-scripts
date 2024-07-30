@@ -125,13 +125,15 @@
             console.error("Tag container not found");
             return;
         }
-        tagContainer.innerHTML = ''; // Clear existing tags
     
         const templateTag = document.querySelector('.attribute-tag.template');
         if (!templateTag) {
             console.error('Template tag not found');
             return;
         }
+    
+        // Clear existing tags
+        tagContainer.innerHTML = '';
     
         // Convert category to the ID format used in the attributesByCategory object
         const categoryId = getCategoryId(category);
@@ -336,13 +338,15 @@
     async function updateHeadingAndDescription(category) {
         const headingElement = document.querySelector('.phys-features_heading');
         const descriptionElement = document.querySelector('.phys-features_description');
+        const tagContainer = document.querySelector('.attribute-tag_list-wrapper');
     
         // Fade out
         headingElement.classList.add('fade-out');
         descriptionElement.classList.add('fade-out');
+        tagContainer.classList.add('fade-out');
     
         // Wait for fade out and transition card to complete
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise(resolve => setTimeout(resolve, 300)); // Reduced to match your 0.3s transition
     
         // Update content
         if (headingElement) {
@@ -355,13 +359,18 @@
             descriptionElement.textContent = description;
         }
     
+        // Update tags
+        displayAttributeTags(category);
+    
         // Trigger reflow
         void headingElement.offsetWidth;
         void descriptionElement.offsetWidth;
+        void tagContainer.offsetWidth;
     
         // Fade in
         headingElement.classList.remove('fade-out');
         descriptionElement.classList.remove('fade-out');
+        tagContainer.classList.remove('fade-out');
     }
     
     async function init() {
