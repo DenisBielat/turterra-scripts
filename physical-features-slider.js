@@ -86,13 +86,14 @@
         }
     }
 
-    async function fetchTurtleAttributes(species) {
-        console.log("Fetching attributes for species:", species);
+    async function fetchTurtleAttributes() {
+        console.log("Fetching attributes for species ID:", window.currentTurtleId);
         try {
-            const speciesName = window.currentTurtleCommonName;
-            console.log("Current turtle common name:", speciesName);
+            if (!window.currentTurtleId) {
+                throw new Error("Current turtle ID not found");
+            }
     
-            const response = await fetch(`http://localhost:3000/turtle-physical-feature-attributes/${encodeURIComponent(speciesName)}`);
+            const response = await fetch(`http://localhost:3000/turtle-physical-feature-attributes/${encodeURIComponent(window.currentTurtleId)}`);
             if (!response.ok) throw new Error('Network response was not ok');
             const attributes = await response.json();
             
