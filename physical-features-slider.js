@@ -133,7 +133,9 @@
             return;
         }
     
-        const attributes = attributesByCategory[category] || [];
+        // Convert category to the ID format used in the attributesByCategory object
+        const categoryId = getCategoryId(category);
+        const attributes = attributesByCategory[categoryId] || [];
         console.log(`Attributes for category ${category}:`, attributes);
     
         attributes.forEach(attr => {
@@ -147,6 +149,22 @@
             
             tagContainer.appendChild(tagElement);
         });
+    }
+    
+    // Helper function to convert category names to IDs
+    function getCategoryId(category) {
+        const categoryMap = {
+            'eyes-and-face': 'dad28cb75e1e71f0501d86ac79900279',
+            'neck': 'bc86bd3f3d58df28ebeda813a59a0131',
+            'skin-and-limbs': '053d305c1e45fcf4b94584d4301d0604',
+            'shell-top': '8f0e64133991e782a39f80f3d48b348c',
+            'shell-bottom': '87ae4ee56e3054d316b664778ffee79f',
+            'coloration': '29410db5275c0eb1727efe8e7c30c24b',
+            'male-specific': 'ccfd0aaec7af1ba7186cf95c29156084',
+            'female-specific': '084c6b6b6a3c6c2d0cb6f7b2ca2db624',
+            'hatchling': 'bf15c81d8df0d97094a5d57cb351f87b'
+        };
+        return categoryMap[category] || category;
     }
 
     function updateNavigationButtons() {
@@ -180,10 +198,10 @@
     }
 
     async function changeCategory(newCategory, direction = 'next') {
-    if (isTransitioning) return;
-    isTransitioning = true;
-
-    const categoryImages = getImagesForCategory(newCategory);
+        if (isTransitioning) return;
+        isTransitioning = true;
+    
+        const categoryImages = getImagesForCategory(newCategory);
         if (categoryImages.length > 0) {
             updateSelectedCategoryButton(newCategory);
             updateCategoryButtons();
@@ -205,8 +223,7 @@
             await Promise.all([textTransitionPromise, transitionPromise, imageTransitionPromise]);
             
             updateSlideCounter();
-            console.log("About to display attribute tags for category:", newCategory);
-            displayAttributeTags(newCategory);
+            displayAttributeTags(newCategory);  // Add this line
             updateNavigationButtons();
         } else {
             console.log('No images in this category');
