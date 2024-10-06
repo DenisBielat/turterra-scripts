@@ -12,7 +12,19 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
+      "src": "/webflow/(.*)",
+      "dest": "/server.mjs"
+    },
+    {
+      "src": "/cloudinary/(.*)",
+      "dest": "/server.mjs"
+    },
+    {
+      "src": "/physical-feature-descriptions/(.*)",
+      "dest": "/server.mjs"
+    },
+    {
+      "src": "/turtle-physical-feature-attributes/(.*)",
       "dest": "/server.mjs"
     },
     {
