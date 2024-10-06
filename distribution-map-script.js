@@ -1,6 +1,6 @@
 (function(window) {
 // Global variables
-const mapboxToken = 'pk.eyJ1IjoiZGVuaXNiaWVsYXQiLCJhIjoiY2x4ZHM4eHBsMDltcjJqb2E4ZG9mb3FvZCJ9.XELbzaM4LAK6hdpXge9SxQ';
+const mapboxToken = process.env.MAPBOX_TOKEN;
 let map;
 const highlightedAreas = {};
 let countryList = [];
@@ -45,8 +45,8 @@ function getSpeciesFromURL() {
 // Fetch species distributions from Webflow CMS
 function fetchSpeciesDistributions() {
   const speciesSlug = getSpeciesFromURL();
-  const turtleSpeciesApiUrl = `http://localhost:3000/webflow/65a871ba95802374d1170989`;
-  const distributionsApiUrl = `http://localhost:3000/webflow/665f58dea5d07e31b92c2ba2`;
+  const turtleSpeciesApiUrl = `https://turterra.vercel.app/webflow/65a871ba95802374d1170989`;
+  const distributionsApiUrl = `https://turterra.vercel.app/webflow/665f58dea5d07e31b92c2ba2`;
 
   Promise.all([
     fetch(turtleSpeciesApiUrl).then(response => response.json()),
