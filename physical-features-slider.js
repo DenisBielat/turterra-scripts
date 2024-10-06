@@ -13,7 +13,7 @@
 
     async function fetchImagesForSpecies(species) {
         try {
-            const response = await fetch(`http://localhost:3000/cloudinary/${species}`);
+            const response = await fetch(`https://turterra.vercel.app/cloudinary/${species}`);
             if (!response.ok) throw new Error('Network response was not ok');
             return await response.json();
         } catch (error) {
@@ -92,7 +92,7 @@
                 throw new Error("Current turtle ID not found");
             }
     
-            const response = await fetch(`http://localhost:3000/turtle-physical-feature-attributes/${encodeURIComponent(window.currentTurtleId)}`);
+            const response = await fetch(`https://turterra.vercel.app/turtle-physical-feature-attributes/${encodeURIComponent(window.currentTurtleId)}`);
             if (!response.ok) throw new Error('Network response was not ok');
             const attributes = await response.json();
     
@@ -315,7 +315,7 @@
     async function fetchPhysicalFeatureDescriptions(species) {
         const formattedSpecies = species.toLowerCase().replace(/\s+/g, '-');
         try {
-            const response = await fetch(`http://localhost:3000/physical-feature-descriptions/${formattedSpecies}`);
+            const response = await fetch(`https://turterra.vercel.app/physical-feature-descriptions/${formattedSpecies}`);
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(`Network response was not ok: ${errorData.details}`);
