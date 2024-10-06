@@ -5,22 +5,21 @@ import cors from 'cors';
 
 const app = express();
 
-const webflowApiToken = process.env.WEBFLOW_API_TOKEN;
+const webflowApiToken = '45a980c49c20f88d84ec607ca7c1ded5d2c78d2e02d0ce398a4f13d1b11e7d60';
 
 // Cloudinary configuration
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_CLOUD_KEY,
-  api_secret: process.env.CLOUDINARY_CLOUD_SECRET
+  cloud_name: 'dyhvmivey',
+  api_key: '482956819452563',
+  api_secret: 'PYh1lSt3eXEhn5UsLeLENgSbs9s'
 });
 
 // CORS configuration
-const corsOptions = {
+app.use(cors({
   origin: ['https://www.turterra.com', 'https://turterra.com'],
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Endpoint to fetch all items from a collection
 app.get('/webflow/:collectionId', async (req, res) => {
