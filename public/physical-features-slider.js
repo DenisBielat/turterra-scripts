@@ -13,7 +13,7 @@
 
     async function fetchImagesForSpecies(species) {
         try {
-            const response = await fetch(`https://turterra.vercel.app/api/cloudinary/${species}`);
+            const response = await fetch(`https://turterra.vercel.app/cloudinary/${species}`);
             if (!response.ok) throw new Error('Network response was not ok');
             return await response.json();
         } catch (error) {
