@@ -14,12 +14,20 @@ cloudinary.config({
 });
 
 // Middleware to add CORS headers
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*'); // Allow all origins
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
-});
+// app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', '*'); // Allow all origins
+//     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//     next();
+// });
+
+// CORS configuration
+const corsOptions = {
+  origin: ['https://www.turterra.com', 'https://turterra.com'],
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 // Endpoint to fetch all items from a collection
 app.get('/webflow/:collectionId', async (req, res) => {
