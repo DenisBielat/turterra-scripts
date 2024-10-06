@@ -1,7 +1,7 @@
 (function() {
   const scripts = [
-    'https://turterra.vercel.app/physical-features-slider.js',
-    'https://turterra.vercel.app/distribution-map-script.js'
+    'https://turterra.vercel.app/public/physical-features-slider.js',
+    'https://turterra.vercel.app/public/distribution-map-script.js'
   ];
   
   scripts.forEach(src => {
