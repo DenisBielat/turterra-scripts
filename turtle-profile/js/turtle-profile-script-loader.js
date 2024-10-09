@@ -1,10 +1,17 @@
 (function() {
-  const scripts = [
-    'https://turterra.vercel.app/fetch-turtle-species.js',
-    'https://turterra.vercel.app/physical-features-slider.js',
-    'https://turterra.vercel.app/distribution-map-script.js',
-    'https://turterra.vercel.app/turtle-profile-hero-slider.js'
-  ];
+  const baseUrl = 'https://turterra.vercel.app/turtle-profile';
+
+  const resources = {
+    css: [
+      '/css/page/turtle-profile-layout.css',
+    ],
+    js: [
+      '/js/page/fetch-turtle-species.js',
+      '/js/components/turtle-profile-slider.js',
+      '/js/components/distribution-map-script.js',
+      '/js/components/turtle-profile-hero-slider.js'
+    ]
+  };
   
   scripts.forEach(src => {
     const script = document.createElement('script');
