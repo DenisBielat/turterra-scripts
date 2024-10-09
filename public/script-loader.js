@@ -2,7 +2,7 @@
   const scripts = [
     'https://turterra.vercel.app/physical-features-slider.js',
     'https://turterra.vercel.app/distribution-map-script.js',
-    // Add other script URLs here
+    'https://turterra.vercel.app/turtle-profile-hero-slider.js',
   ];
   
   scripts.forEach(src => {
