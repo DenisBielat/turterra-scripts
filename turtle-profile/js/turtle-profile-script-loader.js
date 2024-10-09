@@ -8,7 +8,7 @@
     js: [
       '/js/page/fetch-turtle-species.js',
       '/js/components/turtle-profile-slider.js',
-      '/js/components/distribution-map-script.js',
+      '/js/components/species-distribution-map.js',
       '/js/components/turtle-profile-hero-slider.js'
     ]
   };
