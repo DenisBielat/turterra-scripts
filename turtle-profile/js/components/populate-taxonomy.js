@@ -1,75 +1,61 @@
-console.log("Start of taxonomy script");
-
-(function(window) {
-    console.log("Inside IIFE");
-
-    function logError(error) {
-        console.error('Error in taxonomy script:', error);
-    }
-
+async function populateTaxonomy() {
+    const currentGenus = window.currentTurtleScientificName.split(' ')[0].toLowerCase();
     try {
-        async function populateTaxonomy() {
-            console.log("populateTaxonomy called");
-            if (!window.currentTurtleScientificName) {
-                console.error('currentTurtleScientificName is not available');
-                return;
-            }
+        // Fetch genus information
+        const genusResponse = await fetch(`https://turterra.vercel.app/webflow/66637132663284af3d60c285`);
+        const genusData = await genusResponse.json();
+        const currentGenusInfo = genusData.items.find(item => item.fieldData.slug === currentGenus);
+        if (!currentGenusInfo) {
+            console.error('Genus not found:', currentGenus);
+            return;
+        }
+        const familyId = currentGenusInfo.fieldData.family;
 
-            const currentGenus = window.currentTurtleScientificName.split(' ')[0].toLowerCase();
-            console.log("Current genus:", currentGenus);
-            
-            // ... rest of the populateTaxonomy function ...
+        // Fetch family information
+        const familyResponse = await fetch(`https://turterra.vercel.app/webflow/66636a5b1814b2e86443af71`);
+        const familyData = await familyResponse.json();
+        const currentFamilyInfo = familyData.items.find(item => item.id === familyId);
+        if (!currentFamilyInfo) {
+            console.error('Family not found:', familyId);
+            return;
+        }
+        const suborderId = currentFamilyInfo.fieldData.suborder;
+
+        // Fetch suborder information
+        const suborderResponse = await fetch(`https://turterra.vercel.app/webflow/6663676f890637f16da7d6e3`);
+        const suborderData = await suborderResponse.json();
+        const currentSuborderInfo = suborderData.items.find(item => item.id === suborderId);
+        if (!currentSuborderInfo) {
+            console.error('Suborder not found:', suborderId);
+            return;
         }
 
-        function updateTaxonomyElement(taxonLevel, commonName, scientificName) {
-            console.log(`Updating ${taxonLevel}: ${commonName} (${scientificName})`);
-            // ... rest of the updateTaxonomyElement function ...
+        // Fetch order information
+        const orderResponse = await fetch(`https://turterra.vercel.app/webflow/666366bd63ec3102249a34b6`);
+        const orderData = await orderResponse.json();
+        const orderInfo = orderData.items[0]; // Assuming there's only one order
+        if (!orderInfo) {
+            console.error('Order not found');
+            return;
         }
 
-        function initTaxonomy() {
-            console.log("initTaxonomy called");
-            const checkAndPopulate = async () => {
-                if (window.currentTurtleScientificName) {
-                    console.log("currentTurtleScientificName available:", window.currentTurtleScientificName);
-                    await populateTaxonomy();
-                } else {
-                    console.log("currentTurtleScientificName not available, retrying...");
-                    setTimeout(checkAndPopulate, 100);
-                }
-            };
-
-            checkAndPopulate();
-        }
-
-        // Expose the initialization function to the global scope
-        window.initTaxonomy = initTaxonomy;
-
-        console.log("Before DOMContentLoaded event listener");
-
-        // Initialize when the DOM content is loaded
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log("DOMContentLoaded event fired");
-            try {
-                if (typeof window.fetchTurtleNames === 'function') {
-                    console.log("Calling fetchTurtleNames");
-                    await window.fetchTurtleNames();
-                    console.log("fetchTurtleNames completed");
-                } else {
-                    console.error('fetchTurtleNames function is not available');
-                }
-                initTaxonomy();
-            } catch (error) {
-                logError(error);
-            }
-        });
-
-        console.log("After DOMContentLoaded event listener");
-
+        // Update HTML elements
+        updateTaxonomyElement('order', orderInfo.fieldData['common-name'], orderInfo.fieldData.name);
+        updateTaxonomyElement('suborder', currentSuborderInfo.fieldData['common-name'], currentSuborderInfo.fieldData.name);
+        updateTaxonomyElement('family', currentFamilyInfo.fieldData['common-name'], currentFamilyInfo.fieldData.name);
+        updateTaxonomyElement('genus', currentGenusInfo.fieldData['common-name'], currentGenusInfo.fieldData.name);
+        updateTaxonomyElement('species', window.currentTurtleCommonName, window.currentTurtleScientificName);
     } catch (error) {
-        logError(error);
+        console.error('Error in populateTaxonomy:', error);
     }
+}
 
-    console.log("End of IIFE");
-})(window);
-
-console.log("End of taxonomy script");
+function updateTaxonomyElement(taxonLevel, commonName, scientificName) {
+    const element = document.querySelector(`.taxonomy-list-item[taxon-level="${taxonLevel}"]`);
+    if (element) {
+        const commonNameElement = element.querySelector('.taxon-list-item_common-name');
+        const scientificNameElement = element.querySelector('.taxon-list-item_scientific-name');
+        if (commonNameElement) commonNameElement.textContent = commonName;
+        if (scientificNameElement) scientificNameElement.textContent = scientificName;
+    }
+}
