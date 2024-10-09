@@ -1,0 +1,95 @@
+.turtle-profile-slider {
+    display: block;
+    position: relative;
+    margin: 0 0 0 0;
+    width: 100%;
+}
+
+.extended-wrapper {
+    position: relative;
+    display: flex;
+    width: 100vw;
+    left: 50%;
+    margin-left: -50vw;
+}
+
+.turtle-profile-slider-container {
+    display: block;
+    position: relative;
+    width: 100%;
+    max-width: 2560px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.turtle-profile-slider-container .turtle-profile-slider-navigation {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.turtle-profile-slider-container .turtle-profile-slider-navigation .slider-nav-button {
+    position: absolute;
+    top: calc(50% - 50px);
+    opacity: 0;
+}
+
+.turtle-profile-slider-container:hover .turtle-profile-slider-navigation .slider-nav-button {
+    opacity: 1;
+}
+
+.turtle-profile-slider-container .media-attribution {
+    position: absolute;
+    margin: 0;
+    padding: 0.5rem 0 0 0;
+    width: 100%;
+    max-width: unset;
+    height: 45px;
+    color: var(--brand-neutrals--gray-300);
+    opacity: 1;
+    transition: opacity 1s;
+    text-align: right;
+}
+
+.turtle-profile-slider-container .turtle-profile-slider-wrapper {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: content-box;
+}
+
+.turtle-profile-slider-container .turtle-profile-slide {
+    position: relative;
+    flex-shrink: 0;
+    margin-bottom: 6rem;
+    max-width: calc(100vw - 60px);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.turtle-profile-slider-container .turtle-profile-slide .media-data {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 0 auto;
+    border-radius: 1rem;
+    overflow: hidden;
+    height: 472px;
+}
+
+.turtle-profile-slider-container .turtle-profile-slide img {
+    display: inline-block;
+    width: auto;
+    height: 100%;
+    max-width: unset;
+    max-height: 100%;
+    cursor: grab;
+}
