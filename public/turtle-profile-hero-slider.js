@@ -1,70 +1,69 @@
 (function(window) {
   function initTurtleProfileSlider() {
-    document.addEventListener('turtleDataLoaded', function () {
-      const speciesName = window.currentTurtleScientificName;
-      if (!speciesName) {
-        console.error('Species name not found.');
-        return;
-      }
+    if (!window.currentTurtleScientificName) {
+      console.error('Current turtle scientific name not found. Waiting for data to load...');
+      document.addEventListener('turtleDataLoaded', initTurtleProfileSlider);
+      return;
+    }
 
-      const sanitizedSpeciesName = speciesName.replace(/\s+/g, '_');
+    const speciesName = window.currentTurtleScientificName;
+    const sanitizedSpeciesName = speciesName.replace(/\s+/g, '_');
 
-      fetch(`https://turterra.vercel.app/cloudinary/${encodeURIComponent(sanitizedSpeciesName)}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+    fetch(`https://turterra.vercel.app/cloudinary/${encodeURIComponent(sanitizedSpeciesName)}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(images => {
+        console.log(`Fetched ${images.length} images for the slider.`);
+        const sliderWrapper = document.querySelector('.turtle-profile-slider-wrapper');
+
+        if (!sliderWrapper) {
+          console.error('Slider wrapper not found.');
+          return;
+        }
+
+        // Clear existing slides
+        sliderWrapper.innerHTML = '';
+
+        // Find the primary photo
+        const primaryPhotoIndex = images.findIndex(image => 
+          image.metadata && image.metadata.primary_photo && 
+          image.metadata.primary_photo.toLowerCase() === 'true'
+        );
+
+        images.forEach((image, index) => {
+          const slide = document.createElement('div');
+          slide.className = 'turtle-profile-slide';
+          if (index === primaryPhotoIndex) {
+            slide.classList.add('primary-photo');
           }
-          return response.json();
-        })
-        .then(images => {
-          console.log(`Fetched ${images.length} images for the slider.`);
-          const sliderWrapper = document.querySelector('.turtle-profile-slider-wrapper');
+          slide.setAttribute('role', 'group');
+          slide.setAttribute('aria-label', `${index + 1} / ${images.length}`);
+          slide.setAttribute('data-swiper-slide-index', index);
 
-          if (!sliderWrapper) {
-            console.error('Slider wrapper not found.');
-            return;
-          }
+          slide.innerHTML = `
+            <div class="media-data">
+              <img src="${image.secure_url}" alt="${speciesName}" title="${image.metadata?.citation || ''}" loading="lazy">
+            </div>
+            <div class="media-attribution text-size-small">
+              <span class="image-caption">${image.metadata?.citation || ''}</span>
+              <span class="credit-intro">Photo:</span>
+              <span class="credit-value">${image.metadata?.attribution || ''}</span>
+            </div>
+          `;
 
-          // Clear existing slides
-          sliderWrapper.innerHTML = '';
-
-          // Find the primary photo
-          const primaryPhotoIndex = images.findIndex(image => 
-            image.metadata && image.metadata.primary_photo && 
-            image.metadata.primary_photo.toLowerCase() === 'true'
-          );
-
-          images.forEach((image, index) => {
-            const slide = document.createElement('div');
-            slide.className = 'turtle-profile-slide';
-            if (index === primaryPhotoIndex) {
-              slide.classList.add('primary-photo');
-            }
-            slide.setAttribute('role', 'group');
-            slide.setAttribute('aria-label', `${index + 1} / ${images.length}`);
-            slide.setAttribute('data-swiper-slide-index', index);
-
-            slide.innerHTML = `
-              <div class="media-data">
-                <img src="${image.secure_url}" alt="${speciesName}" title="${image.metadata?.citation || ''}" loading="lazy">
-              </div>
-              <div class="media-attribution text-size-small">
-                <span class="image-caption">${image.metadata?.citation || ''}</span>
-                <span class="credit-intro">Photo:</span>
-                <span class="credit-value">${image.metadata?.attribution || ''}</span>
-              </div>
-            `;
-
-            sliderWrapper.appendChild(slide);
-          });
-
-          initializeSwiper(primaryPhotoIndex);
-          initializeExtendedWrapper();
-        })
-        .catch(error => {
-          console.error('Error fetching images:', error);
+          sliderWrapper.appendChild(slide);
         });
-    });
+
+        initializeSwiper(primaryPhotoIndex);
+        initializeExtendedWrapper();
+      })
+      .catch(error => {
+        console.error('Error fetching images:', error);
+      });
   }
 
   function initializeSwiper(initialSlide = 0) {
@@ -180,5 +179,12 @@
 
 })(window);
 
-// Call the initialization function when the DOM is ready
-document.addEventListener('DOMContentLoaded', window.initTurtleProfileSlider);
+// Initialize the slider when the DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.currentTurtleScientificName) {
+    window.initTurtleProfileSlider();
+  } else {
+    console.log('Waiting for turtle data to load...');
+    document.addEventListener('turtleDataLoaded', window.initTurtleProfileSlider);
+  }
+});
