@@ -46,6 +46,13 @@
       }
       console.log('All JS files loaded successfully');
 
+      // Initialize taxonomy population after all scripts are loaded
+      if (typeof populateTaxonomy === 'function') {
+        await populateTaxonomy();
+      } else {
+        console.error('populateTaxonomy function not found');
+      }
+
     } catch (error) {
       console.error('Error loading resources:', error);
     }
