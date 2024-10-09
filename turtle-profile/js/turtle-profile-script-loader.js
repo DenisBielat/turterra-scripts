@@ -3,7 +3,7 @@
 
   const resources = {
     css: [
-      '/css/page/turtle-profile-layout.css',
+      '/css/components/turtle-profile-hero-slider.css',
     ],
     js: [
       '/js/page/fetch-turtle-species.js',
