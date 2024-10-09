@@ -1,4 +1,5 @@
 (function(window) {
+    console.log("Taxonomy script initialized");
     async function populateTaxonomy() {
         if (!window.currentTurtleScientificName) {
             console.error('currentTurtleScientificName is not available');
@@ -84,6 +85,7 @@
 
     // Initialize when the DOM content is loaded
     document.addEventListener('DOMContentLoaded', async () => {
+        console.log("DOMContentLoaded event fired");
         if (typeof window.fetchTurtleNames === 'function') {
             await window.fetchTurtleNames();
         } else {
