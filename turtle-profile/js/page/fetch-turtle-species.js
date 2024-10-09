@@ -31,6 +31,6 @@
         return segments[segments.length - 1];
     }
 
-    // Initialize when the window loads
-    window.addEventListener('load', fetchTurtleNames);
+    // Expose fetchTurtleNames to the global scope
+    window.fetchTurtleNames = fetchTurtleNames;
 })(window);
