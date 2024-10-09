@@ -1,4 +1,9 @@
 async function populateTaxonomy() {
+    if (!window.currentTurtleScientificName) {
+        console.error('currentTurtleScientificName is not set');
+        return;
+    }
+
     const currentGenus = window.currentTurtleScientificName.split(' ')[0].toLowerCase();
     try {
         // Fetch genus information
