@@ -12,6 +12,7 @@
       '/js/components/turtle-profile-hero-slider.js',
       '/js/components/turtle-profile-search-bar.js',
       '/js/components/populate-taxonomy.js',
+      '/js/components/init-turtle-profile.js',
     ]
   };
   
@@ -45,13 +46,6 @@
         await loadResource(jsFile, 'js');
       }
       console.log('All JS files loaded successfully');
-
-      // Initialize taxonomy population after all scripts are loaded
-      if (typeof populateTaxonomy === 'function') {
-        await populateTaxonomy();
-      } else {
-        console.error('populateTaxonomy function not found');
-      }
 
     } catch (error) {
       console.error('Error loading resources:', error);
