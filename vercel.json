@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "public/**",
+      "src": "turtle-profile/**",
       "use": "@vercel/static"
     }
   ],
@@ -28,8 +28,12 @@
       "dest": "/server.mjs"
     },
     {
+      "src": "/turtle-profile/(.*)",
+      "dest": "/turtle-profile/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "/turtle-profile/$1"
     }
   ]
 }
