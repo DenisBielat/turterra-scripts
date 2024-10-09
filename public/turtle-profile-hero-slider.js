@@ -177,14 +177,14 @@
   // Expose the initialization function to the global scope
   window.initTurtleProfileSlider = initTurtleProfileSlider;
 
-})(window);
+  // Initialize when the window loads or when turtle data is loaded
+  window.addEventListener('load', function() {
+    if (window.currentTurtleScientificName) {
+      initTurtleProfileSlider();
+    } else {
+      console.log('Waiting for turtle data to load...');
+      document.addEventListener('turtleDataLoaded', initTurtleProfileSlider);
+    }
+  });
 
-// Initialize the slider when the DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-  if (window.currentTurtleScientificName) {
-    window.initTurtleProfileSlider();
-  } else {
-    console.log('Waiting for turtle data to load...');
-    document.addEventListener('turtleDataLoaded', window.initTurtleProfileSlider);
-  }
-});
+})(window);
