@@ -12,7 +12,7 @@
       '/js/components/turtle-profile-hero-slider.js',
       '/js/components/turtle-profile-search-bar.js',
       '/js/components/populate-taxonomy.js',
-      '/js/components/init-turtle-profile.js',
+      '/js/init-turtle-profile.js',
     ]
   };
   
