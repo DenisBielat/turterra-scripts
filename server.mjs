@@ -88,25 +88,39 @@ app.get('/webflow/:collectionId/:itemId', async (req, res) => {
 app.get('/cloudinary/:species', async (req, res) => {
     const { species } = req.params;
     console.log(`Received request for species: ${species}`);
+    const folderPath = `Turtle Species Photos/${species}/`;
+    console.log(`Searching in folder: ${folderPath}`);
+    
     try {
         const result = await cloudinary.api.resources({
             type: 'upload',
-            prefix: `Turtle Species Photos/${species}/`,
+            prefix: folderPath,
             max_results: 500,
             context: true,
             metadata: true,
         });
 
         console.log(`Total resources fetched: ${result.resources.length}`);
+        console.log('First few resource public_ids:');
+        result.resources.slice(0, 5).forEach(resource => {
+            console.log(resource.public_id);
+        });
+
+        // Filter resources to ensure they're in the correct folder
+        const filteredResources = result.resources.filter(resource => 
+            resource.public_id.startsWith(folderPath)
+        );
+
+        console.log(`Filtered resources: ${filteredResources.length}`);
 
         // Separate images where 'Primary Photo' metadata is 'True'
-        const imagesWithPrimaryPhoto = result.resources.filter(image => 
+        const imagesWithPrimaryPhoto = filteredResources.filter(image => 
             image.metadata && 
             image.metadata['Primary Photo'] &&
             image.metadata['Primary Photo'].toLowerCase() === 'true'
         );
 
-        const imagesWithoutPrimaryPhoto = result.resources.filter(image => 
+        const imagesWithoutPrimaryPhoto = filteredResources.filter(image => 
             !image.metadata || 
             !image.metadata['Primary Photo'] ||
             image.metadata['Primary Photo'].toLowerCase() !== 'true'
