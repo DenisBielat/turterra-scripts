@@ -99,7 +99,7 @@ app.get('/cloudinary/test', async (req, res) => {
         console.log('Attempting to fetch resources from Cloudinary...');
         const result = await cloudinary.api.resources({
             type: 'upload',
-            folder: folderPath,  // Changed from 'prefix' to 'folder'
+            folder: folderPath,
             max_results: 500,
             context: true,
             metadata: true,
@@ -121,14 +121,14 @@ app.get('/cloudinary/test', async (req, res) => {
         // Separate images where 'Primary Photo' metadata is 'True'
         const imagesWithPrimaryPhoto = result.resources.filter(image => 
             image.metadata && 
-            image.metadata['Primary Photo'] &&
-            image.metadata['Primary Photo'].toLowerCase() === 'true'
+            image.metadata.primary_photo &&
+            image.metadata.primary_photo.toLowerCase() === 'true'
         );
 
         const imagesWithoutPrimaryPhoto = result.resources.filter(image => 
             !image.metadata || 
-            !image.metadata['Primary Photo'] ||
-            image.metadata['Primary Photo'].toLowerCase() !== 'true'
+            !image.metadata.primary_photo ||
+            image.metadata.primary_photo.toLowerCase() !== 'true'
         );
 
         // Combine the arrays, placing images with 'Primary Photo' set to 'True' first
