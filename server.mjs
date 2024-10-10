@@ -116,19 +116,30 @@ app.get('/cloudinary/:commonName', async (req, res) => {
             return res.status(404).json({ error: 'No images found for this turtle' });
         }
 
-        console.log('First few resource public_ids:');
-        result.resources.slice(0, 5).forEach(resource => {
+        console.log('All fetched resource public_ids:');
+        result.resources.forEach(resource => {
+            console.log(resource.public_id);
+        });
+
+        // Manually filter resources to ensure they're in the correct folder
+        const filteredResources = result.resources.filter(resource => 
+            resource.public_id.startsWith(folderPath)
+        );
+
+        console.log(`Filtered resources: ${filteredResources.length}`);
+        console.log('Filtered resource public_ids:');
+        filteredResources.forEach(resource => {
             console.log(resource.public_id);
         });
 
         // Separate images where 'Primary Photo' metadata is 'True'
-        const imagesWithPrimaryPhoto = result.resources.filter(image => 
+        const imagesWithPrimaryPhoto = filteredResources.filter(image => 
             image.metadata && 
             image.metadata['Primary Photo'] &&
             image.metadata['Primary Photo'].toLowerCase() === 'true'
         );
 
-        const imagesWithoutPrimaryPhoto = result.resources.filter(image => 
+        const imagesWithoutPrimaryPhoto = filteredResources.filter(image => 
             !image.metadata || 
             !image.metadata['Primary Photo'] ||
             image.metadata['Primary Photo'].toLowerCase() !== 'true'
