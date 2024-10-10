@@ -1,15 +1,15 @@
 (function(window) {
   function initTurtleProfileSlider() {
-    if (!window.currentTurtleScientificName) {
-      console.error('Current turtle scientific name not found. Waiting for data to load...');
+    if (!window.currentTurtleCommonName) {
+      console.error('Current turtle common name not found. Waiting for data to load...');
       document.addEventListener('turtleDataLoaded', initTurtleProfileSlider);
       return;
     }
 
-    const speciesName = window.currentTurtleScientificName;
-    const sanitizedSpeciesName = speciesName.replace(/\s+/g, '_');
+    const commonName = window.currentTurtleCommonName;
+    const encodedCommonName = encodeURIComponent(commonName);
 
-    fetch(`https://turterra.vercel.app/cloudinary/${encodeURIComponent(sanitizedSpeciesName)}`)
+    fetch(`https://turterra.vercel.app/cloudinary/${encodedCommonName}`)
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -51,7 +51,7 @@
 
           slide.innerHTML = `
             <div class="media-data">
-              <img src="${image.secure_url}" alt="${speciesName}" title="${lifeStage}" loading="lazy">
+              <img src="${image.secure_url}" alt="${commonName}" title="${lifeStage}" loading="lazy">
             </div>
             <div class="media-attribution">
               <span class="image-caption">${lifeStage}</span>
