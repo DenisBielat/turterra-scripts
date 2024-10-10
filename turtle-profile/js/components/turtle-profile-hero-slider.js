@@ -1,6 +1,6 @@
 (function(window) {
   function initTurtleProfileSlider() {
-    fetch(`https://turterra.vercel.app/cloudinary/test`)
+    fetch(`https://turterra.vercel.app/cloudinary/big-headed-pantanal-swmap-turtle/`)
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
