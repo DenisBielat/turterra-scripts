@@ -50,9 +50,13 @@
     max-width: unset;
     height: 45px;
     color: var(--brand-neutrals--gray-300);
-    opacity: 1;
-    transition: opacity 1s;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
     text-align: right;
+}
+
+.turtle-profile-slider-container .media-attribution.visible {
+    opacity: 1;
 }
 
 .turtle-profile-slider-container .turtle-profile-slider-wrapper {
