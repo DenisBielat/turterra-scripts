@@ -90,13 +90,10 @@ function formatCommonName(name) {
 }
 
 // Endpoint to fetch Cloudinary images by common name
-app.get('/cloudinary/:commonName', async (req, res) => {
-    const { commonName } = req.params;
-    const formattedCommonName = formatCommonName(commonName);
-    console.log(`Received request for common name: ${commonName}`);
-    console.log(`Formatted common name: ${formattedCommonName}`);
-    const folderPath = `Turtle Species Photos/${formattedCommonName}/`;
-    console.log(`Searching in folder: ${folderPath}`);
+app.get('/cloudinary/test', async (req, res) => {
+    const hardcodedSpecies = 'big-headed-pantanal-swamp-turtle';
+    const folderPath = `Turtle Species Photos/${hardcodedSpecies}/`;
+    console.log(`Searching in hardcoded folder: ${folderPath}`);
     
     try {
         console.log('Attempting to fetch resources from Cloudinary...');
@@ -121,25 +118,14 @@ app.get('/cloudinary/:commonName', async (req, res) => {
             console.log(resource.public_id);
         });
 
-        // Manually filter resources to ensure they're in the correct folder
-        const filteredResources = result.resources.filter(resource => 
-            resource.public_id.startsWith(folderPath)
-        );
-
-        console.log(`Filtered resources: ${filteredResources.length}`);
-        console.log('Filtered resource public_ids:');
-        filteredResources.forEach(resource => {
-            console.log(resource.public_id);
-        });
-
         // Separate images where 'Primary Photo' metadata is 'True'
-        const imagesWithPrimaryPhoto = filteredResources.filter(image => 
+        const imagesWithPrimaryPhoto = result.resources.filter(image => 
             image.metadata && 
             image.metadata['Primary Photo'] &&
             image.metadata['Primary Photo'].toLowerCase() === 'true'
         );
 
-        const imagesWithoutPrimaryPhoto = filteredResources.filter(image => 
+        const imagesWithoutPrimaryPhoto = result.resources.filter(image => 
             !image.metadata || 
             !image.metadata['Primary Photo'] ||
             image.metadata['Primary Photo'].toLowerCase() !== 'true'
