@@ -30,8 +30,9 @@
 
         // Find the primary photo
         const primaryPhotoIndex = images.findIndex(image => 
-          image.metadata && image.metadata.primary_photo && 
-          image.metadata.primary_photo.toLowerCase() === 'true'
+          image.metadata && 
+          image.metadata['Primary Photo'] && 
+          image.metadata['Primary Photo'].toLowerCase() === 'true'
         );
 
         images.forEach((image, index) => {
@@ -69,7 +70,7 @@
         console.error('Error fetching images:', error);
       });
   }
-
+  
   function initializeSwiper(initialSlide = 0) {
     const sliderContainers = document.querySelectorAll('.turtle-profile-slider-container');
     sliderContainers.forEach(sliderContainer => {
