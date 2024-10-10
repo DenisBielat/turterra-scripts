@@ -44,14 +44,18 @@
           slide.setAttribute('aria-label', `${index + 1} / ${images.length}`);
           slide.setAttribute('data-swiper-slide-index', index);
 
+          const lifeStage = image.metadata?.life_stage ? `${image.metadata.life_stage}.` : '';
+          const assetType = image.metadata?.asset_type ? `${image.metadata.asset_type}:` : '';
+          const creditsBasic = image.metadata?.credits_basic || '';
+
           slide.innerHTML = `
             <div class="media-data">
-              <img src="${image.secure_url}" alt="${speciesName}" title="${image.metadata?.citation || ''}" loading="lazy">
+              <img src="${image.secure_url}" alt="${speciesName}" title="${lifeStage}" loading="lazy">
             </div>
             <div class="media-attribution">
-              <span class="image-caption">${image.metadata?.citation || ''}</span>
-              <span class="credit-intro">Photo:</span>
-              <span class="credit-value">${image.metadata?.attribution || ''}</span>
+              <span class="image-caption">${lifeStage}</span>
+              <span class="credit-intro">${assetType}</span>
+              <span class="credit-value">${creditsBasic}</span>
             </div>
           `;
 
