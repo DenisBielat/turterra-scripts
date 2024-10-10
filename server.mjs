@@ -1,6 +1,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
-import cloudinary from 'cloudinary/cloudinary.js';
+//import cloudinary from 'cloudinary/cloudinary.js';
+import { v2 as cloudinary } from 'cloudinary';
 import cors from 'cors';
 
 const app = express();
