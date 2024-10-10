@@ -101,7 +101,7 @@ app.get('/cloudinary/test', async (req, res) => {
         const result = await cloudinary.api.resources({
             type: 'upload',
             resource_type: 'image',
-            prefix: folderPath,
+            prefix: `Turtle Species Photos/big-headed-pantanal-swamp-turtle/`,
             max_results: 500,
             context: true,
             metadata: true,
