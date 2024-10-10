@@ -92,6 +92,7 @@ app.get('/cloudinary/:species', async (req, res) => {
     console.log(`Searching in folder: ${folderPath}`);
     
     try {
+        console.log('Attempting to fetch resources from Cloudinary...');
         const result = await cloudinary.api.resources({
             type: 'upload',
             prefix: folderPath,
@@ -100,7 +101,14 @@ app.get('/cloudinary/:species', async (req, res) => {
             metadata: true,
         });
 
-        console.log(`Total resources fetched: ${result.resources.length}`);
+        console.log('Cloudinary API response received.');
+        console.log(`Total resources fetched: ${result.resources ? result.resources.length : 0}`);
+        
+        if (!result.resources || result.resources.length === 0) {
+            console.log('No resources found. Cloudinary response:', JSON.stringify(result, null, 2));
+            return res.status(404).json({ error: 'No images found for this species' });
+        }
+
         console.log('First few resource public_ids:');
         result.resources.slice(0, 5).forEach(resource => {
             console.log(resource.public_id);
@@ -112,6 +120,14 @@ app.get('/cloudinary/:species', async (req, res) => {
         );
 
         console.log(`Filtered resources: ${filteredResources.length}`);
+
+        if (filteredResources.length === 0) {
+            console.log('No resources found after filtering. All fetched public_ids:');
+            result.resources.forEach(resource => {
+                console.log(resource.public_id);
+            });
+            return res.status(404).json({ error: 'No images found in the specified folder for this species' });
+        }
 
         // Separate images where 'Primary Photo' metadata is 'True'
         const imagesWithPrimaryPhoto = filteredResources.filter(image => 
@@ -129,6 +145,7 @@ app.get('/cloudinary/:species', async (req, res) => {
         // Combine the arrays, placing images with 'Primary Photo' set to 'True' first
         const sortedImages = [...imagesWithPrimaryPhoto, ...imagesWithoutPrimaryPhoto];
 
+        console.log(`Returning ${sortedImages.length} images`);
         res.json(sortedImages);
     } catch (error) {
         console.error('Cloudinary fetch error:', error);
