@@ -89,10 +89,10 @@ function formatCommonName(name) {
   return name.toLowerCase().replace(/\s+/g, '-');
 }
 
-// Endpoint to fetch Cloudinary images by common name
+// Hardcoded endpoint to fetch Cloudinary images for a specific turtle
 app.get('/cloudinary/test', async (req, res) => {
     const hardcodedSpecies = 'big-headed-pantanal-swamp-turtle';
-    const folderPath = `Turtle Species Photos/${hardcodedSpecies}/`;
+    const folderPath = `turtle-species-photos/${hardcodedSpecies}/`;
     console.log(`Searching in hardcoded folder: ${folderPath}`);
     
     try {
