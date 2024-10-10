@@ -99,26 +99,20 @@ app.get('/cloudinary/:species', async (req, res) => {
 
         console.log(`Total resources fetched: ${result.resources.length}`);
 
-        const filteredImages = result.resources.filter(image => 
-            image.metadata &&
-            image.metadata.image_use &&
-            image.metadata.image_use.includes('turtle_profile___slider')
-        );
-
-        console.log(`Filtered images for turtle_profile___slider: ${filteredImages.length}`);
-
-        const imagesWithPrimaryPhoto = filteredImages.filter(image => 
+        // Separate images where 'Primary Photo' metadata is 'True'
+        const imagesWithPrimaryPhoto = result.resources.filter(image => 
             image.metadata && 
             image.metadata['Primary Photo'] &&
             image.metadata['Primary Photo'].toLowerCase() === 'true'
         );
 
-        const imagesWithoutPrimaryPhoto = filteredImages.filter(image => 
+        const imagesWithoutPrimaryPhoto = result.resources.filter(image => 
             !image.metadata || 
             !image.metadata['Primary Photo'] ||
             image.metadata['Primary Photo'].toLowerCase() !== 'true'
         );
 
+        // Combine the arrays, placing images with 'Primary Photo' set to 'True' first
         const sortedImages = [...imagesWithPrimaryPhoto, ...imagesWithoutPrimaryPhoto];
 
         res.json(sortedImages);
