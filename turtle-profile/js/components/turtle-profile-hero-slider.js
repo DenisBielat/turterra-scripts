@@ -18,6 +18,10 @@
       })
       .then(images => {
         console.log(`Fetched ${images.length} images for the slider.`);
+        if (images.length === 0) {
+          console.error('No images returned for this turtle.');
+          return;
+        }
         const sliderWrapper = document.querySelector('.turtle-profile-slider-wrapper');
 
         if (!sliderWrapper) {
