@@ -84,11 +84,18 @@ app.get('/webflow/:collectionId/:itemId', async (req, res) => {
     }
 });
 
-// Endpoint to fetch Cloudinary images by species
-app.get('/cloudinary/:species', async (req, res) => {
-    const { species } = req.params;
-    console.log(`Received request for species: ${species}`);
-    const folderPath = `Turtle Species Photos/${species}/`;
+// Helper function to format the common name
+function formatCommonName(name) {
+  return name.toLowerCase().replace(/\s+/g, '-');
+}
+
+// Endpoint to fetch Cloudinary images by common name
+app.get('/cloudinary/:commonName', async (req, res) => {
+    const { commonName } = req.params;
+    const formattedCommonName = formatCommonName(commonName);
+    console.log(`Received request for common name: ${commonName}`);
+    console.log(`Formatted common name: ${formattedCommonName}`);
+    const folderPath = `Turtle Species Photos/${formattedCommonName}/`;
     console.log(`Searching in folder: ${folderPath}`);
     
     try {
@@ -106,7 +113,7 @@ app.get('/cloudinary/:species', async (req, res) => {
         
         if (!result.resources || result.resources.length === 0) {
             console.log('No resources found. Cloudinary response:', JSON.stringify(result, null, 2));
-            return res.status(404).json({ error: 'No images found for this species' });
+            return res.status(404).json({ error: 'No images found for this turtle' });
         }
 
         console.log('First few resource public_ids:');
@@ -114,29 +121,14 @@ app.get('/cloudinary/:species', async (req, res) => {
             console.log(resource.public_id);
         });
 
-        // Filter resources to ensure they're in the correct folder
-        const filteredResources = result.resources.filter(resource => 
-            resource.public_id.startsWith(folderPath)
-        );
-
-        console.log(`Filtered resources: ${filteredResources.length}`);
-
-        if (filteredResources.length === 0) {
-            console.log('No resources found after filtering. All fetched public_ids:');
-            result.resources.forEach(resource => {
-                console.log(resource.public_id);
-            });
-            return res.status(404).json({ error: 'No images found in the specified folder for this species' });
-        }
-
         // Separate images where 'Primary Photo' metadata is 'True'
-        const imagesWithPrimaryPhoto = filteredResources.filter(image => 
+        const imagesWithPrimaryPhoto = result.resources.filter(image => 
             image.metadata && 
             image.metadata['Primary Photo'] &&
             image.metadata['Primary Photo'].toLowerCase() === 'true'
         );
 
-        const imagesWithoutPrimaryPhoto = filteredResources.filter(image => 
+        const imagesWithoutPrimaryPhoto = result.resources.filter(image => 
             !image.metadata || 
             !image.metadata['Primary Photo'] ||
             image.metadata['Primary Photo'].toLowerCase() !== 'true'
