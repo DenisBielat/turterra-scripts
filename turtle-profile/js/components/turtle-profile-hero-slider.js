@@ -48,7 +48,7 @@
             <div class="media-data">
               <img src="${image.secure_url}" alt="${speciesName}" title="${image.metadata?.citation || ''}" loading="lazy">
             </div>
-            <div class="media-attribution text-size-small">
+            <div class="media-attribution">
               <span class="image-caption">${image.metadata?.citation || ''}</span>
               <span class="credit-intro">Photo:</span>
               <span class="credit-value">${image.metadata?.attribution || ''}</span>
