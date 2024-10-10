@@ -1,15 +1,6 @@
 (function(window) {
   function initTurtleProfileSlider() {
-    if (!window.currentTurtleCommonName) {
-      console.error('Current turtle common name not found. Waiting for data to load...');
-      document.addEventListener('turtleDataLoaded', initTurtleProfileSlider);
-      return;
-    }
-
-    const commonName = window.currentTurtleCommonName;
-    const encodedCommonName = encodeURIComponent(commonName);
-
-    fetch(`https://turterra.vercel.app/cloudinary/${encodedCommonName}`)
+    fetch(`https://turterra.vercel.app/cloudinary/test`)
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -55,7 +46,7 @@
 
           slide.innerHTML = `
             <div class="media-data">
-              <img src="${image.secure_url}" alt="${commonName}" title="${lifeStage}" loading="lazy">
+              <img src="${image.secure_url}" alt="Big-headed Pantanal Swamp Turtle" title="${lifeStage}" loading="lazy">
             </div>
             <div class="media-attribution">
               <span class="image-caption">${lifeStage}</span>
