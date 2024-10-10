@@ -90,15 +90,17 @@
           init: function(swiper) {
             updateSlideClasses(swiper);
             setupHoverBehavior(sliderContainer);
+            updateMediaAttributionVisibility(swiper);
           },
           slideChange: function(swiper) {
             updateSlideClasses(swiper);
+            updateMediaAttributionVisibility(swiper);
           }
         }
       });
     });
   }
-
+  
   function updateSlideClasses(swiper) {
     if (!swiper || !swiper.slides) {
       console.error('Invalid swiper object');
@@ -124,6 +126,30 @@
         slide.classList.add('turtle-profile-slide-prev');
       } else if (normalizedIndex === 1) {
         slide.classList.add('turtle-profile-slide-next');
+      }
+    });
+  }
+
+  function updateMediaAttributionVisibility(swiper) {
+    if (!swiper || !swiper.slides) {
+      console.error('Invalid swiper object');
+      return;
+    }
+
+    const slides = swiper.slides;
+    slides.forEach((slide, index) => {
+      if (!(slide instanceof Element)) {
+        console.error('Invalid slide element at index', index);
+        return;
+      }
+
+      const mediaAttribution = slide.querySelector('.media-attribution');
+      if (mediaAttribution) {
+        if (slide.classList.contains('turtle-profile-slide-active')) {
+          mediaAttribution.classList.add('visible');
+        } else {
+          mediaAttribution.classList.remove('visible');
+        }
       }
     });
   }
