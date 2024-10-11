@@ -137,4 +137,29 @@ app.get('/cloudinary/:species', async (req, res) => {
   }
 });
 
+app.get('/cloudinary/single-image', async (req, res) => {
+    const publicId = 'turtle-species-photos/big-headed-pantanal-swamp-turtle/multi-2_glo1nq';
+
+    try {
+        console.log(`Attempting to fetch single image with public_id: ${publicId}`);
+        const result = await cloudinary.api.resource(publicId, {
+            colors: true,
+            image_metadata: true,
+            context: true,
+            metadata: true
+        });
+
+        console.log('Cloudinary API response received for single image.');
+        console.log('Image details:', JSON.stringify(result, null, 2));
+
+        res.json(result);
+    } catch (error) {
+        console.error('Cloudinary fetch error:', error);
+        res.status(500).json({ 
+            error: 'Error fetching single image from Cloudinary', 
+            details: error.message 
+        });
+    }
+});
+
 export default app;
