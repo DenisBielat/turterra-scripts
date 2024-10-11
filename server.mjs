@@ -1,7 +1,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
-//import cloudinary from 'cloudinary/cloudinary.js';
-import { v2 as cloudinary } from 'cloudinary';
+import cloudinary from 'cloudinary/cloudinary.js';
+// import { v2 as cloudinary } from 'cloudinary';
 import cors from 'cors';
 
 const app = express();
@@ -85,81 +85,56 @@ app.get('/webflow/:collectionId/:itemId', async (req, res) => {
     }
 });
 
-// Helper function to format the common name
-function formatCommonName(name) {
-  return name.toLowerCase().replace(/\s+/g, '-');
-}
+// Endpoint to fetch Cloudinary images by species
+app.get('/cloudinary/:species', async (req, res) => {
+  const { species } = req.params;
+  console.log(`Received request for species: ${species}`);
 
-// Endpoint to fetch Cloudinary images for a specific turtle
-app.get('/cloudinary/:commonName', async (req, res) => {
-    const { commonName } = req.params;
-    const formattedCommonName = formatCommonName(commonName);
-    console.log(`Received request for common name: ${commonName}`);
-    console.log(`Formatted common name: ${formattedCommonName}`);
-    const folderPath = `Turtle Species Photos/${formattedCommonName}/`;
-    console.log(`Searching in folder: ${folderPath}`);
+  // Construct the folder path with a trailing slash
+  const folderPath = `Turtle Species Photos/${species}/`;
+  console.log(`Searching in folder: ${folderPath}`);
 
   try {
-    console.log('Attempting to fetch resources from Cloudinary...');
-    const result = await cloudinary.v2.api.resources({
+    const result = await cloudinary.api.resources({
       type: 'upload',
-      resource_type: 'image',
-      prefix: folderPath,    // Folder path with trailing slash
-      delimiter: '/',        // Exclude subfolders
+      prefix: folderPath, // Include the trailing slash
+      delimiter: '/',     // Exclude resources in subfolders
       max_results: 500,
       context: true,
-      metadata: true,
+      metadata: true,     // Ensure structured metadata is included
     });
 
-    console.log('Cloudinary API response received.');
-        console.log(`Total resources fetched: ${result.resources ? result.resources.length : 0}`);
-        
-        if (!result.resources || result.resources.length === 0) {
-            console.log('No resources found. Cloudinary response:', JSON.stringify(result, null, 2));
-            return res.status(404).json({ error: 'No images found for this turtle' });
-        }
+    console.log(`Total resources fetched: ${result.resources.length}`);
 
-        console.log('All fetched resource public_ids:');
-        result.resources.forEach(resource => {
-            console.log(resource.public_id);
-        });
+    // Use all images without filtering by 'image_use'
+    const images = result.resources;
 
-        // Manually filter resources to ensure they're in the correct folder
-        const filteredResources = result.resources.filter(resource => 
-            resource.public_id.startsWith(folderPath)
-        );
+    // Separate images where 'Primary Photo' metadata is 'True'
+    const imagesWithPrimaryPhoto = images.filter(
+      (image) =>
+        image.metadata &&
+        image.metadata['Primary Photo'] &&
+        image.metadata['Primary Photo'].toLowerCase() === 'true'
+    );
 
-        console.log(`Filtered resources: ${filteredResources.length}`);
-        console.log('Filtered resource public_ids:');
-        filteredResources.forEach(resource => {
-            console.log(resource.public_id);
-        });
+    const imagesWithoutPrimaryPhoto = images.filter(
+      (image) =>
+        !image.metadata ||
+        !image.metadata['Primary Photo'] ||
+        image.metadata['Primary Photo'].toLowerCase() !== 'true'
+    );
 
-        // Separate images where 'Primary Photo' metadata is 'True'
-        const imagesWithPrimaryPhoto = filteredResources.filter(image => 
-            image.metadata && 
-            image.metadata['Primary Photo'] &&
-            image.metadata['Primary Photo'].toLowerCase() === 'true'
-        );
+    // Combine the arrays, placing images with 'Primary Photo' set to 'True' first
+    const sortedImages = [...imagesWithPrimaryPhoto, ...imagesWithoutPrimaryPhoto];
 
-        const imagesWithoutPrimaryPhoto = filteredResources.filter(image => 
-            !image.metadata || 
-            !image.metadata['Primary Photo'] ||
-            image.metadata['Primary Photo'].toLowerCase() !== 'true'
-        );
-
-        // Combine the arrays, placing images with 'Primary Photo' set to 'True' first
-        const sortedImages = [...imagesWithPrimaryPhoto, ...imagesWithoutPrimaryPhoto];
-
-        console.log(`Returning ${sortedImages.length} images`);
-        res.json(sortedImages);
-    } catch (error) {
-        console.error('Cloudinary fetch error:', error);
-        res.status(500).json({ 
-            error: 'Error fetching data from Cloudinary', 
-            details: error.message 
-        });
-    }
+    res.json(sortedImages);
+  } catch (error) {
+    console.error('Cloudinary fetch error:', error);
+    res.status(500).json({
+      error: 'Error fetching data from Cloudinary',
+      details: error.message,
+    });
+  }
 });
 
 export default app;
