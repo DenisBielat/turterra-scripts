@@ -138,7 +138,7 @@ app.get('/cloudinary/:species', async (req, res) => {
 });
 
 app.get('/cloudinary/single-image', async (req, res) => {
-    const publicId = 'turtle-species-photos/big-headed-pantanal-swamp-turtle/multi-2_glo1nq';
+    const publicId = 'multi-2_glo1nq';
 
     try {
         console.log(`Attempting to fetch single image with public_id: ${publicId}`);
