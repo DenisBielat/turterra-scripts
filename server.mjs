@@ -90,16 +90,18 @@ function formatCommonName(name) {
   return name.toLowerCase().replace(/\s+/g, '-');
 }
 
-// Hardcoded endpoint to fetch Cloudinary images for a specific turtle
 // Endpoint to fetch Cloudinary images for a specific turtle
-app.get('/cloudinary/test', async (req, res) => {
-  const hardcodedSpecies = 'big-headed-pantanal-swamp-turtle';
-  const folderPath = `turtle-species-photos/${hardcodedSpecies}/`; // Include trailing slash
-  console.log(`Searching in folder: ${folderPath}`);
+app.get('/cloudinary/:commonName', async (req, res) => {
+    const { commonName } = req.params;
+    const formattedCommonName = formatCommonName(commonName);
+    console.log(`Received request for common name: ${commonName}`);
+    console.log(`Formatted common name: ${formattedCommonName}`);
+    const folderPath = `Turtle Species Photos/${formattedCommonName}/`;
+    console.log(`Searching in folder: ${folderPath}`);
 
   try {
     console.log('Attempting to fetch resources from Cloudinary...');
-    const result = await cloudinary.api.resources({
+    const result = await cloudinary.v2.api.resources({
       type: 'upload',
       resource_type: 'image',
       prefix: folderPath,    // Folder path with trailing slash
@@ -110,44 +112,54 @@ app.get('/cloudinary/test', async (req, res) => {
     });
 
     console.log('Cloudinary API response received.');
-    console.log(`Total resources fetched: ${result.resources.length}`);
+        console.log(`Total resources fetched: ${result.resources ? result.resources.length : 0}`);
+        
+        if (!result.resources || result.resources.length === 0) {
+            console.log('No resources found. Cloudinary response:', JSON.stringify(result, null, 2));
+            return res.status(404).json({ error: 'No images found for this turtle' });
+        }
 
-    if (!result.resources || result.resources.length === 0) {
-      console.log('No resources found. Cloudinary response:', JSON.stringify(result, null, 2));
-      return res.status(404).json({ error: 'No images found for this turtle' });
-    }
+        console.log('All fetched resource public_ids:');
+        result.resources.forEach(resource => {
+            console.log(resource.public_id);
+        });
 
-    // Log the public IDs and metadata
-    result.resources.forEach(resource => {
-      console.log('Public ID:', resource.public_id);
-      console.log('Metadata:', resource.metadata);
-    });
-
-        // Separate images where 'Primary Photo' metadata is 'True'
-        const imagesWithPrimaryPhoto = result.resources.filter(image => 
-            image.metadata && 
-            image.metadata.primary_photo &&
-            image.metadata.primary_photo.toLowerCase() === 'true'
+        // Manually filter resources to ensure they're in the correct folder
+        const filteredResources = result.resources.filter(resource => 
+            resource.public_id.startsWith(folderPath)
         );
 
-        const imagesWithoutPrimaryPhoto = result.resources.filter(image => 
+        console.log(`Filtered resources: ${filteredResources.length}`);
+        console.log('Filtered resource public_ids:');
+        filteredResources.forEach(resource => {
+            console.log(resource.public_id);
+        });
+
+        // Separate images where 'Primary Photo' metadata is 'True'
+        const imagesWithPrimaryPhoto = filteredResources.filter(image => 
+            image.metadata && 
+            image.metadata['Primary Photo'] &&
+            image.metadata['Primary Photo'].toLowerCase() === 'true'
+        );
+
+        const imagesWithoutPrimaryPhoto = filteredResources.filter(image => 
             !image.metadata || 
-            !image.metadata.primary_photo ||
-            image.metadata.primary_photo.toLowerCase() !== 'true'
+            !image.metadata['Primary Photo'] ||
+            image.metadata['Primary Photo'].toLowerCase() !== 'true'
         );
 
         // Combine the arrays, placing images with 'Primary Photo' set to 'True' first
         const sortedImages = [...imagesWithPrimaryPhoto, ...imagesWithoutPrimaryPhoto];
 
         console.log(`Returning ${sortedImages.length} images`);
-        res.json(result.resources);
-  } catch (error) {
-    console.error('Cloudinary fetch error:', error);
-    res.status(500).json({ 
-      error: 'Error fetching data from Cloudinary', 
-      details: error.message 
-    });
-  }
+        res.json(sortedImages);
+    } catch (error) {
+        console.error('Cloudinary fetch error:', error);
+        res.status(500).json({ 
+            error: 'Error fetching data from Cloudinary', 
+            details: error.message 
+        });
+    }
 });
 
 export default app;
