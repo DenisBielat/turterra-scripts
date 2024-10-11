@@ -87,76 +87,47 @@ app.get('/webflow/:collectionId/:itemId', async (req, res) => {
 
 // Endpoint to fetch Cloudinary images by species
 app.get('/cloudinary/:species', async (req, res) => {
-  const { species } = req.params;
-  console.log(`Received request for species: ${species}`);
-
-  // Construct the folder path with a trailing slash
-  const folderPath = `Turtle Species Photos/${species}/`;
-  console.log(`Searching in folder: ${folderPath}`);
-
-  try {
-    const result = await cloudinary.api.resources({
-      type: 'upload',
-      prefix: folderPath, // Include the trailing slash
-      delimiter: '/',     // Exclude resources in subfolders
-      max_results: 500,
-      context: true,
-      metadata: true,     // Ensure structured metadata is included
-    });
-
-    console.log(`Total resources fetched: ${result.resources.length}`);
-
-    // Use all images without filtering by 'image_use'
-    const images = result.resources;
-
-    // Separate images where 'Primary Photo' metadata is 'True'
-    const imagesWithPrimaryPhoto = images.filter(
-      (image) =>
-        image.metadata &&
-        image.metadata['Primary Photo'] &&
-        image.metadata['Primary Photo'].toLowerCase() === 'true'
-    );
-
-    const imagesWithoutPrimaryPhoto = images.filter(
-      (image) =>
-        !image.metadata ||
-        !image.metadata['Primary Photo'] ||
-        image.metadata['Primary Photo'].toLowerCase() !== 'true'
-    );
-
-    // Combine the arrays, placing images with 'Primary Photo' set to 'True' first
-    const sortedImages = [...imagesWithPrimaryPhoto, ...imagesWithoutPrimaryPhoto];
-
-    res.json(sortedImages);
-  } catch (error) {
-    console.error('Cloudinary fetch error:', error);
-    res.status(500).json({
-      error: 'Error fetching data from Cloudinary',
-      details: error.message,
-    });
-  }
-});
-
-app.get('/cloudinary/single-image', async (req, res) => {
-    const publicId = 'multi-2_glo1nq';
-
+    const { species } = req.params;
+    const formattedSpecies = species.toLowerCase().replace(/\s+/g, '-');
+    const folderPath = `Turtle Species Photos/${formattedSpecies}`;
+    console.log(`Searching in folder: ${folderPath}`);
+    
     try {
-        console.log(`Attempting to fetch single image with public_id: ${publicId}`);
-        const result = await cloudinary.api.resource(publicId, {
-            colors: true,
-            image_metadata: true,
+        console.log('Attempting to fetch resources from Cloudinary...');
+        const result = await cloudinary.api.resources({
+            type: 'upload',
+            prefix: folderPath,
+            max_results: 500,
             context: true,
-            metadata: true
+            metadata: true,
         });
 
-        console.log('Cloudinary API response received for single image.');
-        console.log('Image details:', JSON.stringify(result, null, 2));
+        console.log(`Total resources fetched: ${result.resources.length}`);
 
-        res.json(result);
+        if (result.resources.length === 0) {
+            return res.status(404).json({ error: 'No images found for this species' });
+        }
+
+        const processedImages = result.resources.map(image => ({
+            public_id: image.public_id,
+            secure_url: image.secure_url,
+            metadata: {
+                primary_photo: image.metadata?.primary_photo === 'true',
+                life_stage: image.metadata?.life_stage || '',
+                asset_type: image.metadata?.asset_type || '',
+                credits_basic: image.metadata?.credits_basic || ''
+            }
+        }));
+
+        // Sort images to put primary photo first
+        processedImages.sort((a, b) => (b.metadata.primary_photo ? 1 : 0) - (a.metadata.primary_photo ? 1 : 0));
+
+        console.log(`Returning ${processedImages.length} processed images`);
+        res.json(processedImages);
     } catch (error) {
         console.error('Cloudinary fetch error:', error);
         res.status(500).json({ 
-            error: 'Error fetching single image from Cloudinary', 
+            error: 'Error fetching data from Cloudinary', 
             details: error.message 
         });
     }
