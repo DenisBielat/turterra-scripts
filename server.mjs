@@ -92,33 +92,28 @@ function formatCommonName(name) {
 
 // Hardcoded endpoint to fetch Cloudinary images for a specific turtle
 app.get('/cloudinary/test', async (req, res) => {
-    const hardcodedSpecies = 'big-headed-pantanal-swamp-turtle';
-    const folderPath = `turtle-species-photos/${hardcodedSpecies}`;
-    console.log(`Searching in hardcoded folder: ${folderPath}`);
-    
-    try {
-        console.log('Attempting to fetch resources from Cloudinary using search API...');
-        const result = await cloudinary.search
-            .expression(`folder:${folderPath}`)
-            .with_field('context')
-            .with_field('metadata')
-            .max_results(500)
-            .execute();
+  const hardcodedSpecies = 'big-headed-pantanal-swamp-turtle';
+  const folderPath = `turtle-species-photos/${hardcodedSpecies}`; // No trailing slash
+  console.log(`Searching in folder: ${folderPath}`);
 
-        console.log('Cloudinary Search API response received.');
-        console.log(`Total resources fetched: ${result.resources ? result.resources.length : 0}`);
-        
-        if (!result.resources || result.resources.length === 0) {
-            console.log('No resources found. Cloudinary response:', JSON.stringify(result, null, 2));
-            return res.status(404).json({ error: 'No images found for this turtle' });
-        }
+  try {
+    console.log('Attempting to fetch resources from Cloudinary...');
+    const result = await cloudinary.v2.api.resources({
+      type: 'upload',
+      resource_type: 'image',
+      folder: folderPath, // Use 'folder' instead of 'prefix'
+      max_results: 500,
+      context: true,
+      metadata: true,
+    });
 
-        // Log the public IDs and metadata
-        console.log('All fetched resource public_ids and metadata:');
-        result.resources.forEach(resource => {
-            console.log('Public ID:', resource.public_id);
-            console.log('Metadata:', resource.metadata);
-        });
+    console.log('Cloudinary API response received.');
+    console.log(`Total resources fetched: ${result.resources.length}`);
+
+    if (!result.resources || result.resources.length === 0) {
+      console.log('No resources found. Cloudinary response:', JSON.stringify(result, null, 2));
+      return res.status(404).json({ error: 'No images found for this turtle' });
+    }
 
         // Separate images where 'Primary Photo' metadata is 'True'
         const imagesWithPrimaryPhoto = result.resources.filter(image => 
