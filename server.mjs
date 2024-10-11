@@ -93,7 +93,7 @@ function formatCommonName(name) {
 // Hardcoded endpoint to fetch Cloudinary images for a specific turtle
 app.get('/cloudinary/test', async (req, res) => {
     const hardcodedSpecies = 'big-headed-pantanal-swamp-turtle';
-    const folderPath = `turtle-species-photos/${hardcodedSpecies}`;
+    const folderPath = `turtle-species-photos/${hardcodedSpecies}/`;
     console.log(`Searching in hardcoded folder: ${folderPath}`);
     
     try {
