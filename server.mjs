@@ -1,7 +1,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
-import cloudinary from 'cloudinary/cloudinary.js';
-// import { v2 as cloudinary } from 'cloudinary';
+// import cloudinary from 'cloudinary/cloudinary.js';
+import { v2 as cloudinary } from 'cloudinary';
 import cors from 'cors';
 
 const app = express();
@@ -88,15 +88,13 @@ app.get('/webflow/:collectionId/:itemId', async (req, res) => {
 // Endpoint to fetch Cloudinary images by species
 app.get('/cloudinary/:species', async (req, res) => {
     const { species } = req.params;
-    const formattedSpecies = species.toLowerCase().replace(/\s+/g, '-');
-    const folderPath = `Turtle Species Photos/${formattedSpecies}`;
-    console.log(`Searching in folder: ${folderPath}`);
+    const formattedSpecies = species.replace(/\s+/g, '-');
+    const assetFolder = `Turtle Species Photos/${formattedSpecies}`;
+    console.log(`Searching in asset folder: ${assetFolder}`);
     
     try {
         console.log('Attempting to fetch resources from Cloudinary...');
-        const result = await cloudinary.api.resources({
-            type: 'upload',
-            prefix: folderPath,
+        const result = await cloudinary.v2.api.resources_by_asset_folder(assetFolder, {
             max_results: 500,
             context: true,
             metadata: true,
