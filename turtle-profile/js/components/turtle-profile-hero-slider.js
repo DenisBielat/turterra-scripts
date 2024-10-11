@@ -38,8 +38,8 @@
           slide.setAttribute('aria-label', `${index + 1} / ${images.length}`);
           slide.setAttribute('data-swiper-slide-index', index);
 
-          const lifeStage = image.metadata.life_stage ? `${image.metadata.life_stage}.` : '';
-          const assetType = image.metadata.asset_type ? `${image.metadata.asset_type}:` : '';
+          const lifeStage = image.metadata.life_stage ? `${capitalizeFirstLetter(image.metadata.life_stage)}.` : '';
+          const assetType = image.metadata.asset_type ? `${capitalizeFirstLetter(image.metadata.asset_type)}:` : '';
           const creditsBasic = image.metadata.credits_basic || '';
 
           slide.innerHTML = `
@@ -62,6 +62,10 @@
       .catch(error => {
         console.error('Error fetching images:', error);
       });
+  }
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   }
   
   function initializeSwiper(initialSlide = 0) {
