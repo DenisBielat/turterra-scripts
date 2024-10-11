@@ -91,17 +91,19 @@ function formatCommonName(name) {
 }
 
 // Hardcoded endpoint to fetch Cloudinary images for a specific turtle
+// Endpoint to fetch Cloudinary images for a specific turtle
 app.get('/cloudinary/test', async (req, res) => {
   const hardcodedSpecies = 'big-headed-pantanal-swamp-turtle';
-  const folderPath = `turtle-species-photos/${hardcodedSpecies}`; // No trailing slash
+  const folderPath = `turtle-species-photos/${hardcodedSpecies}/`; // Include trailing slash
   console.log(`Searching in folder: ${folderPath}`);
 
   try {
     console.log('Attempting to fetch resources from Cloudinary...');
-    const result = await cloudinary.v2.api.resources({
+    const result = await cloudinary.api.resources({
       type: 'upload',
       resource_type: 'image',
-      folder: folderPath, // Use 'folder' instead of 'prefix'
+      prefix: folderPath,    // Folder path with trailing slash
+      delimiter: '/',        // Exclude subfolders
       max_results: 500,
       context: true,
       metadata: true,
@@ -114,6 +116,12 @@ app.get('/cloudinary/test', async (req, res) => {
       console.log('No resources found. Cloudinary response:', JSON.stringify(result, null, 2));
       return res.status(404).json({ error: 'No images found for this turtle' });
     }
+
+    // Log the public IDs and metadata
+    result.resources.forEach(resource => {
+      console.log('Public ID:', resource.public_id);
+      console.log('Metadata:', resource.metadata);
+    });
 
         // Separate images where 'Primary Photo' metadata is 'True'
         const imagesWithPrimaryPhoto = result.resources.filter(image => 
@@ -132,14 +140,14 @@ app.get('/cloudinary/test', async (req, res) => {
         const sortedImages = [...imagesWithPrimaryPhoto, ...imagesWithoutPrimaryPhoto];
 
         console.log(`Returning ${sortedImages.length} images`);
-        res.json(sortedImages);
-    } catch (error) {
-        console.error('Cloudinary fetch error:', error);
-        res.status(500).json({ 
-            error: 'Error fetching data from Cloudinary', 
-            details: error.message 
-        });
-    }
+        res.json(result.resources);
+  } catch (error) {
+    console.error('Cloudinary fetch error:', error);
+    res.status(500).json({ 
+      error: 'Error fetching data from Cloudinary', 
+      details: error.message 
+    });
+  }
 });
 
 export default app;
