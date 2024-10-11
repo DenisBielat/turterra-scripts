@@ -1,6 +1,6 @@
 (function(window) {
   function initTurtleProfileSlider() {
-    fetch(`https://turterra.vercel.app/cloudinary/turtle-species-photos/big-headed-pantanal-swamp-turtle`)
+    fetch(`https://turterra.vercel.app/cloudinary/test`)
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
