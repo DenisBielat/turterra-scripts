@@ -18,10 +18,6 @@
       })
       .then(images => {
         console.log(`Fetched ${images.length} images for the slider.`);
-        if (images.length === 0) {
-          console.error('No images returned for this turtle.');
-          return;
-        }
         const sliderWrapper = document.querySelector('.turtle-profile-slider-wrapper');
 
         if (!sliderWrapper) {
@@ -32,26 +28,19 @@
         // Clear existing slides
         sliderWrapper.innerHTML = '';
 
-        // Find the primary photo
-        const primaryPhotoIndex = images.findIndex(image => 
-          image.metadata && 
-          image.metadata['Primary Photo'] && 
-          image.metadata['Primary Photo'].toLowerCase() === 'true'
-        );
-
         images.forEach((image, index) => {
           const slide = document.createElement('div');
           slide.className = 'turtle-profile-slide';
-          if (index === primaryPhotoIndex) {
+          if (image.metadata.primary_photo) {
             slide.classList.add('primary-photo');
           }
           slide.setAttribute('role', 'group');
           slide.setAttribute('aria-label', `${index + 1} / ${images.length}`);
           slide.setAttribute('data-swiper-slide-index', index);
 
-          const lifeStage = image.metadata?.life_stage ? `${image.metadata.life_stage}.` : '';
-          const assetType = image.metadata?.asset_type ? `${image.metadata.asset_type}:` : '';
-          const creditsBasic = image.metadata?.credits_basic || '';
+          const lifeStage = image.metadata.life_stage ? `${image.metadata.life_stage}.` : '';
+          const assetType = image.metadata.asset_type ? `${image.metadata.asset_type}:` : '';
+          const creditsBasic = image.metadata.credits_basic || '';
 
           slide.innerHTML = `
             <div class="media-data">
@@ -67,7 +56,7 @@
           sliderWrapper.appendChild(slide);
         });
 
-        initializeSwiper(primaryPhotoIndex);
+        initializeSwiper();
         initializeExtendedWrapper();
       })
       .catch(error => {
