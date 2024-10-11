@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import { v2 as cloudinary } from 'cloudinary';
 import cors from 'cors';
 
+const cloudinary = require('cloudinary').v2;
 const app = express();
 
 const webflowApiToken = '45a980c49c20f88d84ec607ca7c1ded5d2c78d2e02d0ce398a4f13d1b11e7d60';
