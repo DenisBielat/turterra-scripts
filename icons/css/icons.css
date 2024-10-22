@@ -10,8 +10,8 @@
     mask-repeat: no-repeat;
     mask-position: center;
     mask-size: contain;
-    width: 2rem;
-    height: 2rem;
+    width: 1rem;
+    height: 1rem;
 }
 
 /* Pseudo-element specific styles */
@@ -179,24 +179,29 @@
     mask-image: url('/icons/assets/illustrative/color/worm.svg');
 }
 
-/* Illustrative Line Icons
-.icon-ill-line-habitat::before {
-    mask-image: url('/icons/assets/illustrative/line/habitat.svg');
+/* Size variants*/
+.icon-xsm::before {
+    width: .5rem;
+    height: .5rem;
 }
-*/
 
-/* Size variants if needed */
 .icon-sm::before {
-    width: 16px;
-    height: 16px;
+    width: .875rem;
+    height: .875rem;
 }
 
 .icon-lg::before {
-    width: 24px;
-    height: 24px;
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
-/* Custom colors when needed */
-.icon-primary::before {
-    background-color: #4670D9; /* or whatever your primary color is */
+.icon-xlg::before {
+    width: 2rem;
+    height: 2rem;
 }
+
+/* Custom colors when needed
+.icon-primary::before {
+    background-color: #4670D9;
+}
+*/
