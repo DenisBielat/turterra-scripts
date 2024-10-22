@@ -4,6 +4,7 @@
     css: [
       '/css/components/turtle-profile-hero-slider.css',
       '/css/components/turtle-profile-search-bar.css',
+      '/icons/css/icons.css',
     ],
     js: [
       '/js/page/fetch-turtle-species.js',
