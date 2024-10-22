@@ -66,6 +66,46 @@
     mask-image: url('/icons/assets/ui/line/compare.svg');
 }
 
+.icon-ui-line-bulleted-list::before {
+    mask-image: url('/icons/assets/ui/line/bulleted-list.svg');
+}
+
+.icon-ui-line-category::before {
+    mask-image: url('/icons/assets/ui/line/category.svg');
+}
+
+.icon-ui-line-earth-locate::before {
+    mask-image: url('/icons/assets/ui/line/earth-locate.svg');
+}
+
+.icon-ui-line-graph-stats-descend::before {
+    mask-image: url('/icons/assets/ui/line/graph-stats-descend.svg');
+}
+
+.icon-ui-line-hierarchy::before {
+    mask-image: url('/icons/assets/ui/line/hierarchy.svg');
+}
+
+.icon-ui-line-information-circle::before {
+    mask-image: url('/icons/assets/ui/line/information-circle.svg');
+}
+
+.icon-ui-line-map-marks::before {
+    mask-image: url('/icons/assets/ui/line/map-marks.svg');
+}
+
+.icon-ui-line-outdoors-tree-valley::before {
+    mask-image: url('/icons/assets/ui/line/outdoors-tree-valley.svg');
+}
+
+.icon-ui-line-tree::before {
+    mask-image: url('/icons/assets/ui/line/tree.svg');
+}
+
+.icon-ui-line-water-droplet::before {
+    mask-image: url('/icons/assets/ui/line/water-droplet.svg');
+}
+
 /* Illustrative Color Icons */
 .icon-ill-color-turtle::before {
     mask-image: url('/icons/assets/illustrative/color/turtle.svg');
