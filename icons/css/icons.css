@@ -111,10 +111,79 @@
     mask-image: url('/icons/assets/illustrative/color/turtle.svg');
 }
 
-/* Illustrative Line Icons */
+.icon-ill-color-turtle-2::before {
+    mask-image: url('/icons/assets/illustrative/color/turtle-2.svg');
+}
+
+.icon-ill-color-algae::before {
+    mask-image: url('/icons/assets/illustrative/color/algae.svg');
+}
+
+.icon-ill-color-fish-food::before {
+    mask-image: url('/icons/assets/illustrative/color/fish-food.svg');
+}
+
+.icon-ill-color-fish-small::before {
+    mask-image: url('/icons/assets/illustrative/color/fish-small.svg');
+}
+
+.icon-ill-color-fish::before {
+    mask-image: url('/icons/assets/illustrative/color/fish.svg');
+}
+
+.icon-ill-color-frog::before {
+    mask-image: url('/icons/assets/illustrative/color/frog.svg');
+}
+
+.icon-ill-color-prawn::before {
+    mask-image: url('/icons/assets/illustrative/color/prawn.svg');
+}
+
+.icon-ill-color-radiant::before {
+    mask-image: url('/icons/assets/illustrative/color/radiant.svg');
+}
+
+.icon-ill-color-seaweed::before {
+    mask-image: url('/icons/assets/illustrative/color/seaweed.svg');
+}
+
+.icon-ill-color-shoal::before {
+    mask-image: url('/icons/assets/illustrative/color/shoal.svg');
+}
+
+.icon-ill-color-sleep::before {
+    mask-image: url('/icons/assets/illustrative/color/sleep.svg');
+}
+
+.icon-ill-color-sunny::before {
+    mask-image: url('/icons/assets/illustrative/color/sunny.svg');
+}
+
+.icon-ill-color-trout::before {
+    mask-image: url('/icons/assets/illustrative/color/trout.svg');
+}
+
+.icon-ill-color-turtle-basking::before {
+    mask-image: url('/icons/assets/illustrative/color/turtle-basking.svg');
+}
+
+.icon-ill-color-radiant::before {
+    mask-image: url('/icons/assets/illustrative/color/radiant.svg');
+}
+
+.icon-ill-color-wood-log::before {
+    mask-image: url('/icons/assets/illustrative/color/wood-log.svg');
+}
+
+.icon-ill-color-worm::before {
+    mask-image: url('/icons/assets/illustrative/color/worm.svg');
+}
+
+/* Illustrative Line Icons
 .icon-ill-line-habitat::before {
     mask-image: url('/icons/assets/illustrative/line/habitat.svg');
 }
+*/
 
 /* Size variants if needed */
 .icon-sm::before {
