@@ -1,1 +1,69 @@
+/* icons/css/icons.css */
 
+/* Base icon styles */
+.icon,
+.icon-before::before,
+.icon-after::after {
+    display: inline-block;
+    background-color: currentColor;
+    vertical-align: middle;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Pseudo-element specific styles */
+.icon-before::before,
+.icon-after::after {
+    content: "";
+}
+
+.icon-before::before {
+    margin-right: 5px;
+}
+
+.icon-after::after {
+    margin-left: 5px;
+}
+
+/* UI Fill Icons */
+.icon-ui-fill-arrow-right::before {
+    mask-image: url('/icons/assets/ui/fill/arrow-right.svg');
+}
+
+.icon-ui-fill-close::before {
+    mask-image: url('/icons/assets/ui/fill/close.svg');
+}
+
+/* UI Line Icons */
+.icon-ui-line-compare::before {
+    mask-image: url('/icons/assets/ui/line/compare.svg');
+}
+
+/* Illustrative Color Icons */
+.icon-ill-color-turtle::before {
+    mask-image: url('/icons/assets/illustrative/color/turtle.svg');
+}
+
+/* Illustrative Line Icons */
+.icon-ill-line-habitat::before {
+    mask-image: url('/icons/assets/illustrative/line/habitat.svg');
+}
+
+/* Size variants if needed */
+.icon-sm::before {
+    width: 16px;
+    height: 16px;
+}
+
+.icon-lg::before {
+    width: 24px;
+    height: 24px;
+}
+
+/* Custom colors when needed */
+.icon-primary::before {
+    background-color: #4670D9; /* or whatever your primary color is */
+}
