@@ -10,7 +10,7 @@
       "use": "@vercel/static"
     },
     {
-      "src": "icons/**",  // Add this line
+      "src": "icons/**",
       "use": "@vercel/static"
     }
   ],
@@ -32,7 +32,7 @@
       "dest": "/server.mjs"
     },
     {
-      "src": "/icons/(.*)",  // Add this line
+      "src": "/icons/(.*)",
       "dest": "/icons/$1"
     },
     {
