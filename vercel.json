@@ -8,6 +8,10 @@
     {
       "src": "turtle-profile/**",
       "use": "@vercel/static"
+    },
+    {
+      "src": "icons/**",  // Add this line
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -26,6 +30,10 @@
     {
       "src": "/turtle-physical-feature-attributes/(.*)",
       "dest": "/server.mjs"
+    },
+    {
+      "src": "/icons/(.*)",  // Add this line
+      "dest": "/icons/$1"
     },
     {
       "src": "/turtle-profile/(.*)",
