@@ -30,11 +30,35 @@
 
 /* UI Fill Icons */
 .icon-ui-fill-arrow-right::before {
-    mask-image: url('/icons/assets/ui/fill/arrow-right.svg');
+    mask-image: url('/icons/assets/ui/filled/arrow-right.svg');
 }
 
 .icon-ui-fill-close::before {
-    mask-image: url('/icons/assets/ui/fill/close.svg');
+    mask-image: url('/icons/assets/ui/filled/close.svg');
+}
+
+.icon-ui-fill-eyeball::before {
+    mask-image: url('/icons/assets/ui/filled/eyeball.svg');
+}
+
+.icon-ui-fill-hand-shake-heart::before {
+    mask-image: url('/icons/assets/ui/filled/hand-shake-heart.svg');
+}
+
+.icon-ui-fill-marine-turtle::before {
+    mask-image: url('/icons/assets/ui/filled/marine-turtle.svg');
+}
+
+.icon-ui-fill-outdoors-tree-valley::before {
+    mask-image: url('/icons/assets/ui/filled/outdoors-tree-valley.svg');
+}
+
+.icon-ui-fill-trip-map-markers::before {
+    mask-image: url('/icons/assets/ui/filled/trip-map-markers.svg');
+}
+
+.icon-ui-fill-vegetables-salad::before {
+    mask-image: url('/icons/assets/ui/filled/vegetables-salad.svg');
 }
 
 /* UI Line Icons */
