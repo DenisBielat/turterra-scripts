@@ -1,1 +1,10 @@
-
+.grid-stat-item .icon-before::before {
+    -webkit-mask-size: 1rem 1rem;
+    mask-size: 1rem 1rem;
+    width: 1rem;
+    height: 1rem;
+    background: var(--brand-neutrals--gray-400);
+    position: absolute;
+/*     left: 1px; */
+    top: 18px;
+}
