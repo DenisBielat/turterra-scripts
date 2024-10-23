@@ -3,8 +3,7 @@
 /* Base icon styles */
 .icon,
 .icon-before::before,
-.icon-after::after,
-.icon-centered::before {
+.icon-after::after {
     display: inline-block;
     background-color: currentColor;
     vertical-align: middle;
@@ -27,14 +26,6 @@
 
 .icon-after::after {
     margin-left: 5px;
-}
-
-.icon-centered::before {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: 0;
 }
 
 /* UI Fill Icons */
@@ -207,6 +198,14 @@
 .icon-xlg::before {
     width: 2rem;
     height: 2rem;
+}
+
+/* Position variations */
+.icon--centered::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* Custom colors when needed
