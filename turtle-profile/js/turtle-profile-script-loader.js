@@ -13,7 +13,8 @@
       basePath: PATHS.TURTLE_PROFILE,
       css: [
         '/css/components/turtle-profile-hero-slider.css',
-        '/css/components/turtle-profile-search-bar.css'
+        '/css/components/turtle-profile-search-bar.css',
+        '/css/page/turtle-profile-content-at-a-glance.css',
       ],
       js: [
         '/js/page/fetch-turtle-species.js',
@@ -21,7 +22,7 @@
         '/js/components/turtle-profile-hero-slider.js',
         '/js/components/turtle-profile-search-bar.js',
         '/js/components/populate-taxonomy.js',
-        '/js/page/init-turtle-profile.js'
+        '/js/page/init-turtle-profile.js',
       ]
     },
     global: {
