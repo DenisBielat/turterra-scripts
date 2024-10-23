@@ -3,7 +3,8 @@
 /* Base icon styles */
 .icon,
 .icon-before::before,
-.icon-after::after {
+.icon-after::after,
+.icon-centered::before {
     display: inline-block;
     background-color: currentColor;
     vertical-align: middle;
