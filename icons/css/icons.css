@@ -1,5 +1,3 @@
-/* icons/css/icons.css */
-
 /* Base icon styles */
 .icon,
 .icon-before::before,
@@ -62,6 +60,18 @@
 }
 
 /* UI Line Icons */
+.icon-ui-line-turtle::before {
+    mask-image: url('/icons/assets/ui/line/turtle.svg');
+}
+
+.icon-ui-line-hand-shake-heart::before {
+    mask-image: url('/icons/assets/ui/line/hand-shake-heart.svg');
+}
+
+.icon-ui-line-ruler::before {
+    mask-image: url('/icons/assets/ui/line/ruler.svg');
+}
+
 .icon-ui-line-compare::before {
     mask-image: url('/icons/assets/ui/line/compare.svg');
 }
