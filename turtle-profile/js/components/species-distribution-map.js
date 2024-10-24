@@ -1,6 +1,18 @@
 (function(window) {
   
-// Ensure Mapbox is loaded
+  // Global variables
+  const mapboxToken = 'pk.eyJ1IjoiZGVuaXNiaWVsYXQiLCJhIjoiY2x4ZHM4eHBsMDltcjJqb2E4ZG9mb3FvZCJ9.XELbzaM4LAK6hdpXge9SxQ';
+  let map;
+  const highlightedAreas = {};
+  let countryList = [];
+  let selectedCountry = null;
+  let currentSpeciesScientificName = null;
+  let popup; // Declare popup here but initialize it later
+
+  const SELECTED_COUNTRY_COLOR = '#30302e';
+  const SELECTED_COUNTRY_OPACITY = 0.3;
+
+  // Function to load Mapbox GL JS
   function loadMapboxGL() {
     return new Promise((resolve, reject) => {
       if (window.mapboxgl) {
@@ -20,28 +32,18 @@
       document.head.appendChild(link);
     });
   }
-  
-// Global variables
-const mapboxToken = 'pk.eyJ1IjoiZGVuaXNiaWVsYXQiLCJhIjoiY2x4ZHM4eHBsMDltcjJqb2E4ZG9mb3FvZCJ9.XELbzaM4LAK6hdpXge9SxQ';
-let map;
-const highlightedAreas = {};
-let countryList = [];
-let selectedCountry = null;
-let currentSpeciesScientificName = null;
 
-const SELECTED_COUNTRY_COLOR = '#30302e';;
-const SELECTED_COUNTRY_OPACITY = 0.3;
-
-let popup = new mapboxgl.Popup({
-  closeButton: false,
-  closeOnClick: false
-});
-
-// Initialize map
+  // Initialize map
   async function initializeMap() {
     try {
       const mapboxgl = await loadMapboxGL();
       
+      // Initialize popup after Mapbox is loaded
+      popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+      });
+
       mapboxgl.accessToken = mapboxToken;
       map = new mapboxgl.Map({
         container: 'map',
