@@ -9,13 +9,13 @@
       }
 
       const script = document.createElement('script');
-      script.src = 'https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js';
+      script.src = 'https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js';
       script.onload = () => resolve(window.mapboxgl);
       script.onerror = reject;
       document.head.appendChild(script);
 
       const link = document.createElement('link');
-      link.href = 'https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css';
+      link.href = 'https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css';
       link.rel = 'stylesheet';
       document.head.appendChild(link);
     });
