@@ -38,20 +38,26 @@ let popup = new mapboxgl.Popup({
 });
 
 // Initialize map
-function initializeMap() {
-        mapboxgl.accessToken = mapboxToken;
-        map = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/denisbielat/clyc8jdx800zl01nzasir014p?fresh=true',
-            center: [0, 20],
-            zoom: 2
-        });
+  async function initializeMap() {
+    try {
+      const mapboxgl = await loadMapboxGL();
+      
+      mapboxgl.accessToken = mapboxToken;
+      map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/denisbielat/clyc8jdx800zl01nzasir014p?fresh=true',
+        center: [0, 20],
+        zoom: 2
+      });
 
-        map.on('load', () => {
-            console.log('Map loaded');
-            fetchSpeciesDistributions();
-        });
+      map.on('load', () => {
+        console.log('Map loaded');
+        fetchSpeciesDistributions();
+      });
+    } catch (error) {
+      console.error('Error initializing map:', error);
     }
+  }
 
 // Expose functions to the global scope
 window.initializeMap = initializeMap;
