@@ -1,4 +1,26 @@
 (function(window) {
+  
+// Ensure Mapbox is loaded
+  function loadMapboxGL() {
+    return new Promise((resolve, reject) => {
+      if (window.mapboxgl) {
+        resolve(window.mapboxgl);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js';
+      script.onload = () => resolve(window.mapboxgl);
+      script.onerror = reject;
+      document.head.appendChild(script);
+
+      const link = document.createElement('link');
+      link.href = 'https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css';
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+    });
+  }
+  
 // Global variables
 const mapboxToken = 'pk.eyJ1IjoiZGVuaXNiaWVsYXQiLCJhIjoiY2x4ZHM4eHBsMDltcjJqb2E4ZG9mb3FvZCJ9.XELbzaM4LAK6hdpXge9SxQ';
 let map;
