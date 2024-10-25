@@ -23,6 +23,7 @@
         '/js/components/turtle-profile-search-bar.js',
         '/js/components/populate-taxonomy.js',
         '/js/page/init-turtle-profile.js',
+        '/js/page/init-breakout-containers.js',
       ]
     },
     global: {
