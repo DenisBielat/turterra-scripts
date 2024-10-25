@@ -60,6 +60,10 @@
 }
 
 /* UI Line Icons */
+.icon-ui-line-split::before {
+    mask-image: url('/icons/assets/ui/line/split.svg');
+}
+
 .icon-ui-line-turtle::before {
     mask-image: url('/icons/assets/ui/line/turtle.svg');
 }
