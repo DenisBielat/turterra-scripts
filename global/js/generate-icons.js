@@ -4,6 +4,9 @@ import { join, relative, basename } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const rootDir = join(__dirname, '../../');  // Go up to turterra-scripts root
+const iconAssetsDir = join(rootDir, 'icons/assets');
+const outputPath = join(rootDir, 'icons/css/icons.css');
 
 async function generateIconCSS(iconRootDir) {
     const css = [];
@@ -93,14 +96,15 @@ async function generateIconCSS(iconRootDir) {
 /* Generated icon classes */
 ${css.join('\n')}`;
         
-        // Write to the icons directory so it's included in Vercel static deployment
-        await writeFile(join(iconRootDir, '../icons.css'), outputCSS);
+        // Write to the specified output path
+        await writeFile(outputPath, outputCSS);
         console.log('Icon CSS generated successfully!');
+        console.log(`CSS file written to: ${outputPath}`);
         
     } catch (error) {
         console.error('Error generating icon CSS:', error);
     }
 }
 
-// Assuming your icons are in the /icons/assets directory
-generateIconCSS(join(__dirname, 'icons', 'assets'));
+// Generate CSS using the icon assets directory
+generateIconCSS(iconAssetsDir);
