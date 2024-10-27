@@ -64,7 +64,7 @@
     mask-image: url('/icons/assets/ui/line/clock.svg');
 }
 
-.icon-ui-line-kettlebell::before {
+.icon-ui-line-kettlebell::before, .icon-ui-line-kettlebell::after {
     mask-image: url('/icons/assets/ui/line/kettlebell.svg');
 }
 
