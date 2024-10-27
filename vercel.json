@@ -43,5 +43,6 @@
       "src": "/(.*)",
       "dest": "/turtle-profile/$1"
     }
-  ]
+  ],
+  "buildCommand": "npm run build"
 }
