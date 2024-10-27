@@ -60,6 +60,18 @@
 }
 
 /* UI Line Icons */
+.icon-ui-line-clock::before {
+    mask-image: url('/icons/assets/ui/line/clock.svg');
+}
+
+.icon-ui-line-kettlebell::before {
+    mask-image: url('/icons/assets/ui/line/kettlebell.svg');
+}
+
+.icon-ui-line-scale::before {
+    mask-image: url('/icons/assets/ui/line/scale.svg');
+}
+
 .icon-ui-line-animal-skin::before {
     mask-image: url('/icons/assets/ui/line/animal-skin.svg');
 }
@@ -245,7 +257,6 @@
     left: 50%;
     transform: translate(-50%, -50%);
     margin: 0;
-    background: #FFE2DB;
 }
 
 /* Custom colors when needed
