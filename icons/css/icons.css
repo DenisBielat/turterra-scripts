@@ -1,4 +1,4 @@
-/* Base icon styles */
+/* Base icon styles with shared properties */
 .icon,
 .icon-before::before,
 .icon-after::after {
@@ -12,10 +12,11 @@
     height: 1rem;
 }
 
-/* Pseudo-element specific styles */
+/* Pseudo-element setup */
 .icon-before::before,
 .icon-after::after {
     content: "";
+    mask-image: var(--icon-url);
 }
 
 .icon-before::before {
@@ -26,241 +27,26 @@
     margin-left: 5px;
 }
 
-/* UI Fill Icons */
-.icon-ui-fill-arrow-right::before {
-    mask-image: url('/icons/assets/ui/filled/arrow-right.svg');
+/* Size variants */
+.icon-xsm {
+    --icon-size: .5rem;
 }
 
-.icon-ui-fill-close::before {
-    mask-image: url('/icons/assets/ui/filled/close.svg');
+.icon-sm {
+    --icon-size: .875rem;
 }
 
-.icon-ui-fill-eyeball::before {
-    mask-image: url('/icons/assets/ui/filled/eyeball.svg');
+.icon-lg {
+    --icon-size: 1.5rem;
 }
 
-.icon-ui-fill-hand-shake-heart::before {
-    mask-image: url('/icons/assets/ui/filled/hand-shake-heart.svg');
+.icon-xlg {
+    --icon-size: 2rem;
 }
 
-.icon-ui-fill-marine-turtle::before {
-    mask-image: url('/icons/assets/ui/filled/marine-turtle.svg');
+.icon,
+.icon-before::before,
+.icon-after::after {
+    width: var(--icon-size, 1rem);
+    height: var(--icon-size, 1rem);
 }
-
-.icon-ui-fill-outdoors-tree-valley::before {
-    mask-image: url('/icons/assets/ui/filled/outdoors-tree-valley.svg');
-}
-
-.icon-ui-fill-trip-map-markers::before {
-    mask-image: url('/icons/assets/ui/filled/trip-map-markers.svg');
-}
-
-.icon-ui-fill-vegetables-salad::before {
-    mask-image: url('/icons/assets/ui/filled/vegetables-salad.svg');
-}
-
-/* UI Line Icons */
-.icon-ui-line-clock::before {
-    mask-image: url('/icons/assets/ui/line/clock.svg');
-}
-
-.icon-ui-line-kettlebell::before, .icon-ui-line-kettlebell::after {
-    mask-image: url('/icons/assets/ui/line/kettlebell.svg');
-}
-
-.icon-ui-line-scale::before {
-    mask-image: url('/icons/assets/ui/line/scale.svg');
-}
-
-.icon-ui-line-animal-skin::before {
-    mask-image: url('/icons/assets/ui/line/animal-skin.svg');
-}
-
-.icon-ui-line-color-palette::before {
-    mask-image: url('/icons/assets/ui/line/color-palette.svg');
-}
-
-.icon-ui-line-face-id::before {
-    mask-image: url('/icons/assets/ui/line/face-id.svg');
-}
-
-.icon-ui-line-pattern::before {
-    mask-image: url('/icons/assets/ui/line/pattern.svg');
-}
-
-.icon-ui-line-warp-shell-lower::before {
-    mask-image: url('/icons/assets/ui/line/warp-shell-lower.svg');
-}
-
-.icon-ui-line-warp-shell-upper::before {
-    mask-image: url('/icons/assets/ui/line/warp-shell-upper.svg');
-}
-
-.icon-ui-line-split::before {
-    mask-image: url('/icons/assets/ui/line/split.svg');
-}
-
-.icon-ui-line-turtle::before {
-    mask-image: url('/icons/assets/ui/line/turtle.svg');
-}
-
-.icon-ui-line-hand-shake-heart::before {
-    mask-image: url('/icons/assets/ui/line/hand-shake-heart.svg');
-}
-
-.icon-ui-line-ruler::before {
-    mask-image: url('/icons/assets/ui/line/ruler.svg');
-}
-
-.icon-ui-line-compare::before {
-    mask-image: url('/icons/assets/ui/line/compare.svg');
-}
-
-.icon-ui-line-bulleted-list::before {
-    mask-image: url('/icons/assets/ui/line/bulleted-list.svg');
-}
-
-.icon-ui-line-category::before {
-    mask-image: url('/icons/assets/ui/line/category.svg');
-}
-
-.icon-ui-line-earth-locate::before {
-    mask-image: url('/icons/assets/ui/line/earth-locate.svg');
-}
-
-.icon-ui-line-graph-stats-descend::before {
-    mask-image: url('/icons/assets/ui/line/graph-stats-descend.svg');
-}
-
-.icon-ui-line-hierarchy::before {
-    mask-image: url('/icons/assets/ui/line/hierarchy.svg');
-}
-
-.icon-ui-line-information-circle::before {
-    mask-image: url('/icons/assets/ui/line/information-circle.svg');
-}
-
-.icon-ui-line-map-marks::before {
-    mask-image: url('/icons/assets/ui/line/map-marks.svg');
-}
-
-.icon-ui-line-outdoors-tree-valley::before {
-    mask-image: url('/icons/assets/ui/line/outdoors-tree-valley.svg');
-}
-
-.icon-ui-line-tree::before {
-    mask-image: url('/icons/assets/ui/line/tree.svg');
-}
-
-.icon-ui-line-water-droplet::before {
-    mask-image: url('/icons/assets/ui/line/water-droplet.svg');
-}
-
-/* Illustrative Color Icons */
-.icon-ill-color-turtle::before {
-    mask-image: url('/icons/assets/illustrative/color/turtle.svg');
-}
-
-.icon-ill-color-turtle-2::before {
-    mask-image: url('/icons/assets/illustrative/color/turtle-2.svg');
-}
-
-.icon-ill-color-algae::before {
-    mask-image: url('/icons/assets/illustrative/color/algae.svg');
-}
-
-.icon-ill-color-fish-food::before {
-    mask-image: url('/icons/assets/illustrative/color/fish-food.svg');
-}
-
-.icon-ill-color-fish-small::before {
-    mask-image: url('/icons/assets/illustrative/color/fish-small.svg');
-}
-
-.icon-ill-color-fish::before {
-    mask-image: url('/icons/assets/illustrative/color/fish.svg');
-}
-
-.icon-ill-color-frog::before {
-    mask-image: url('/icons/assets/illustrative/color/frog.svg');
-}
-
-.icon-ill-color-prawn::before {
-    mask-image: url('/icons/assets/illustrative/color/prawn.svg');
-}
-
-.icon-ill-color-radiant::before {
-    mask-image: url('/icons/assets/illustrative/color/radiant.svg');
-}
-
-.icon-ill-color-seaweed::before {
-    mask-image: url('/icons/assets/illustrative/color/seaweed.svg');
-}
-
-.icon-ill-color-shoal::before {
-    mask-image: url('/icons/assets/illustrative/color/shoal.svg');
-}
-
-.icon-ill-color-sleep::before {
-    mask-image: url('/icons/assets/illustrative/color/sleep.svg');
-}
-
-.icon-ill-color-sunny::before {
-    mask-image: url('/icons/assets/illustrative/color/sunny.svg');
-}
-
-.icon-ill-color-trout::before {
-    mask-image: url('/icons/assets/illustrative/color/trout.svg');
-}
-
-.icon-ill-color-turtle-basking::before {
-    mask-image: url('/icons/assets/illustrative/color/turtle-basking.svg');
-}
-
-.icon-ill-color-radiant::before {
-    mask-image: url('/icons/assets/illustrative/color/radiant.svg');
-}
-
-.icon-ill-color-wood-log::before {
-    mask-image: url('/icons/assets/illustrative/color/wood-log.svg');
-}
-
-.icon-ill-color-worm::before {
-    mask-image: url('/icons/assets/illustrative/color/worm.svg');
-}
-
-/* Size variants*/
-.icon-xsm::before {
-    width: .5rem;
-    height: .5rem;
-}
-
-.icon-sm::before {
-    width: .875rem;
-    height: .875rem;
-}
-
-.icon-lg::before {
-    width: 1.5rem;
-    height: 1.5rem;
-}
-
-.icon-xlg::before {
-    width: 2rem;
-    height: 2rem;
-}
-
-/* Position variations */
-.icon--centered::before {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: 0;
-}
-
-/* Custom colors when needed
-.icon-primary::before {
-    background-color: #4670D9;
-}
-*/
