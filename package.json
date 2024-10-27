@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
+    "generate-icons": "node generate-icons.js",
+    "build": "npm run generate-icons",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
