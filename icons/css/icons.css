@@ -60,6 +60,30 @@
 }
 
 /* UI Line Icons */
+.icon-ui-line-animal-skin::before {
+    mask-image: url('/icons/assets/ui/line/animal-skin.svg');
+}
+
+.icon-ui-line-color-palette::before {
+    mask-image: url('/icons/assets/ui/line/color-palette.svg');
+}
+
+.icon-ui-line-face-id::before {
+    mask-image: url('/icons/assets/ui/line/face-id.svg');
+}
+
+.icon-ui-line-pattern::before {
+    mask-image: url('/icons/assets/ui/line/pattern.svg');
+}
+
+.icon-ui-line-warp-shell-lower::before {
+    mask-image: url('/icons/assets/ui/line/warp-shell-lower.svg');
+}
+
+.icon-ui-line-warp-shell-upper::before {
+    mask-image: url('/icons/assets/ui/line/warp-shell-upper.svg');
+}
+
 .icon-ui-line-split::before {
     mask-image: url('/icons/assets/ui/line/split.svg');
 }
