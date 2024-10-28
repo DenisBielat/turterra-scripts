@@ -25,8 +25,18 @@
     {
       "source": "/icons/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "https://www.turterra.com" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET" }
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://www.turterra.com"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type"
+        }
       ]
     }
   ],
@@ -49,11 +59,7 @@
     },
     {
       "src": "/icons/(.*)",
-      "dest": "/icons/$1",
-      "headers": {
-        "Access-Control-Allow-Origin": "https://www.turterra.com",
-        "Access-Control-Allow-Methods": "GET"
-      }
+      "dest": "/icons/$1"
     },
     {
       "src": "/turtle-profile/(.*)",
