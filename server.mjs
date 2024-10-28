@@ -2,10 +2,29 @@ import express from 'express';
 import fetch from 'node-fetch';
 import cloudinary from 'cloudinary/cloudinary.js';
 import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 const webflowApiToken = '45a980c49c20f88d84ec607ca7c1ded5d2c78d2e02d0ce398a4f13d1b11e7d60';
+
+// CORS configuration
+const corsOptions = {
+  origin: ['https://www.turterra.com', 'https://turterra.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
+// Serve static files with CORS headers
+app.use('/icons', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://www.turterra.com');
+  res.header('Access-Control-Allow-Methods', 'GET');
+  next();
+}, express.static(join(__dirname, 'icons')));
 
 // Cloudinary configuration
 cloudinary.config({
@@ -13,13 +32,6 @@ cloudinary.config({
   api_key: '482956819452563',
   api_secret: 'PYh1lSt3eXEhn5UsLeLENgSbs9s'
 });
-
-// CORS configuration
-app.use(cors({
-  origin: ['https://www.turterra.com', 'https://turterra.com'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
 
 // Endpoint to fetch all items from a collection
 app.get('/webflow/:collectionId', async (req, res) => {
