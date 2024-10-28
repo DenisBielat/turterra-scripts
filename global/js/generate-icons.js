@@ -8,30 +8,43 @@ const rootDir = join(__dirname, '../../');  // Go up to turterra-scripts root
 const iconAssetsDir = join(rootDir, 'icons/assets');
 const outputPath = join(rootDir, 'icons/css/icons.css');
 
+// Debug logging
+console.log('Script starting...');
+console.log('Root directory:', rootDir);
+console.log('Icons assets directory:', iconAssetsDir);
+console.log('Output path:', outputPath);
+
 async function generateIconCSS(iconRootDir) {
     const css = [];
     
     async function processDirectory(dir, categoryPrefix) {
+        console.log('Processing directory:', dir);
+        console.log('Category prefix:', categoryPrefix);
+        
         const files = await readdir(dir);
+        console.log('Found files:', files);
         
         for (const file of files) {
             const fullPath = join(dir, file);
             const stats = await stat(fullPath);
             
             if (stats.isDirectory()) {
-                // Process subdirectories (ui/filled, ui/line, illustrative/color, etc.)
+                console.log('Found subdirectory:', file);
                 const newPrefix = categoryPrefix ? 
                     `${categoryPrefix}-${file}` : 
                     `icon-${file}`;
                 await processDirectory(fullPath, newPrefix);
             } else if (file.endsWith('.svg')) {
+                console.log('Processing SVG file:', file);
                 const iconName = basename(file, '.svg');
                 const relativePath = relative(iconRootDir, fullPath).replace(/\\/g, '/');
                 const className = categoryPrefix ? 
                     `${categoryPrefix}-${iconName}` : 
                     `icon-${iconName}`;
                 
-                // Generate the CSS class
+                console.log('Generated class:', className);
+                console.log('Relative path:', relativePath);
+                
                 css.push(`
 /* Icon: ${iconName} */
 [class*="${className.toLowerCase()}"] {
@@ -96,15 +109,19 @@ async function generateIconCSS(iconRootDir) {
 /* Generated icon classes */
 ${css.join('\n')}`;
         
-        // Write to the specified output path
+        console.log('Writing CSS file to:', outputPath);
         await writeFile(outputPath, outputCSS);
         console.log('Icon CSS generated successfully!');
-        console.log(`CSS file written to: ${outputPath}`);
+        console.log('Number of icon classes generated:', css.length);
         
     } catch (error) {
         console.error('Error generating icon CSS:', error);
+        console.error('Error details:', error.stack);
     }
 }
 
 // Generate CSS using the icon assets directory
-generateIconCSS(iconAssetsDir);
+console.log('Starting icon CSS generation...');
+generateIconCSS(iconAssetsDir)
+    .then(() => console.log('Generation complete'))
+    .catch(error => console.error('Top level error:', error));
