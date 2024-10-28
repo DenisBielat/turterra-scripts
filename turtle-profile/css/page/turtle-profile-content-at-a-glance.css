@@ -14,3 +14,7 @@
     display: inline-block;
     position: relative;
 }
+
+.stat-block_icon {
+    margin: 0;
+}
