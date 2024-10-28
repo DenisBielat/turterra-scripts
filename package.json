@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "generate-icons": "node generate-icons.js",
-    "build": "npm run generate-icons",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "generate-icons": "node global/js/generate-icons.js",
+    "vercel-build": "npm run generate-icons",
+    "build": "npm run generate-icons"
   },
   "keywords": [],
   "author": "",
