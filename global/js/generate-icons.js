@@ -1,18 +1,31 @@
 // generate-icons.js
 import { readdir, stat, writeFile } from 'fs/promises';
-import { join, relative, basename } from 'path';
+import { join, relative, basename, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const rootDir = join(__dirname, '../../');  // Go up to turterra-scripts root
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+console.log('Current directory:', __dirname);
+console.log('Process working directory:', process.cwd());
+console.log('Directory contents:', await readdir(process.cwd()));
+
+const rootDir = join(__dirname, '../..'); // Go up to project root
 const iconAssetsDir = join(rootDir, 'icons/assets');
 const outputPath = join(rootDir, 'icons/css/icons.css');
 
-// Debug logging
 console.log('Script starting...');
 console.log('Root directory:', rootDir);
 console.log('Icons assets directory:', iconAssetsDir);
 console.log('Output path:', outputPath);
+
+// Check if directories exist
+try {
+    const iconAssetsStat = await stat(iconAssetsDir);
+    console.log('Icons assets directory exists:', iconAssetsStat.isDirectory());
+    console.log('Icons assets contents:', await readdir(iconAssetsDir));
+} catch (error) {
+    console.error('Error checking icons assets directory:', error);
+}
 
 async function generateIconCSS(iconRootDir) {
     const css = [];
