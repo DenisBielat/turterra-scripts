@@ -2,11 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "server.mjs",
-      "use": "@vercel/node"
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "buildCommand": "npm run vercel-build"
+      }
     },
     {
-      "src": "package.json",
+      "src": "server.mjs",
       "use": "@vercel/node"
     },
     {
@@ -47,5 +50,10 @@
       "src": "/(.*)",
       "dest": "/turtle-profile/$1"
     }
-  ]
+  ],
+  "outputs": {
+    "static": {
+      "copying": ["icons/css/icons.css"]
+    }
+  }
 }
