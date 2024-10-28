@@ -6,6 +6,10 @@
       "use": "@vercel/node"
     },
     {
+      "src": "package.json",
+      "use": "@vercel/node"
+    },
+    {
       "src": "turtle-profile/**",
       "use": "@vercel/static"
     },
@@ -43,6 +47,5 @@
       "src": "/(.*)",
       "dest": "/turtle-profile/$1"
     }
-  ],
-  "buildCommand": "npm run build"
+  ]
 }
