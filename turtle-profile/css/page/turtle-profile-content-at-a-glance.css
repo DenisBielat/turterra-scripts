@@ -15,6 +15,6 @@
     position: relative;
 }
 
-.stat-block_icon {
+.stat-block_icon.icon-before::before {
     margin: 0;
 }
