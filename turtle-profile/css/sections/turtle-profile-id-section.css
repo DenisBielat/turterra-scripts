@@ -2,7 +2,6 @@
     margin: 0;
 }
 
-
 .stat-block_heading-wrapper.icon-after::after {
     cursor: pointer;
 }
