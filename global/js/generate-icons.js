@@ -7,61 +7,46 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 console.log('Current directory:', __dirname);
 console.log('Process working directory:', process.cwd());
-console.log('Directory contents:', await readdir(process.cwd()));
 
 const rootDir = join(__dirname, '../..'); // Go up to project root
 const iconAssetsDir = join(rootDir, 'icons/assets');
 const outputPath = join(rootDir, 'icons/css/icons.css');
-
-console.log('Script starting...');
-console.log('Root directory:', rootDir);
-console.log('Icons assets directory:', iconAssetsDir);
-console.log('Output path:', outputPath);
-
-// Check if directories exist
-try {
-    const iconAssetsStat = await stat(iconAssetsDir);
-    console.log('Icons assets directory exists:', iconAssetsStat.isDirectory());
-    console.log('Icons assets contents:', await readdir(iconAssetsDir));
-} catch (error) {
-    console.error('Error checking icons assets directory:', error);
-}
 
 async function generateIconCSS(iconRootDir) {
     const css = [];
     
     async function processDirectory(dir, categoryPrefix) {
         console.log('Processing directory:', dir);
-        console.log('Category prefix:', categoryPrefix);
-        
         const files = await readdir(dir);
-        console.log('Found files:', files);
         
         for (const file of files) {
             const fullPath = join(dir, file);
             const stats = await stat(fullPath);
             
             if (stats.isDirectory()) {
-                console.log('Found subdirectory:', file);
                 const newPrefix = categoryPrefix ? 
                     `${categoryPrefix}-${file}` : 
                     `icon-${file}`;
                 await processDirectory(fullPath, newPrefix);
             } else if (file.endsWith('.svg')) {
-                console.log('Processing SVG file:', file);
                 const iconName = basename(file, '.svg');
+                // Generate relative path starting from 'assets' directory
                 const relativePath = relative(iconRootDir, fullPath).replace(/\\/g, '/');
                 const className = categoryPrefix ? 
                     `${categoryPrefix}-${iconName}` : 
                     `icon-${iconName}`;
                 
-                console.log('Generated class:', className);
-                console.log('Relative path:', relativePath);
+                console.log('Processing icon:', {
+                    name: iconName,
+                    path: relativePath,
+                    class: className
+                });
                 
+                // Update the URL to include 'assets' in the path
                 css.push(`
 /* Icon: ${iconName} */
 [class*="${className.toLowerCase()}"] {
-    --icon-url: url('/icons/${relativePath}');
+    --icon-url: url('/icons/assets/${relativePath}');
 }`);
             }
         }
@@ -70,7 +55,6 @@ async function generateIconCSS(iconRootDir) {
     try {
         await processDirectory(iconRootDir, '');
         
-        // Create the complete CSS with base styles and generated classes
         const outputCSS = `/* Auto-generated icon styles - DO NOT EDIT DIRECTLY */
 
 /* Base icon styles */
