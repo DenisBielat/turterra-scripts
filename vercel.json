@@ -21,6 +21,15 @@
       "use": "@vercel/static"
     }
   ],
+  "headers": [
+    {
+      "source": "/icons/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "https://www.turterra.com" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET" }
+      ]
+    }
+  ],
   "routes": [
     {
       "src": "/webflow/(.*)",
@@ -40,7 +49,11 @@
     },
     {
       "src": "/icons/(.*)",
-      "dest": "/icons/$1"
+      "dest": "/icons/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "https://www.turterra.com",
+        "Access-Control-Allow-Methods": "GET"
+      }
     },
     {
       "src": "/turtle-profile/(.*)",
