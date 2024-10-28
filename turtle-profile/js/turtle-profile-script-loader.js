@@ -14,7 +14,8 @@
       css: [
         '/css/components/turtle-profile-hero-slider.css',
         '/css/components/turtle-profile-search-bar.css',
-        '/css/page/turtle-profile-content-at-a-glance.css',
+        '/css/sections/turtle-profile-content-at-a-glance.css',
+        '/css/sections/turtle-profile-id-section.css',
       ],
       js: [
         '/js/page/fetch-turtle-species.js',
