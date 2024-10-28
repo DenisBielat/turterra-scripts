@@ -50,10 +50,5 @@
       "src": "/(.*)",
       "dest": "/turtle-profile/$1"
     }
-  ],
-  "outputs": {
-    "static": {
-      "copying": ["icons/css/icons.css"]
-    }
-  }
+  ]
 }
