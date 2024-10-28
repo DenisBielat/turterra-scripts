@@ -17,5 +17,5 @@
 
 .stat-block_icon.icon-before::before {
     margin: 0;
-    cursor: hover;
+    cursor: pointer;
 }
