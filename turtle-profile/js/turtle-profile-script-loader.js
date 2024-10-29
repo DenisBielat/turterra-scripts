@@ -97,7 +97,7 @@
   // Fetch data from Supabase using the endpoint in server.mjs
   async function fetchSupabaseData() {
     try {
-      const response = await fetch(`${baseUrl}/supabase-data`);
+      const response = await fetch(`${baseUrl}/supabase/data`);
       if (!response.ok) throw new Error(`Error fetching Supabase data: ${response.statusText}`);
       
       const data = await response.json();
