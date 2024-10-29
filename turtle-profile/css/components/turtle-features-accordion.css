@@ -67,7 +67,7 @@
 }
 
 /* Rotate the move-back icon for sub-features */
-.sub-feature .icon-before.icon-ui-line-move-back::before {
+.sub-feature.icon-before.icon-ui-line-move-back::before {
   transform: rotate(180deg);
   position: absolute;
   left: 1rem;
