@@ -1,8 +1,6 @@
-// Remove the automatic DOMContentLoaded initialization and just export the function
 function initTurtleFeaturesAccordion(turtleData = null) {
   console.log('Initializing turtle features accordion...');
   
-  // Default data structure if no data is provided
   const defaultData = {
     categories: [
       {
@@ -47,7 +45,7 @@ function initTurtleFeaturesAccordion(turtleData = null) {
   
   console.log('Container found, building accordion...');
   
-  data.categories.forEach(category => {
+  data.categories.forEach((category, categoryIndex) => {
     const section = document.createElement('div');
     section.className = 'accordion-section';
     
@@ -65,6 +63,12 @@ function initTurtleFeaturesAccordion(turtleData = null) {
     const content = document.createElement('div');
     content.className = 'accordion-content';
     
+    // Open first section by default
+    if (categoryIndex === 0) {
+      content.classList.add('open');
+      header.querySelector('.accordion-icon').classList.add('open');
+    }
+    
     // Add features
     category.features.forEach((feature, index) => {
       // Add main feature
@@ -81,7 +85,9 @@ function initTurtleFeaturesAccordion(turtleData = null) {
         const subFeatureRow = document.createElement('div');
         subFeatureRow.className = 'feature-row sub-feature divider';
         subFeatureRow.innerHTML = `
-          <div class="feature-name">${subFeature.name}</div>
+          <div class="feature-name icon-before icon-ui-line-move-back">
+            ${subFeature.name}
+          </div>
           <div class="feature-value">${subFeature.value}</div>
         `;
         content.appendChild(subFeatureRow);
@@ -113,7 +119,7 @@ function initTurtleFeaturesAccordion(turtleData = null) {
     container.appendChild(section);
   });
   
-  console.log('Accordion built successfully'); // Debug log
+  console.log('Accordion built successfully');
 }
 
 // Make it available globally
