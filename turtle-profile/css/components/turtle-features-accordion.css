@@ -64,13 +64,17 @@
   padding-left: 2.5rem;
   color: #4b5563;
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
-/* Rotate the move-back icon for sub-features */
-.sub-feature .icon-before.icon-ui-line-move-back::before {
-  transform: rotate(180deg);
+/* Adjust icon positioning for vertical alignment */
+.sub-feature .icon-before::before {
   position: absolute;
   left: 1rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(180deg);
+  margin-right: 0; /* Override default margin */
 }
 
 .divider {
