@@ -1,5 +1,6 @@
+// Remove the automatic DOMContentLoaded initialization and just export the function
 function initTurtleFeaturesAccordion(turtleData = null) {
-  console.log('Initializing turtle features accordion...'); // Debug log
+  console.log('Initializing turtle features accordion...');
   
   // Default data structure if no data is provided
   const defaultData = {
@@ -40,11 +41,11 @@ function initTurtleFeaturesAccordion(turtleData = null) {
   const container = document.getElementById('turtle-features');
   
   if (!container) {
-    console.error('Turtle features container not found!'); // Debug log
+    console.error('Turtle features container not found!');
     return;
   }
   
-  console.log('Container found, building accordion...'); // Debug log
+  console.log('Container found, building accordion...');
   
   data.categories.forEach(category => {
     const section = document.createElement('div');
@@ -115,11 +116,5 @@ function initTurtleFeaturesAccordion(turtleData = null) {
   console.log('Accordion built successfully'); // Debug log
 }
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM loaded, calling initTurtleFeaturesAccordion...'); // Debug log
-  initTurtleFeaturesAccordion();
-});
-
-// Also make it available globally
+// Make it available globally
 window.initTurtleFeaturesAccordion = initTurtleFeaturesAccordion;
