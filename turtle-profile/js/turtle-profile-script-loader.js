@@ -78,6 +78,17 @@
     return failed.length === 0;
   }
 
+  async function initializeComponents() {
+    console.log('Initializing components...');
+    // Initialize accordion with default data
+    if (typeof window.initTurtleFeaturesAccordion === 'function') {
+      console.log('Initializing turtle features accordion...');
+      window.initTurtleFeaturesAccordion();
+    } else {
+      console.error('initTurtleFeaturesAccordion function not found');
+    }
+  }
+
   async function loadResources() {
     try {
       // Load CSS files first
@@ -87,6 +98,9 @@
       // Then load JS files
       const jsLoaded = await loadResourcesByType('js');
       console.log('JS files loaded:', jsLoaded ? 'successfully' : 'with some failures');
+
+      // Initialize components after all resources are loaded
+      await initializeComponents();
 
       // Fetch Supabase data after resources have loaded
       await fetchSupabaseData();
@@ -112,6 +126,8 @@
     }
   }
 
-  // Start loading resources and then fetch Supabase data
-  loadResources();
+  // Start loading resources when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    loadResources();
+  });
 })();
