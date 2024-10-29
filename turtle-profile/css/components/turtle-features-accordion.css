@@ -45,8 +45,10 @@
 
 .feature-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(200px, 1fr) minmax(200px, 2fr);
+  gap: 2rem;
   padding: 0.5rem 1rem;
+  align-items: center;
 }
 
 .main-feature {
@@ -59,8 +61,16 @@
 }
 
 .sub-feature .feature-name {
-  padding-left: 1.5rem;
+  padding-left: 2.5rem;
   color: #4b5563;
+  position: relative;
+}
+
+/* Rotate the move-back icon for sub-features */
+.sub-feature .icon-before.icon-ui-line-move-back::before {
+  transform: rotate(180deg);
+  position: absolute;
+  left: 1rem;
 }
 
 .divider {
