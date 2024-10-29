@@ -9,10 +9,6 @@
     "vercel-build": "npm run generate-icons",
     "build": "npm run generate-icons"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "cloudinary": "^2.3.1",
