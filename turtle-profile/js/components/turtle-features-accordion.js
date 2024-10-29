@@ -1,4 +1,6 @@
 function initTurtleFeaturesAccordion(turtleData = null) {
+  console.log('Initializing turtle features accordion...'); // Debug log
+  
   // Default data structure if no data is provided
   const defaultData = {
     categories: [
@@ -19,13 +21,30 @@ function initTurtleFeaturesAccordion(turtleData = null) {
           }
         ]
       },
-      // ... other categories
+      {
+        name: "Shell Top",
+        features: [
+          {
+            name: "Shell Top Pattern",
+            value: "Reticulated",
+            subFeatures: [
+              { name: "Shell Top Texture", value: "Rough" }
+            ]
+          }
+        ]
+      }
     ]
   };
 
   const data = turtleData || defaultData;
   const container = document.getElementById('turtle-features');
-  if (!container) return;
+  
+  if (!container) {
+    console.error('Turtle features container not found!'); // Debug log
+    return;
+  }
+  
+  console.log('Container found, building accordion...'); // Debug log
   
   data.categories.forEach(category => {
     const section = document.createElement('div');
@@ -92,7 +111,15 @@ function initTurtleFeaturesAccordion(turtleData = null) {
     section.appendChild(content);
     container.appendChild(section);
   });
+  
+  console.log('Accordion built successfully'); // Debug log
 }
 
-// Make the function available globally
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM loaded, calling initTurtleFeaturesAccordion...'); // Debug log
+  initTurtleFeaturesAccordion();
+});
+
+// Also make it available globally
 window.initTurtleFeaturesAccordion = initTurtleFeaturesAccordion;
