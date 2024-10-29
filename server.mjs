@@ -27,18 +27,6 @@ const supabase = createClient(
 console.log('Supabase URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
 console.log('Supabase Anon Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
-// Initialize Supabase client with error handling
-let supabase;
-try {
-    supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    );
-} catch (error) {
-    console.error('Error initializing Supabase client:', error);
-}
-
-
 app.use(cors(corsOptions));
 
 // Serve static files with CORS headers
