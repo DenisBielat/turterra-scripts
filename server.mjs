@@ -55,7 +55,7 @@ cloudinary.config({
   api_secret: 'PYh1lSt3eXEhn5UsLeLENgSbs9s'
 });
 
-app.get('/supabase-data', async (req, res) => {
+app.get('/supabase/data', async (req, res) => {
     if (!supabase) {
         return res.status(500).json({ 
             error: 'Supabase client not initialized',
