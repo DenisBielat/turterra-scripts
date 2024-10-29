@@ -1,8 +1,8 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import cloudinary from 'cloudinary/cloudinary.js';
-import supabaseRoutes from './supabaseRoutes.mjs';
 import cors from 'cors';
+import { createClient } from '@supabase/supabase-js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -18,6 +18,11 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
+
 app.use(cors(corsOptions));
 
 // Serve static files with CORS headers
@@ -27,13 +32,30 @@ app.use('/icons', (req, res, next) => {
   next();
 }, express.static(join(__dirname, 'icons')));
 
-app.use('/supabase', supabaseRoutes);
-
 // Cloudinary configuration
 cloudinary.config({
   cloud_name: 'dyhvmivey',
   api_key: '482956819452563',
   api_secret: 'PYh1lSt3eXEhn5UsLeLENgSbs9s'
+});
+
+app.get('/supabase-data', async (req, res) => {
+    try {
+        // Replace 'your_table' with your actual table name
+        const { data, error } = await supabase
+            .from('your_table')
+            .select('*')
+        
+        if (error) throw error
+        
+        res.json(data);
+    } catch (error) {
+        console.error('Supabase fetch error:', error);
+        res.status(500).json({ 
+            error: 'Error fetching data from Supabase', 
+            details: error.message 
+        });
+    }
 });
 
 // Endpoint to fetch all items from a collection
