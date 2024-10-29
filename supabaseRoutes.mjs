@@ -13,7 +13,7 @@ router.get('/data', async (req, res) => {
     try {
         // Replace 'your_table' with your actual table name
         const { data, error } = await supabase
-            .from('your_table')
+            .from('turtle_species')
             .select('*')
         
         if (error) throw error
