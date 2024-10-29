@@ -2,9 +2,9 @@ import express from 'express';
 import fetch from 'node-fetch';
 import cloudinary from 'cloudinary/cloudinary.js';
 import cors from 'cors';
-import { createClient } from '@supabase/supabase-js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { createClient } from '@supabase/supabase-js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -23,6 +23,22 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+// Log environment variables (remove in production)
+console.log('Supabase URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log('Supabase Anon Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
+// Initialize Supabase client with error handling
+let supabase;
+try {
+    supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
+} catch (error) {
+    console.error('Error initializing Supabase client:', error);
+}
+
+
 app.use(cors(corsOptions));
 
 // Serve static files with CORS headers
@@ -40,13 +56,19 @@ cloudinary.config({
 });
 
 app.get('/supabase-data', async (req, res) => {
+    if (!supabase) {
+        return res.status(500).json({ 
+            error: 'Supabase client not initialized',
+            details: 'Configuration error'
+        });
+    }
+
     try {
-        // Replace 'your_table' with your actual table name
         const { data, error } = await supabase
             .from('your_table')
-            .select('*')
+            .select('*');
         
-        if (error) throw error
+        if (error) throw error;
         
         res.json(data);
     } catch (error) {
