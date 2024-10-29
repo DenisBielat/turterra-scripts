@@ -1,6 +1,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import cloudinary from 'cloudinary/cloudinary.js';
+import supabaseRoutes from './supabaseRoutes.mjs';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -25,6 +26,8 @@ app.use('/icons', (req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET');
   next();
 }, express.static(join(__dirname, 'icons')));
+
+app.use('/supabase', supabaseRoutes);
 
 // Cloudinary configuration
 cloudinary.config({
