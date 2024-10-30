@@ -18,13 +18,13 @@
 }
 
 .accordion-header:hover {
-  background-color: #f9fafb;
+  background-color: var(--brand-green--green-900);
 }
 
-.accordion-title .font-family-primary {
+/* .accordion-title {
   font-size: 1.125rem;
   font-weight: 600;
-}
+} */
 
 .accordion-icon {
   transition: transform 0.2s;
