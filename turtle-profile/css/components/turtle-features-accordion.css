@@ -11,7 +11,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: var(--brand-neutrals--brand-neutral);
+  background: var(--brand-neutrals--brand-white);
   border: none;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -22,6 +22,7 @@
 }
 
 .accordion-title {
+  color: var(--brand-neutrals--brand-black);
   font-size: 1.125rem;
   font-weight: 600;
 }
@@ -36,7 +37,7 @@
 
 .accordion-content {
   display: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--brand-neutrals--gray-200);
 }
 
 .accordion-content.open {
@@ -52,17 +53,17 @@
 }
 
 .main-feature {
-  background-color: #f9fafb;
+  background-color: var(--brand-neutrals--brand-white);
   font-weight: 500;
 }
 
 .sub-feature {
-  background-color: white;
+  background-color: var(--brand-neutrals--brand-white);
 }
 
 .sub-feature .feature-name {
   padding-left: 2.5rem;
-  color: #4b5563;
+  color: var(--brand-neutrals--brand-black);
   position: relative;
   display: flex;
   align-items: center;
@@ -74,11 +75,11 @@
   left: 0.5rem;
   top: 50%;
   transform: translateY(-50%) rotate(180deg);
-  margin-right: 0; /* Override default margin */
+  margin-right: 0;
 }
 
 .divider {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--brand-neutrals--gray-200);
 }
 
 .species-card-toolbar-icon.icon-before::before {
