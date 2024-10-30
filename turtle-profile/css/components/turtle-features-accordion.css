@@ -22,11 +22,8 @@
 }
 
 .accordion-title {
-  font-family: var(--all-headings--heading-font-family);
-  font-size: var(--text-medium--font-size);
-  font-weight: var(--all-headings--heading-font-weight);
-  letter-spacing: var(--all-headings--heading-letter-spacing);
-  line-height: var(--all-headings--heading-line-height);
+  font-size: 1.125rem;
+  font-weight: 600;
 }
 
 .accordion-icon {
