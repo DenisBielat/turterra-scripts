@@ -80,3 +80,8 @@
 .divider {
   border-top: 1px solid #e5e7eb;
 }
+
+.species-card-toolbar-icon.icon-before::before {
+  margin: 0;
+  background-color: var(--brand-orange--orange-600);
+}
