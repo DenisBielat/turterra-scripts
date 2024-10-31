@@ -1,4 +1,6 @@
-function testPhysicalFeaturesImages() {
+(function(window) {
+  // Add this new function to test physical features images
+  function testPhysicalFeaturesImages() {
     if (!window.currentTurtleCommonName) {
         console.error('Current turtle common name not found for physical features test.');
         return;
@@ -29,3 +31,6 @@ function testPhysicalFeaturesImages() {
             console.error('Error fetching physical features images:', error);
         });
 }
+  // Expose the test function to the global scope
+  window.testPhysicalFeaturesImages = testPhysicalFeaturesImages;
+})(window);
