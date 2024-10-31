@@ -54,7 +54,7 @@ router.get('/:species', async (req, res) => {
 // Endpoint to fetch Cloudinary images from physical features folder by species
 router.get('/:species/physical-features', async (req, res) => {
     const { species } = req.params;
-    const formattedSpecies = species.replace(/\s+/g, '-');
+    const formattedSpecies = species.toLowerCase().replace(/\s+/g, '-');
     const assetFolder = `Turtle Species Photos/${formattedSpecies}/physical-features`;
 
     try {
@@ -71,7 +71,7 @@ router.get('/:species/physical-features', async (req, res) => {
         const processedImages = result.resources.map(image => ({
             public_id: image.public_id,
             secure_url: image.secure_url,
-            tags: image.tags || [],  // Include tags associated with each image
+            tags: image.tags || [],
             metadata: {
                 primary_photo: image.metadata?.primary_photo === 'true',
                 life_stage: image.metadata?.life_stage || '',
