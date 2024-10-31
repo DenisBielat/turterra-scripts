@@ -9,7 +9,7 @@ const supabase = createClient(
 
 router.get('/data', async (req, res) => {
   try {
-    const { data, error } = await supabase.from('turtle_species').select('*');
+    const { data, error } = await supabase.from('turtle_species_physical_features').select('*');
     if (error) throw error;
     res.json(data);
   } catch (error) {
