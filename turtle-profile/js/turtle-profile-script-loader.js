@@ -104,6 +104,9 @@
 
       // Fetch Supabase data after resources have loaded
       await fetchSupabaseData();
+
+      // Fetch Cloudinary data for physical features
+      await fetchCloudinaryPhysicalFeaturesData('big-headed-pantanal-swamp-turtle');
       
     } catch (error) {
       console.error('Error in resource loading:', error);
