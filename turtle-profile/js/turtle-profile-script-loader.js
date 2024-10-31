@@ -104,9 +104,6 @@
 
       // Fetch Supabase data after resources have loaded
       await fetchSupabaseData();
-
-      // Fetch Cloudinary data for physical features
-      await fetchCloudinaryPhysicalFeaturesData('big-headed-pantanal-swamp-turtle');
       
     } catch (error) {
       console.error('Error in resource loading:', error);
@@ -126,22 +123,6 @@
       
     } catch (error) {
       console.error('Error fetching Supabase data:', error);
-    }
-  }
-
-   // Fetch data from Cloudinary physical features endpoint
-  async function fetchCloudinaryPhysicalFeaturesData(species) {
-    try {
-      const response = await fetch(`${baseUrl}/api/cloudinary/${species}/physical-features`);
-      if (!response.ok) throw new Error(`Error fetching Cloudinary physical features data: ${response.statusText}`);
-
-      const data = await response.json();
-      console.log('Cloudinary physical features data:', data);
-      
-      // Additional code to handle or display Cloudinary data goes here
-
-    } catch (error) {
-      console.error('Error fetching Cloudinary physical features data:', error);
     }
   }
 
