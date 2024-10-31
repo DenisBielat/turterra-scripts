@@ -1,61 +1,10 @@
 // turtle-features-accordion.js
-async function initTurtleFeaturesAccordion() {
-  console.log('Initializing turtle features accordion...');
-  
-  const container = document.getElementById('turtle-features');
-  // Hard-coded species ID - you can change this value as needed
-  const SPECIES_ID = '1';
-  
-  if (!container) {
-    console.error('Turtle features container not found!');
-    return;
-  }
+(function() {
+  // Component state
+  let initialized = false;
+  const SPECIES_ID = '1'; // Hard-coded species ID
 
-  try {
-    // Clear existing content
-    container.innerHTML = '';
-    
-    // Show loading state with proper styling
-    const loadingSection = document.createElement('div');
-    loadingSection.className = 'accordion-section';
-    loadingSection.innerHTML = `
-      <div class="accordion-header">
-        <span class="accordion-title">Loading Features...</span>
-      </div>
-      <div class="accordion-content open">
-        <div class="feature-row main-feature">
-          <div class="feature-name">Please wait while we load the turtle features...</div>
-        </div>
-      </div>
-    `;
-    container.appendChild(loadingSection);
-    
-    // Fetch data using hard-coded species ID
-    const response = await fetch(`/api/species/${SPECIES_ID}/features`);
-    if (!response.ok) throw new Error('Failed to fetch turtle features');
-    const data = await response.json();
-    
-    // Clear loading state
-    container.innerHTML = '';
-    
-    // If no data is returned, show an empty state
-    if (!data.categories || data.categories.length === 0) {
-      const emptySection = document.createElement('div');
-      emptySection.className = 'accordion-section';
-      emptySection.innerHTML = `
-        <div class="accordion-header">
-          <span class="accordion-title">No Features Available</span>
-        </div>
-        <div class="accordion-content open">
-          <div class="feature-row main-feature">
-            <div class="feature-name">No physical features are available for this species.</div>
-          </div>
-        </div>
-      `;
-      container.appendChild(emptySection);
-      return;
-    }
-    
+  async function createAccordion(container, data) {
     data.categories.forEach((category, categoryIndex) => {
       const section = document.createElement('div');
       section.className = 'accordion-section';
@@ -139,12 +88,25 @@ async function initTurtleFeaturesAccordion() {
       section.appendChild(content);
       container.appendChild(section);
     });
-    
-    console.log('Accordion built successfully');
-  } catch (error) {
-    console.error('Error building accordion:', error);
-    
-    // Show error state with proper styling
+  }
+
+  async function showLoadingState(container) {
+    const loadingSection = document.createElement('div');
+    loadingSection.className = 'accordion-section';
+    loadingSection.innerHTML = `
+      <div class="accordion-header">
+        <span class="accordion-title">Loading Features...</span>
+      </div>
+      <div class="accordion-content open">
+        <div class="feature-row main-feature">
+          <div class="feature-name">Please wait while we load the turtle features...</div>
+        </div>
+      </div>
+    `;
+    container.appendChild(loadingSection);
+  }
+
+  async function showErrorState(container, message) {
     container.innerHTML = '';
     const errorSection = document.createElement('div');
     errorSection.className = 'accordion-section';
@@ -154,18 +116,61 @@ async function initTurtleFeaturesAccordion() {
       </div>
       <div class="accordion-content open">
         <div class="feature-row main-feature">
-          <div class="feature-name">
-            There was an error loading the turtle features. Please try again later.
-          </div>
+          <div class="feature-name">${message}</div>
         </div>
       </div>
     `;
     container.appendChild(errorSection);
   }
-}
 
-// Auto-initialize when the page loads
-document.addEventListener('DOMContentLoaded', initTurtleFeaturesAccordion);
+  async function initTurtleFeaturesAccordion() {
+    // Prevent multiple initializations
+    if (initialized) {
+      console.warn('Turtle features accordion already initialized');
+      return;
+    }
 
-// Also make it available globally in case you need to call it manually
-window.initTurtleFeaturesAccordion = initTurtleFeaturesAccordion;
+    const container = document.getElementById('turtle-features');
+    if (!container) {
+      console.error('Turtle features container not found');
+      return;
+    }
+
+    try {
+      // Clear existing content
+      container.innerHTML = '';
+      await showLoadingState(container);
+      
+      // Get the base URL from the global scope if it exists
+      const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
+      
+      // Fetch data using hard-coded species ID
+      const response = await fetch(`${baseUrl}/api/species/${SPECIES_ID}/features`);
+      if (!response.ok) throw new Error('Failed to fetch turtle features');
+      const data = await response.json();
+      
+      // Clear loading state
+      container.innerHTML = '';
+      
+      // Handle empty data
+      if (!data.categories || data.categories.length === 0) {
+        await showErrorState(container, 'No physical features are available for this species.');
+        return;
+      }
+      
+      // Create the accordion with the data
+      await createAccordion(container, data);
+      
+      // Mark as initialized
+      initialized = true;
+      console.log('Turtle features accordion initialized successfully');
+      
+    } catch (error) {
+      console.error('Error initializing turtle features accordion:', error);
+      await showErrorState(container, 'There was an error loading the turtle features. Please try again later.');
+    }
+  }
+
+  // Export the initialization function
+  window.initTurtleFeaturesAccordion = initTurtleFeaturesAccordion;
+})();
