@@ -55,7 +55,7 @@ router.get('/:species', async (req, res) => {
 router.get('/:species/physical-features', async (req, res) => {
     const { species } = req.params;
     const formattedSpecies = species.replace(/\s+/g, '-');
-    const assetFolder = `Turtle Species Photos/${formattedSpecies}/physical features`;
+    const assetFolder = `Turtle Species Photos/${formattedSpecies}/physical-features`;
 
     try {
         const result = await cloudinary.v2.api.resources_by_asset_folder(assetFolder, {
