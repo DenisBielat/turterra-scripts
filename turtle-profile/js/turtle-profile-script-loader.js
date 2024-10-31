@@ -126,6 +126,22 @@
     }
   }
 
+   // Fetch data from Cloudinary physical features endpoint
+  async function fetchCloudinaryPhysicalFeaturesData(species) {
+    try {
+      const response = await fetch(`${baseUrl}/api/cloudinary/${species}/physical-features`);
+      if (!response.ok) throw new Error(`Error fetching Cloudinary physical features data: ${response.statusText}`);
+
+      const data = await response.json();
+      console.log('Cloudinary physical features data:', data);
+      
+      // Additional code to handle or display Cloudinary data goes here
+
+    } catch (error) {
+      console.error('Error fetching Cloudinary physical features data:', error);
+    }
+  }
+
   // Start loading resources when DOM is ready
   document.addEventListener('DOMContentLoaded', () => {
     loadResources();
