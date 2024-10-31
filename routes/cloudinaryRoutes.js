@@ -10,43 +10,26 @@ cloudinary.config({
     api_secret: 'PYh1lSt3eXEhn5UsLeLENgSbs9s'
 });
 
-// Endpoint to fetch Cloudinary images by species and optionally from physical features folder
+// Endpoint to fetch Cloudinary images by species
 router.get('/:species', async (req, res) => {
     const { species } = req.params;
-    const { tag } = req.query;  // Add a query parameter for the tag
     const formattedSpecies = species.replace(/\s+/g, '-');
-    const assetFolders = [
-        `Turtle Species Photos/${formattedSpecies}`,
-        `Turtle Species Photos/${formattedSpecies}/physical features`
-    ];
-
+    const assetFolder = `Turtle Species Photos/${formattedSpecies}`;
+    
     try {
-        let allResources = [];
+        const result = await cloudinary.v2.api.resources_by_asset_folder(assetFolder, {
+            max_results: 500,
+            context: true,
+            metadata: true,
+        });
 
-        for (const assetFolder of assetFolders) {
-            const options = {
-                max_results: 500,
-                context: true,
-                metadata: true,
-            };
-
-            // Add tag to options if provided
-            if (tag && assetFolder.includes('physical features')) {
-                options.tags = tag;
-            }
-
-            const result = await cloudinary.v2.api.resources_by_asset_folder(assetFolder, options);
-            allResources = allResources.concat(result.resources);
+        if (result.resources.length === 0) {
+            return res.status(404).json({ error: 'No images found for this species' });
         }
 
-        if (allResources.length === 0) {
-            return res.status(404).json({ error: 'No images found for this species or tag' });
-        }
-
-        const processedImages = allResources.map(image => ({
+        const processedImages = result.resources.map(image => ({
             public_id: image.public_id,
             secure_url: image.secure_url,
-            tags: image.tags || [],  // Include tags associated with each image
             metadata: {
                 primary_photo: image.metadata?.primary_photo === 'true',
                 life_stage: image.metadata?.life_stage || '',
@@ -55,7 +38,7 @@ router.get('/:species', async (req, res) => {
             }
         }));
 
-        // Sort images to put primary photo first, if applicable
+        // Sort images to put primary photo first
         processedImages.sort((a, b) => (b.metadata.primary_photo ? 1 : 0) - (a.metadata.primary_photo ? 1 : 0));
 
         res.json(processedImages);
