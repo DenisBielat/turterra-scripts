@@ -58,37 +58,29 @@ router.get('/:species/physical-features', async (req, res) => {
     const assetFolder = `Turtle Species Photos/${formattedSpecies}/physical-features`;
 
     try {
-        // First, get all resources in the folder
+        // Single API call with all needed information
         const result = await cloudinary.v2.api.resources_by_asset_folder(assetFolder, {
             max_results: 500,
             context: true,
             metadata: true,
-            tags: true  // Explicitly request tags
+            tags: true
         });
 
         if (result.resources.length === 0) {
             return res.status(404).json({ error: 'No images found for this species in physical features folder' });
         }
 
-        // Process the resources and fetch detailed info for each image
-        const processedImages = await Promise.all(result.resources.map(async image => {
-            // Get detailed resource info including tags
-            const imageDetails = await cloudinary.v2.api.resource(image.public_id, {
-                tags: true,
-                metadata: true
-            });
-
-            return {
-                public_id: image.public_id,
-                secure_url: image.secure_url,
-                tags: imageDetails.tags || [],  // Use tags from detailed response
-                metadata: {
-                    primary_photo: image.metadata?.primary_photo === 'true',
-                    life_stage: image.metadata?.life_stage || '',
-                    asset_type: image.metadata?.asset_type || '',
-                    credits_basic: image.metadata?.credits_basic || ''
-                }
-            };
+        // Process the resources without additional API calls
+        const processedImages = result.resources.map(image => ({
+            public_id: image.public_id,
+            secure_url: image.secure_url,
+            tags: image.tags || [],
+            metadata: {
+                primary_photo: image.metadata?.primary_photo === 'true',
+                life_stage: image.metadata?.life_stage || '',
+                asset_type: image.metadata?.asset_type || '',
+                credits_basic: image.metadata?.credits_basic || ''
+            }
         }));
 
         res.json(processedImages);
