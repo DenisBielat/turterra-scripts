@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21.32 17.24">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #000;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.5px;
+      }
+    </style>
+  </defs>
+  <g id="Diagram-Steady-And-Fall-Large-Head--Streamline-Ultimate.svg">
+    <g>
+      <path class="cls-1" d="M16.06,7.47l4.51,4.51-4.51,4.51"/>
+      <path class="cls-1" d="M.75.75v7.75c0,.92.36,1.8,1.01,2.45s1.52,1.02,2.44,1.03h16.37"/>
+    </g>
+  </g>
+</svg>
