@@ -25,12 +25,18 @@ router.get('/species/:slug', async (req, res) => {
   }
 });
 
-router.get('/data', async (req, res) => {
+router.get('/data/:speciesId', async (req, res) => {
   try {
+    const { speciesId } = req.params;
     const { data, error } = await supabase
       .from('turtle_species_physical_features')
-      .select('*');
+      .select('*')
+      .eq('species_id', speciesId)
+      .single();
+
     if (error) throw error;
+    if (!data) return res.status(404).json({ error: 'Physical features not found' });
+    
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
