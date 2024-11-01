@@ -2,10 +2,114 @@
 (function() {
   // Component state
   let initialized = false;
-  const SPECIES_ID = 1; // Hard-coded species ID
+  const SPECIES_ID = 1;
+
+  // Default feature keys structure based on your exact CSV
+  const DEFAULT_FEATURE_KEYS = [
+    {
+      id: 1,
+      physical_feature: "Head/Neck Pattern",
+      category: "Head/Neck",
+      parent_feature: null
+    },
+    {
+      id: 2,
+      physical_feature: "Head/Neck Pattern Color",
+      category: "Head/Neck",
+      parent_feature: 1
+    },
+    {
+      id: 3,
+      physical_feature: "Shell Top Pattern",
+      category: "Shell Top",
+      parent_feature: null
+    },
+    {
+      id: 4,
+      physical_feature: "Shell Top Texture",
+      category: "Shell Top",
+      parent_feature: null
+    },
+    {
+      id: 5,
+      physical_feature: "Skin Color",
+      category: "Skin/Limbs",
+      parent_feature: null
+    },
+    {
+      id: 6,
+      physical_feature: "Skin Pattern",
+      category: "Skin/Limbs",
+      parent_feature: null
+    },
+    {
+      id: 7,
+      physical_feature: "Skin Pattern Color",
+      category: "Skin/Limbs",
+      parent_feature: 6
+    },
+    {
+      id: 8,
+      physical_feature: "Shell Top Vertebral Keel",
+      category: "Shell Top",
+      parent_feature: null
+    },
+    {
+      id: 9,
+      physical_feature: "Shell Bottom Scute Number",
+      category: "Shell Bottom",
+      parent_feature: null
+    },
+    {
+      id: 10,
+      physical_feature: "Ear Color",
+      category: "Head/Neck",
+      parent_feature: null
+    },
+    {
+      id: 11,
+      physical_feature: "Eye Color",
+      category: "Head/Neck",
+      parent_feature: null
+    },
+    {
+      id: 12,
+      physical_feature: "Eye Pattern",
+      category: "Head/Neck",
+      parent_feature: null
+    },
+    {
+      id: 13,
+      physical_feature: "Neck Texture",
+      category: "Head/Neck",
+      parent_feature: null
+    },
+    {
+      id: 14,
+      physical_feature: "Chin Barbels Present",
+      category: "Head/Neck",
+      parent_feature: null
+    },
+    {
+      id: 15,
+      physical_feature: "Chin Barbels Size",
+      category: "Head/Neck",
+      parent_feature: 14
+    }
+  ];
+
+  // Helper function to convert Title Case to snake_case for data lookup
+  function toSnakeCase(str) {
+    return str
+      .toLowerCase()
+      .replace(/\//g, '_')
+      .replace(/\s+/g, '_');
+  }
 
   // Transform raw Supabase data into the accordion structure
   function transformData(rawData, featureKeys) {
+    console.log('Transforming data with:', { rawData, featureKeys });
+    
     // Create a map to store categories
     const categories = new Map();
     
@@ -24,33 +128,44 @@
       // Skip sub-features for now
       if (key.parent_feature) return;
 
+      // Convert the feature name to snake_case for data lookup
+      const dataKey = toSnakeCase(key.physical_feature);
+      console.log(`Looking up data for "${key.physical_feature}" using key "${dataKey}"`);
+
       const feature = {
-        name: key.physical_feature,
-        value: rawData[key.physical_feature.toLowerCase().replace(/\//g, '_')] || 'N/A',
+        name: key.physical_feature, // Keep original Title Case for display
+        value: rawData[dataKey] || 'N/A',
         subFeatures: []
       };
 
       // Find and add any sub-features
       const subFeatures = featureKeys.filter(k => k.parent_feature === key.id);
       subFeatures.forEach(sub => {
-        const subFeatureValue = rawData[sub.physical_feature.toLowerCase().replace(/\//g, '_')] || 'N/A';
+        const subFeatureDataKey = toSnakeCase(sub.physical_feature);
+        const subFeatureValue = rawData[subFeatureDataKey];
+        
         // Handle array values (like colors)
         const displayValue = Array.isArray(subFeatureValue) 
           ? subFeatureValue.join(', ')
-          : subFeatureValue;
+          : subFeatureValue || 'N/A';
 
         feature.subFeatures.push({
-          name: sub.physical_feature,
+          name: sub.physical_feature, // Keep original Title Case for display
           value: displayValue
         });
       });
 
-      categories.get(key.category).features.push(feature);
+      if (categories.has(key.category)) {
+        categories.get(key.category).features.push(feature);
+      }
     });
 
-    return {
+    const result = {
       categories: Array.from(categories.values())
     };
+    
+    console.log('Transformed data:', result);
+    return result;
   }
 
   async function createAccordion(container, data) {
