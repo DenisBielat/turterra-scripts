@@ -4,6 +4,14 @@
   const SPECIES_ID = 1;
   let categoryImages = new Map();
 
+  // Helper function to convert category names to Cloudinary tag format
+  function toCategoryTag(category) {
+    return category
+      .toLowerCase()
+      .replace(/\//, '-and-')  // Convert "/" to "-and-"
+      .replace(/\s+/g, '-');   // Replace spaces with hyphens
+  }
+
   function toSnakeCase(str) {
     return str
       .toLowerCase()
@@ -71,8 +79,8 @@
       imageContainer.className = 'category-image-container';
       imageContainer.style.display = 'none';
       
-      // If we have images for this category, add them
-      const categoryTag = toSnakeCase(category.name);
+      // Convert category name to match Cloudinary tag format
+      const categoryTag = toCategoryTag(category.name);
       if (categoryImages.has(categoryTag)) {
         const images = categoryImages.get(categoryTag);
         images.forEach(image => {
@@ -85,7 +93,6 @@
           img.className = 'category-feature-image';
           imgWrapper.appendChild(img);
 
-          // Add credits if available
           if (image.credits) {
             const credits = document.createElement('div');
             credits.className = 'category-image-credits';
