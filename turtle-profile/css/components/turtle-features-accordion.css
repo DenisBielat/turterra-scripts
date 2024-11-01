@@ -91,12 +91,10 @@
 }
 
 .feature-header-text {
-  font-family: "Outfit";
-  color: var(--brand-neutrals--gray-200);
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: -0.03em;
-  font-weight: 600;
+  color: var(--brand-neutrals--gray-400);
+  font-size: 0.75rem;
+  line-height: 1.5em;
+  letter-spacing: 0em;
 }
 
 .main-feature {
