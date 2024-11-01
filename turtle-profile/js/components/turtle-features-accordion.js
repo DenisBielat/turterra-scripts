@@ -3,6 +3,8 @@
   let initialized = false;
   let initializing = false;
   let categoryImages = new Map();
+  let currentVariant = null;
+  let allVariants = null;
 
   function toCategoryTag(category) {
     return category
@@ -212,7 +214,7 @@
     });
   }
 
-   async function initTurtleFeaturesAccordion() {
+    async function initTurtleFeaturesAccordion() {
     if (initialized || initializing) return;
     initializing = true;
 
@@ -233,7 +235,7 @@
       // Load category images and feature keys in parallel
       const [featureKeysResponse] = await Promise.all([
         fetch(`${baseUrl}/supabase/feature-keys`),
-        loadCategoryImages() // This is already handling its own dependencies
+        loadCategoryImages()
       ]);
 
       if (!featureKeysResponse.ok) {
@@ -243,13 +245,17 @@
       // Get feature keys
       const featureKeys = await featureKeysResponse.json();
 
-      // Now fetch physical features using the species ID
+      // Fetch physical features with all variants
       const featuresResponse = await fetch(`${baseUrl}/supabase/data/${window.currentSpeciesId}`);
       if (!featuresResponse.ok) {
         throw new Error('Failed to fetch physical features');
       }
 
-      const speciesFeatures = await featuresResponse.json();
+      const { defaultVariant, allVariants: variants } = await featuresResponse.json();
+      
+      // Store the variants for potential future use
+      currentVariant = defaultVariant;
+      allVariants = variants;
 
       const transformedData = {
         categories: Array.from(new Map(
@@ -263,12 +269,12 @@
               }
               const feature = {
                 name: key.physical_feature,
-                value: formatFeatureValue(speciesFeatures[toSnakeCase(key.physical_feature)]),
+                value: formatFeatureValue(currentVariant[toSnakeCase(key.physical_feature)]),
                 subFeatures: featureKeys
                   .filter(k => k.parent_feature === key.id)
                   .map(sub => ({
                     name: sub.physical_feature,
-                    value: formatFeatureValue(speciesFeatures[toSnakeCase(sub.physical_feature)])
+                    value: formatFeatureValue(currentVariant[toSnakeCase(sub.physical_feature)])
                   }))
               };
               acc.get(key.category).features.push(feature);
