@@ -4,12 +4,13 @@
   const SPECIES_ID = 1;
   let categoryImages = new Map();
 
-  // Helper function to convert category names to Cloudinary tag format
   function toCategoryTag(category) {
-    return category
+    const tag = category
       .toLowerCase()
-      .replace(/\//, '-and-')  // Convert "/" to "-and-"
-      .replace(/\s+/g, '-');   // Replace spaces with hyphens
+      .replace(/\//, '-and-')
+      .replace(/\s+/g, '-');
+    console.log('Converting category to tag:', { category, tag });
+    return tag;
   }
 
   function toSnakeCase(str) {
@@ -37,23 +38,44 @@
     return capitalizeValue(value.toString());
   }
 
-  async function loadCategoryImages() {
-    if (!window.currentTurtleCommonName) return;
+   async function loadCategoryImages() {
+    if (!window.currentTurtleCommonName) {
+      console.log('No turtle common name found in window object');
+      return;
+    }
 
+    console.log('Current turtle common name:', window.currentTurtleCommonName);
     const encodedCommonName = encodeURIComponent(window.currentTurtleCommonName);
+    console.log('Encoded name:', encodedCommonName);
+
     try {
-      const response = await fetch(`${window.baseUrl || 'https://turterra.vercel.app'}/cloudinary/${encodedCommonName}/physical-features`);
-      if (!response.ok) return;
+      const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
+      const url = `${baseUrl}/cloudinary/${encodedCommonName}/physical-features`;
+      console.log('Fetching images from:', url);
+
+      const response = await fetch(url);
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        console.log('Response not OK:', await response.text());
+        return;
+      }
       
       const images = await response.json();
+      console.log('Received images:', images);
       
-      // Reset the category images map
       categoryImages.clear();
       
-      // Create a map of category to image data
       images.forEach(image => {
+        console.log('Processing image:', {
+          url: image.secure_url,
+          tags: image.tags,
+          metadata: image.metadata
+        });
+
         if (image.tags && image.tags.length > 0) {
           image.tags.forEach(tag => {
+            console.log('Processing tag:', tag);
             if (!categoryImages.has(tag)) {
               categoryImages.set(tag, []);
             }
@@ -64,25 +86,35 @@
           });
         }
       });
+
+      console.log('Final category images map:', Object.fromEntries(categoryImages));
     } catch (error) {
-      // Silently fail - we'll just not show images if they're not available
+      console.error('Error loading category images:', error);
     }
   }
 
   async function createAccordion(container, data) {
     data.categories.forEach((category, categoryIndex) => {
+      const categoryTag = toCategoryTag(category.name);
+      console.log('Looking for images for category:', {
+        category: category.name,
+        tag: categoryTag,
+        hasImages: categoryImages.has(categoryTag),
+        imagesAvailable: categoryImages.get(categoryTag)
+      });
+
       const section = document.createElement('div');
       section.className = 'accordion-section';
       
-      // Create image container for this category
+      // Create image container
       const imageContainer = document.createElement('div');
       imageContainer.className = 'category-image-container';
       imageContainer.style.display = 'none';
       
-      // Convert category name to match Cloudinary tag format
-      const categoryTag = toCategoryTag(category.name);
       if (categoryImages.has(categoryTag)) {
         const images = categoryImages.get(categoryTag);
+        console.log(`Adding ${images.length} images for category ${category.name}`);
+        
         images.forEach(image => {
           const imgWrapper = document.createElement('div');
           imgWrapper.className = 'category-image-wrapper';
@@ -91,6 +123,16 @@
           img.src = image.url;
           img.alt = `${category.name} feature`;
           img.className = 'category-feature-image';
+          
+          // Add load event listener to verify image loading
+          img.addEventListener('load', () => {
+            console.log(`Image loaded successfully for ${category.name}:`, image.url);
+          });
+          
+          img.addEventListener('error', (e) => {
+            console.error(`Image failed to load for ${category.name}:`, image.url, e);
+          });
+
           imgWrapper.appendChild(img);
 
           if (image.credits) {
@@ -102,6 +144,8 @@
 
           imageContainer.appendChild(imgWrapper);
         });
+      } else {
+        console.log(`No images found for category ${category.name} with tag ${categoryTag}`);
       }
       
       section.appendChild(imageContainer);
