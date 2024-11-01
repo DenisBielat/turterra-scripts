@@ -90,6 +90,7 @@
 .category-image-container {
   margin: 1rem 0;
   display: none;
+  background-color: var(--brand-neutrals--brand-white);
 }
 
 .category-image-wrapper {
