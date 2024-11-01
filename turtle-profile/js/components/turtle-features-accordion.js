@@ -2,7 +2,7 @@
 (function() {
   // Component state
   let initialized = false;
-  const SPECIES_ID = '1'; // Hard-coded species ID
+  const SPECIES_ID = 1; // Hard-coded species ID
 
   // Transform raw Supabase data into the accordion structure
   function transformData(rawData, featureKeys) {
@@ -198,10 +198,18 @@
       if (!response.ok) throw new Error('Failed to fetch turtle features');
       const rawData = await response.json();
       
-      // Find the features data for our species
-      const speciesFeatures = rawData.find(item => item.species_id === SPECIES_ID);
+      // Debug log to see what data we're getting
+      console.log('Raw data from Supabase:', rawData);
+
+      // Find the features data for our species, converting both to numbers for comparison
+      const speciesFeatures = rawData.find(item => Number(item.species_id) === Number(SPECIES_ID));
+      
+      // Debug log for the found species
+      console.log('Looking for species_id:', SPECIES_ID);
+      console.log('Found species features:', speciesFeatures);
+
       if (!speciesFeatures) {
-        throw new Error('Species not found');
+        throw new Error(`Species with ID ${SPECIES_ID} not found in data: ${JSON.stringify(rawData.map(item => item.species_id))}`);
       }
 
       // Get the feature keys structure
@@ -209,9 +217,15 @@
       if (!featureKeysResponse.ok) throw new Error('Failed to fetch feature keys');
       const featureKeys = await featureKeysResponse.json();
       
+      // Debug log for feature keys
+      console.log('Feature keys:', featureKeys);
+
       // Transform the data into our accordion structure
       const transformedData = transformData(speciesFeatures, featureKeys);
       
+      // Debug log for transformed data
+      console.log('Transformed data:', transformedData);
+
       // Clear loading state
       container.innerHTML = '';
       
