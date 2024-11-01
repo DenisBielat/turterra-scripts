@@ -2,7 +2,6 @@
 (function() {
   let initialized = false;
   let initializing = false;
-  let speciesId = null;
   let categoryImages = new Map();
 
   function toCategoryTag(category) {
@@ -215,34 +214,6 @@
     });
   }
 
-   async function getSpeciesId(slug) {
-    try {
-      const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
-      console.log('Fetching species ID for slug:', slug);  // Debug log
-      
-      const response = await fetch(`${baseUrl}/supabase/species/${slug}`);
-      console.log('Response status:', response.status);  // Debug log
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error response:', errorData);  // Debug log
-        throw new Error(errorData.error || 'Failed to fetch species ID');
-      }
-      
-      const data = await response.json();
-      console.log('Species data received:', data);  // Debug log
-      
-      if (!data || !data.id) {
-        throw new Error('Invalid species data received');
-      }
-      
-      return data.id;
-    } catch (error) {
-      console.error('Error fetching species ID:', error);
-      throw error;  // Re-throw to be handled by the calling function
-    }
-  }
-
   async function initTurtleFeaturesAccordion() {
     if (initialized || initializing) return;
     initializing = true;
@@ -258,22 +229,12 @@
       
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
       
-      // Get the current slug from the URL and clean it
-      const slug = window.location.pathname.split('/').pop();
-      console.log('Current slug:', slug);  // Debug log
-      
-      try {
-        // Get the species ID using the slug
-        speciesId = await getSpeciesId(slug);
-        console.log('Retrieved species ID:', speciesId);  // Debug log
-        
-        if (!speciesId) {
-          throw new Error('Species ID not found');
-        }
-      } catch (error) {
-        console.error('Error getting species ID:', error);
-        throw error;
+      // Use the species ID that was set by fetchTurtleNames
+      if (!window.currentSpeciesId) {
+        throw new Error('Species ID not available');
       }
+      
+      console.log('Using species ID:', window.currentSpeciesId);
       
       // Wait for category images to be loaded
       await loadCategoryImages();
@@ -292,13 +253,48 @@
         featureKeysResponse.json()
       ]);
 
-      const speciesFeatures = rawData.find(item => Number(item.species_id) === Number(speciesId));
-      if (!speciesFeatures) throw new Error('Species features not found');
+      const speciesFeatures = rawData.find(item => 
+        Number(item.species_id) === Number(window.currentSpeciesId)
+      );
+      
+      if (!speciesFeatures) {
+        throw new Error('Species features not found');
+      }
 
-      // ... (rest of your existing code for creating the accordion)
+      // Transform the data for the accordion
+      const transformedData = {
+        categories: Array.from(new Map(
+          featureKeys.reduce((acc, key) => {
+            if (!key.parent_feature) {
+              if (!acc.has(key.category)) {
+                acc.set(key.category, {
+                  name: key.category,
+                  features: []
+                });
+              }
+              const feature = {
+                name: key.physical_feature,
+                value: formatFeatureValue(speciesFeatures[toSnakeCase(key.physical_feature)]),
+                subFeatures: featureKeys
+                  .filter(k => k.parent_feature === key.id)
+                  .map(sub => ({
+                    name: sub.physical_feature,
+                    value: formatFeatureValue(speciesFeatures[toSnakeCase(sub.physical_feature)])
+                  }))
+              };
+              acc.get(key.category).features.push(feature);
+            }
+            return acc;
+          }, new Map())
+        ).values())
+      };
+
+      // Create the accordion with the transformed data
+      await createAccordion(container, transformedData);
+      initialized = true;
 
     } catch (error) {
-      console.error('Initialization error:', error);  // Debug log
+      console.error('Initialization error:', error);
       container.innerHTML = `
         <div class="accordion-section">
           <div class="accordion-header">
@@ -317,14 +313,12 @@
       initializing = false;
     }
   }
-  
-  // Create a single initialization function that handles all cases
+
+  // Initialize when the document is ready and turtle data is available
   function initialize() {
     if (window.currentTurtleCommonName) {
-      // If we already have the turtle data, initialize immediately
       initTurtleFeaturesAccordion();
     } else {
-      // If we don't have turtle data yet, wait for it
       const initHandler = () => {
         if (window.currentTurtleCommonName) {
           document.removeEventListener('turtleDataLoaded', initHandler);
@@ -335,14 +329,14 @@
     }
   }
 
-  // Only set up a single initialization trigger
+  // Set up initialization
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initialize, { once: true });
   } else {
     initialize();
   }
 
-  // Export the initialization function, but make it safe to call multiple times
+  // Export the initialization function
   window.initTurtleFeaturesAccordion = function() {
     if (!initialized) {
       initialize();
