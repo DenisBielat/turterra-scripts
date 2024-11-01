@@ -212,7 +212,7 @@
     });
   }
 
-  async function initTurtleFeaturesAccordion() {
+   async function initTurtleFeaturesAccordion() {
     if (initialized || initializing) return;
     initializing = true;
 
@@ -229,30 +229,27 @@
       if (!window.currentSpeciesId) {
         throw new Error('Species ID not available');
       }
-      
-      await loadCategoryImages();
-      
-      const [response, featureKeysResponse] = await Promise.all([
-        fetch(`${baseUrl}/supabase/data`),
-        fetch(`${baseUrl}/supabase/feature-keys`)
+
+      // Load category images and feature keys in parallel
+      const [featureKeysResponse] = await Promise.all([
+        fetch(`${baseUrl}/supabase/feature-keys`),
+        loadCategoryImages() // This is already handling its own dependencies
       ]);
 
-      if (!response.ok || !featureKeysResponse.ok) {
-        throw new Error('Failed to fetch data');
+      if (!featureKeysResponse.ok) {
+        throw new Error('Failed to fetch feature keys');
       }
 
-      const [rawData, featureKeys] = await Promise.all([
-        response.json(),
-        featureKeysResponse.json()
-      ]);
+      // Get feature keys
+      const featureKeys = await featureKeysResponse.json();
 
-      const speciesFeatures = rawData.find(item => 
-        Number(item.species_id) === Number(window.currentSpeciesId)
-      );
-      
-      if (!speciesFeatures) {
-        throw new Error('Species features not found');
+      // Now fetch physical features using the species ID
+      const featuresResponse = await fetch(`${baseUrl}/supabase/data/${window.currentSpeciesId}`);
+      if (!featuresResponse.ok) {
+        throw new Error('Failed to fetch physical features');
       }
+
+      const speciesFeatures = await featuresResponse.json();
 
       const transformedData = {
         categories: Array.from(new Map(
@@ -305,11 +302,11 @@
   }
 
   function initialize() {
-    if (window.currentTurtleCommonName) {
+    if (window.currentTurtleCommonName && window.currentSpeciesId) {
       initTurtleFeaturesAccordion();
     } else {
       const initHandler = () => {
-        if (window.currentTurtleCommonName) {
+        if (window.currentTurtleCommonName && window.currentSpeciesId) {
           document.removeEventListener('turtleDataLoaded', initHandler);
           initTurtleFeaturesAccordion();
         }
