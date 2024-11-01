@@ -7,6 +7,26 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+router.get('/species/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { data, error } = await supabase
+      .from('turtle_species')
+      .select('id')
+      .eq('slug', slug)
+      .single();
+    
+    if (error) throw error;
+    if (!data) {
+      return res.status(404).json({ error: 'Species not found' });
+    }
+    
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.get('/data', async (req, res) => {
   try {
     const { data, error } = await supabase.from('turtle_species_physical_features').select('*');
