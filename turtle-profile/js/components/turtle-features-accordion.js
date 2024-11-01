@@ -145,6 +145,15 @@
     
     const content = document.createElement('div');
     content.className = 'accordion-content';
+
+    // Add header row for features table
+    const headerRow = document.createElement('div');
+    headerRow.className = 'feature-row feature-header';
+    headerRow.innerHTML = `
+      <div class="feature-name">Feature</div>
+      <div class="feature-value">Value</div>
+    `;
+    content.appendChild(headerRow);
     
     // Add elements to section in the correct order
     section.appendChild(header);
@@ -157,7 +166,6 @@
       imageContainer.style.display = 'block';
     }
     
-    // Rest of the content creation...
     if (category.features.length === 0) {
       const emptyRow = document.createElement('div');
       emptyRow.className = 'feature-row main-feature';
@@ -167,26 +175,28 @@
       `;
       content.appendChild(emptyRow);
     } else {
-      let lastMainFeature = null;
+      let previousWasSubFeature = false;
       
       category.features.forEach((feature, index) => {
         const featureRow = document.createElement('div');
         featureRow.className = 'feature-row main-feature';
-        if (index > 0 && !lastMainFeature?.hasSubFeatures) {
+        
+        // Add border if it's not the first feature and either:
+        // 1. The previous item was a main feature, or
+        // 2. The previous item was a sub-feature (ensuring separation between feature groups)
+        if (index > 0 || previousWasSubFeature) {
           featureRow.classList.add('with-border');
         }
+        
         featureRow.innerHTML = `
           <div class="feature-name">${feature.name}</div>
           <div class="feature-value">${feature.value}</div>
         `;
         content.appendChild(featureRow);
         
-        lastMainFeature = {
-          element: featureRow,
-          hasSubFeatures: feature.subFeatures.length > 0
-        };
+        previousWasSubFeature = false;
         
-        feature.subFeatures.forEach(subFeature => {
+        feature.subFeatures.forEach((subFeature, subIndex) => {
           const subFeatureRow = document.createElement('div');
           subFeatureRow.className = 'feature-row sub-feature';
           subFeatureRow.innerHTML = `
@@ -196,6 +206,7 @@
             <div class="feature-value">${subFeature.value}</div>
           `;
           content.appendChild(subFeatureRow);
+          previousWasSubFeature = true;
         });
       });
     }
