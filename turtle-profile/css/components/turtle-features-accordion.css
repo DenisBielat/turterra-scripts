@@ -86,17 +86,17 @@
 }
 
 .feature-header {
-  background-color: var(--brand-neutrals--gray-50);
   border-bottom: 1px solid var(--brand-neutrals--gray-200);
-  font-weight: 600;
+  padding-top: 1rem;
 }
 
-.feature-header .feature-name,
-.feature-header .feature-value {
-  color: var(--brand-neutrals--gray-600);
+.feature-header-text {
+  font-family: "Outfit";
+  color: var(--brand-neutrals--gray-200);
   font-size: 0.875rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: -0.03em;
+  font-weight: 600;
 }
 
 .main-feature {
