@@ -92,18 +92,30 @@
   display: none;
 }
 
-.category-feature-image {
-  max-width: 100%;
-  height: auto;
-  border-radius: 0.5rem;
+.category-image-wrapper {
+  position: relative;
   margin-bottom: 1rem;
 }
 
-/* If you have multiple images per category */
+.category-feature-image {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  display: block;
+}
+
+.category-image-credits {
+  font-size: 0.875rem;
+  color: var(--brand-neutrals--gray-600);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Grid layout for multiple images */
 .category-image-container:not(:empty) {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
   padding: 0 1rem;
 }
 
