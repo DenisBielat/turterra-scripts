@@ -73,6 +73,8 @@
 
 .accordion-content.open {
   display: block;
+  border-top: none;
+  padding-bottom: 0.5rem;
 }
 
 .feature-row {
