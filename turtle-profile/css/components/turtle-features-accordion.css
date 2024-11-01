@@ -36,6 +36,36 @@
   transform: rotate(180deg);
 }
 
+.category-image-container {
+  border-top: 1px solid var(--brand-neutrals--gray-200);
+}
+
+.category-image-container:not(:empty) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.category-image-wrapper {
+  position: relative;
+  margin: 0;
+}
+
+.category-feature-image {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  display: block;
+}
+
+.category-image-credits {
+  font-size: 0.875rem;
+  color: var(--brand-neutrals--gray-600);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
 .accordion-content {
   display: none;
   border-top: 1px solid var(--brand-neutrals--gray-200);
@@ -58,6 +88,10 @@
   font-weight: 500;
 }
 
+.main-feature.with-border {
+  border-top: 1px solid var(--brand-neutrals--gray-200);
+}
+
 .sub-feature {
   background-color: var(--brand-neutrals--brand-white);
 }
@@ -70,7 +104,6 @@
   align-items: center;
 }
 
-/* Adjust icon positioning for vertical alignment */
 .sub-feature .icon-before::before {
   position: absolute;
   left: 0.5rem;
@@ -81,43 +114,6 @@
 
 .feature-name {
   font-weight: 600;
-}
-
-.divider {
-  border-top: 1px solid var(--brand-neutrals--gray-200);
-}
-
-.category-image-container {
-  margin: 1rem 0;
-  display: none;
-  background-color: var(--brand-neutrals--brand-white);
-}
-
-.category-image-wrapper {
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-.category-feature-image {
-  width: 100%;
-  height: auto;
-  border-radius: 0.5rem;
-  display: block;
-}
-
-.category-image-credits {
-  font-size: 0.875rem;
-  color: var(--brand-neutrals--gray-600);
-  margin-top: 0.5rem;
-  font-style: italic;
-}
-
-/* Grid layout for multiple images */
-.category-image-container:not(:empty) {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  padding: 0 1rem;
 }
 
 .species-card-toolbar-icon.icon-before::before {
