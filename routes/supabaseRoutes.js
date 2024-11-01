@@ -10,30 +10,37 @@ const supabase = createClient(
 router.get('/species/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
-    
-    // Add logging to debug
     console.log('Looking up species with slug:', slug);
+
+    // Clean the slug to match database format
+    const cleanSlug = slug.toLowerCase().trim();
     
     const { data, error } = await supabase
       .from('turtle_species')
-      .select('id, species_common_name')  // Added species_common_name for verification
-      .eq('slug', slug)
-      .single();
+      .select('id, species_common_name')
+      .eq('slug', cleanSlug)
+      .limit(1);  // Add limit to ensure we only get one result
     
     if (error) {
       console.error('Supabase error:', error);
-      throw error;
+      return res.status(500).json({ 
+        error: 'Database error', 
+        details: error.message 
+      });
     }
     
-    if (!data) {
-      console.log('No species found for slug:', slug);
-      return res.status(404).json({ error: 'Species not found' });
+    if (!data || data.length === 0) {
+      console.log('No species found for slug:', cleanSlug);
+      return res.status(404).json({ 
+        error: 'Species not found',
+        details: `No species found with slug: ${cleanSlug}`
+      });
     }
     
-    // Add logging for successful lookup
-    console.log('Found species:', data);
-    
-    res.json(data);
+    // Return the first match
+    console.log('Found species:', data[0]);
+    res.json(data[0]);
+
   } catch (error) {
     console.error('Server error:', error);
     res.status(500).json({ 
