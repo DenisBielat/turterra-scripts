@@ -1,8 +1,8 @@
 // turtle-features-accordion.js
 (function() {
-  // Component state
   let initialized = false;
   const SPECIES_ID = 1;
+  let categoryImages = new Map();
 
   // Helper function to convert Title Case to snake_case for data lookup
   function toSnakeCase(str) {
@@ -15,7 +15,6 @@
   // Helper function to capitalize the first letter of each word
   function capitalizeValue(value) {
     if (!value || value === 'N/A') return value;
-    
     return value
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -25,113 +24,64 @@
   // Helper function to format feature values
   function formatFeatureValue(value) {
     if (!value) return 'N/A';
-    
     if (Array.isArray(value)) {
       return value
         .map(item => capitalizeValue(item.toString()))
         .join(', ');
     }
-    
     return capitalizeValue(value.toString());
   }
 
-  // Transform raw Supabase data into the accordion structure
-  function transformData(rawData, featureKeys) {
-    console.log('Transforming data with:', { rawData, featureKeys });
-    
-    // Create a map to store categories
-    const categories = new Map();
-    
-    // First, create all main categories from the feature keys
-    featureKeys.forEach(key => {
-      if (!categories.has(key.category)) {
-        categories.set(key.category, {
-          name: key.category,
-          features: []
-        });
-      }
-    });
+  async function loadCategoryImages() {
+    if (!window.currentTurtleCommonName) return;
 
-    // Then, add features to their categories
-    featureKeys.forEach(key => {
-      // Skip sub-features for now
-      if (key.parent_feature) return;
-
-      // Convert the feature name to snake_case for data lookup
-      const dataKey = toSnakeCase(key.physical_feature);
-      console.log(`Looking up data for "${key.physical_feature}" using key "${dataKey}"`);
-
-      const feature = {
-        name: key.physical_feature,
-        value: formatFeatureValue(rawData[dataKey]),
-        subFeatures: []
-      };
-
-      // Find and add any sub-features
-      const subFeatures = featureKeys.filter(k => k.parent_feature === key.id);
-      subFeatures.forEach(sub => {
-        const subFeatureDataKey = toSnakeCase(sub.physical_feature);
-        const subFeatureValue = rawData[subFeatureDataKey];
-        
-        feature.subFeatures.push({
-          name: sub.physical_feature,
-          value: formatFeatureValue(subFeatureValue)
-        });
+    const encodedCommonName = encodeURIComponent(window.currentTurtleCommonName);
+    try {
+      const response = await fetch(`https://turterra.vercel.app/cloudinary/${encodedCommonName}/physical-features`);
+      if (!response.ok) throw new Error('Failed to fetch images');
+      
+      const images = await response.json();
+      
+      // Create a map of category to image URL
+      images.forEach(image => {
+        if (image.tags) {
+          image.tags.forEach(tag => {
+            if (!categoryImages.has(tag)) {
+              categoryImages.set(tag, []);
+            }
+            categoryImages.get(tag).push(image.public_id);
+          });
+        }
       });
-
-      if (categories.has(key.category)) {
-        categories.get(key.category).features.push(feature);
-      }
-    });
-
-    const result = {
-      categories: Array.from(categories.values())
-    };
-    
-    console.log('Transformed data:', result);
-    return result;
-  }
-
-  async function showLoadingState(container) {
-    const loadingSection = document.createElement('div');
-    loadingSection.className = 'accordion-section';
-    loadingSection.innerHTML = `
-      <div class="accordion-header">
-        <span class="accordion-title">Loading Features...</span>
-      </div>
-      <div class="accordion-content open">
-        <div class="feature-row main-feature">
-          <div class="feature-name">Please wait while we load the turtle features...</div>
-        </div>
-      </div>
-    `;
-    container.appendChild(loadingSection);
-  }
-
-  async function showErrorState(container, message, isRLSError = false) {
-    container.innerHTML = '';
-    const errorSection = document.createElement('div');
-    errorSection.className = 'accordion-section';
-    errorSection.innerHTML = `
-      <div class="accordion-header">
-        <span class="accordion-title">Error Loading Features</span>
-      </div>
-      <div class="accordion-content open">
-        <div class="feature-row main-feature">
-          <div class="feature-name">
-            ${message}
-            ${isRLSError ? '<br><br>This might be due to a database permissions issue. Please contact the administrator.' : ''}
-          </div>
-        </div>
-      </div>
-    `;
-    container.appendChild(errorSection);
+    } catch (error) {
+      // Silently fail - we'll just not show images if they're not available
+    }
   }
 
   async function createAccordion(container, data) {
     data.categories.forEach((category, categoryIndex) => {
       const section = document.createElement('div');
       section.className = 'accordion-section';
+      
+      // Create image container for this category
+      const imageContainer = document.createElement('div');
+      imageContainer.className = 'category-image-container';
+      imageContainer.style.display = 'none';
+      
+      // If we have images for this category, add them
+      const categoryTag = toSnakeCase(category.name);
+      if (categoryImages.has(categoryTag)) {
+        const images = categoryImages.get(categoryTag);
+        images.forEach(publicId => {
+          const img = document.createElement('img');
+          img.src = `https://res.cloudinary.com/your-cloud-name/image/upload/${publicId}`; // Replace with your cloud name
+          img.alt = `${category.name} feature`;
+          img.className = 'category-feature-image';
+          imageContainer.appendChild(img);
+        });
+      }
+      
+      section.appendChild(imageContainer);
       
       // Create header
       const header = document.createElement('button');
@@ -151,6 +101,7 @@
       if (categoryIndex === 0) {
         content.classList.add('open');
         header.querySelector('.accordion-icon').classList.add('open');
+        imageContainer.style.display = 'block';
       }
       
       // Add features
@@ -164,7 +115,6 @@
         content.appendChild(emptyRow);
       } else {
         category.features.forEach((feature, index) => {
-          // Add main feature
           const featureRow = document.createElement('div');
           featureRow.className = `feature-row main-feature ${index > 0 ? 'divider' : ''}`;
           featureRow.innerHTML = `
@@ -173,7 +123,6 @@
           `;
           content.appendChild(featureRow);
           
-          // Add sub-features
           feature.subFeatures.forEach(subFeature => {
             const subFeatureRow = document.createElement('div');
             subFeatureRow.className = 'feature-row sub-feature divider';
@@ -193,18 +142,22 @@
         const isOpen = content.classList.contains('open');
         const icon = header.querySelector('.accordion-icon');
         
-        // Close all other sections
+        // Close all other sections and hide their images
         document.querySelectorAll('.accordion-content').forEach(el => {
           el.classList.remove('open');
         });
         document.querySelectorAll('.accordion-icon').forEach(el => {
           el.classList.remove('open');
         });
+        document.querySelectorAll('.category-image-container').forEach(el => {
+          el.style.display = 'none';
+        });
         
         // Toggle current section
         if (!isOpen) {
           content.classList.add('open');
           icon.classList.add('open');
+          imageContainer.style.display = 'block';
         }
       });
       
@@ -215,76 +168,80 @@
   }
 
   async function initTurtleFeaturesAccordion() {
-    if (initialized) {
-      console.warn('Turtle features accordion already initialized');
-      return;
-    }
+    if (initialized) return;
 
     const container = document.getElementById('turtle-features');
-    if (!container) {
-      console.error('Turtle features container not found');
-      return;
-    }
+    if (!container) return;
 
     try {
       container.innerHTML = '';
-      await showLoadingState(container);
       
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
       
-      // Fetch data using your existing endpoint
-      const response = await fetch(`${baseUrl}/supabase/data`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch turtle features');
-      }
-      const rawData = await response.json();
+      // Load images first
+      await loadCategoryImages();
       
-      console.log('Raw data from Supabase:', rawData);
+      // Fetch feature data
+      const response = await fetch(`${baseUrl}/supabase/data`);
+      if (!response.ok) throw new Error('Failed to fetch turtle features');
+      const rawData = await response.json();
 
       const speciesFeatures = rawData.find(item => Number(item.species_id) === Number(SPECIES_ID));
-      if (!speciesFeatures) {
-        throw new Error(`Species with ID ${SPECIES_ID} not found`);
-      }
+      if (!speciesFeatures) throw new Error('Species not found');
 
       // Fetch feature keys
       const featureKeysResponse = await fetch(`${baseUrl}/supabase/feature-keys`);
-      if (!featureKeysResponse.ok) {
-        throw new Error('Failed to fetch feature keys structure');
-      }
+      if (!featureKeysResponse.ok) throw new Error('Failed to fetch feature keys');
       const featureKeys = await featureKeysResponse.json();
       
-      if (!featureKeys || featureKeys.length === 0) {
-        throw new Error('No feature keys found in the database');
-      }
-
-      console.log('Feature keys:', featureKeys);
-
-      const transformedData = transformData(speciesFeatures, featureKeys);
-      
-      container.innerHTML = '';
-      
-      if (!transformedData.categories || transformedData.categories.length === 0) {
-        await showErrorState(container, 'No physical features are available for this species.');
-        return;
-      }
+      const transformedData = {
+        categories: Array.from(new Map(
+          featureKeys.reduce((acc, key) => {
+            if (!key.parent_feature) {
+              if (!acc.has(key.category)) {
+                acc.set(key.category, {
+                  name: key.category,
+                  features: []
+                });
+              }
+              const feature = {
+                name: key.physical_feature,
+                value: formatFeatureValue(speciesFeatures[toSnakeCase(key.physical_feature)]),
+                subFeatures: featureKeys
+                  .filter(k => k.parent_feature === key.id)
+                  .map(sub => ({
+                    name: sub.physical_feature,
+                    value: formatFeatureValue(speciesFeatures[toSnakeCase(sub.physical_feature)])
+                  }))
+              };
+              acc.get(key.category).features.push(feature);
+            }
+            return acc;
+          }, new Map())
+        ).values())
+      };
       
       await createAccordion(container, transformedData);
       
       initialized = true;
-      console.log('Turtle features accordion initialized successfully');
       
     } catch (error) {
-      console.error('Error initializing turtle features accordion:', error);
-      const isRLSError = error.message.includes('permission denied') || 
-                        error.message.includes('authentication failed');
-      await showErrorState(
-        container, 
-        'There was an error loading the turtle features. Please try again later.',
-        isRLSError
-      );
+      container.innerHTML = `
+        <div class="accordion-section">
+          <div class="accordion-header">
+            <span class="accordion-title">Error Loading Features</span>
+          </div>
+          <div class="accordion-content open">
+            <div class="feature-row main-feature">
+              <div class="feature-name">
+                There was an error loading the turtle features. Please try again later.
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     }
   }
 
-  // Export the initialization function
   window.initTurtleFeaturesAccordion = initTurtleFeaturesAccordion;
 })();
