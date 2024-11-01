@@ -1,6 +1,7 @@
 // turtle-features-accordion.js
 (function() {
   let initialized = false;
+  let initializing = false;
   const SPECIES_ID = 1;
   let categoryImages = new Map();
 
@@ -215,17 +216,24 @@
   }
 
   async function initTurtleFeaturesAccordion() {
-    if (initialized) return;
+    // Prevent multiple concurrent initializations
+    if (initialized || initializing) return;
+    
+    // Set initializing flag
+    initializing = true;
 
     const container = document.getElementById('turtle-features');
-    if (!container) return;
+    if (!container) {
+      initializing = false;
+      return;
+    }
 
     try {
       container.innerHTML = '';
       
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
       
-      // First, wait for category images to be loaded
+      // Wait for category images to be loaded
       await loadCategoryImages();
       
       const [response, featureKeysResponse] = await Promise.all([
@@ -290,22 +298,40 @@
           </div>
         </div>
       `;
+    } finally {
+      // Reset initializing flag
+      initializing = false;
     }
   }
 
-  // Initialize when the page loads
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initTurtleFeaturesAccordion);
-  } else {
-    initTurtleFeaturesAccordion();
+  // Create a single initialization function that handles all cases
+  function initialize() {
+    if (window.currentTurtleCommonName) {
+      // If we already have the turtle data, initialize immediately
+      initTurtleFeaturesAccordion();
+    } else {
+      // If we don't have turtle data yet, wait for it
+      const initHandler = () => {
+        if (window.currentTurtleCommonName) {
+          document.removeEventListener('turtleDataLoaded', initHandler);
+          initTurtleFeaturesAccordion();
+        }
+      };
+      document.addEventListener('turtleDataLoaded', initHandler);
+    }
   }
 
-  // Also reinitialize when turtle data is loaded
-  document.addEventListener('turtleDataLoaded', () => {
-    initialized = false; // Reset initialization flag to allow reinitialization
-    initTurtleFeaturesAccordion();
-  });
+  // Only set up a single initialization trigger
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialize, { once: true });
+  } else {
+    initialize();
+  }
 
-  // Export the initialization function
-  window.initTurtleFeaturesAccordion = initTurtleFeaturesAccordion;
+  // Export the initialization function, but make it safe to call multiple times
+  window.initTurtleFeaturesAccordion = function() {
+    if (!initialized) {
+      initialize();
+    }
+  };
 })();
