@@ -79,13 +79,8 @@
   }
 
   async function initializeComponents() {
-    console.log('Initializing components...');
-    // Initialize accordion with default data
     if (typeof window.initTurtleFeaturesAccordion === 'function') {
-      console.log('Initializing turtle features accordion...');
       window.initTurtleFeaturesAccordion();
-    } else {
-      console.error('initTurtleFeaturesAccordion function not found');
     }
   }
 
@@ -93,36 +88,15 @@
     try {
       // Load CSS files first
       const cssLoaded = await loadResourcesByType('css');
-      console.log('CSS files loaded:', cssLoaded ? 'successfully' : 'with some failures');
 
       // Then load JS files
       const jsLoaded = await loadResourcesByType('js');
-      console.log('JS files loaded:', jsLoaded ? 'successfully' : 'with some failures');
 
       // Initialize components after all resources are loaded
       await initializeComponents();
-
-      // Fetch Supabase data after resources have loaded
-      await fetchSupabaseData();
       
     } catch (error) {
       console.error('Error in resource loading:', error);
-    }
-  }
-
-  // Fetch data from Supabase using the endpoint in server.mjs
-  async function fetchSupabaseData() {
-    try {
-      const response = await fetch(`${baseUrl}/supabase/data`);
-      if (!response.ok) throw new Error(`Error fetching Supabase data: ${response.statusText}`);
-      
-      const data = await response.json();
-      console.log('Supabase data:', data);
-      
-      // Additional code to handle or display Supabase data goes here
-      
-    } catch (error) {
-      console.error('Error fetching Supabase data:', error);
     }
   }
 
