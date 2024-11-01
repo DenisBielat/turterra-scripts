@@ -4,7 +4,6 @@
   const SPECIES_ID = 1;
   let categoryImages = new Map();
 
-  // Helper function to convert Title Case to snake_case for data lookup
   function toSnakeCase(str) {
     return str
       .toLowerCase()
@@ -12,7 +11,6 @@
       .replace(/\s+/g, '_');
   }
 
-  // Helper function to capitalize the first letter of each word
   function capitalizeValue(value) {
     if (!value || value === 'N/A') return value;
     return value
@@ -21,7 +19,6 @@
       .join(' ');
   }
 
-  // Helper function to format feature values
   function formatFeatureValue(value) {
     if (!value) return 'N/A';
     if (Array.isArray(value)) {
@@ -37,19 +34,25 @@
 
     const encodedCommonName = encodeURIComponent(window.currentTurtleCommonName);
     try {
-      const response = await fetch(`https://turterra.vercel.app/cloudinary/${encodedCommonName}/physical-features`);
-      if (!response.ok) throw new Error('Failed to fetch images');
+      const response = await fetch(`${window.baseUrl || 'https://turterra.vercel.app'}/cloudinary/${encodedCommonName}/physical-features`);
+      if (!response.ok) return;
       
       const images = await response.json();
       
-      // Create a map of category to image URL
+      // Reset the category images map
+      categoryImages.clear();
+      
+      // Create a map of category to image data
       images.forEach(image => {
-        if (image.tags) {
+        if (image.tags && image.tags.length > 0) {
           image.tags.forEach(tag => {
             if (!categoryImages.has(tag)) {
               categoryImages.set(tag, []);
             }
-            categoryImages.get(tag).push(image.public_id);
+            categoryImages.get(tag).push({
+              url: image.secure_url,
+              credits: image.metadata.credits_basic
+            });
           });
         }
       });
@@ -72,18 +75,30 @@
       const categoryTag = toSnakeCase(category.name);
       if (categoryImages.has(categoryTag)) {
         const images = categoryImages.get(categoryTag);
-        images.forEach(publicId => {
+        images.forEach(image => {
+          const imgWrapper = document.createElement('div');
+          imgWrapper.className = 'category-image-wrapper';
+
           const img = document.createElement('img');
-          img.src = `https://res.cloudinary.com/your-cloud-name/image/upload/${publicId}`; // Replace with your cloud name
+          img.src = image.url;
           img.alt = `${category.name} feature`;
           img.className = 'category-feature-image';
-          imageContainer.appendChild(img);
+          imgWrapper.appendChild(img);
+
+          // Add credits if available
+          if (image.credits) {
+            const credits = document.createElement('div');
+            credits.className = 'category-image-credits';
+            credits.textContent = `Photo: ${image.credits}`;
+            imgWrapper.appendChild(credits);
+          }
+
+          imageContainer.appendChild(imgWrapper);
         });
       }
       
       section.appendChild(imageContainer);
       
-      // Create header
       const header = document.createElement('button');
       header.className = 'accordion-header';
       header.innerHTML = `
@@ -93,18 +108,15 @@
         </svg>
       `;
       
-      // Create content
       const content = document.createElement('div');
       content.className = 'accordion-content';
       
-      // Open first section by default
       if (categoryIndex === 0) {
         content.classList.add('open');
         header.querySelector('.accordion-icon').classList.add('open');
         imageContainer.style.display = 'block';
       }
       
-      // Add features
       if (category.features.length === 0) {
         const emptyRow = document.createElement('div');
         emptyRow.className = 'feature-row main-feature';
@@ -137,12 +149,10 @@
         });
       }
       
-      // Add click handler
       header.addEventListener('click', () => {
         const isOpen = content.classList.contains('open');
         const icon = header.querySelector('.accordion-icon');
         
-        // Close all other sections and hide their images
         document.querySelectorAll('.accordion-content').forEach(el => {
           el.classList.remove('open');
         });
@@ -153,7 +163,6 @@
           el.style.display = 'none';
         });
         
-        // Toggle current section
         if (!isOpen) {
           content.classList.add('open');
           icon.classList.add('open');
@@ -178,22 +187,25 @@
       
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
       
-      // Load images first
       await loadCategoryImages();
       
-      // Fetch feature data
-      const response = await fetch(`${baseUrl}/supabase/data`);
-      if (!response.ok) throw new Error('Failed to fetch turtle features');
-      const rawData = await response.json();
+      const [response, featureKeysResponse] = await Promise.all([
+        fetch(`${baseUrl}/supabase/data`),
+        fetch(`${baseUrl}/supabase/feature-keys`)
+      ]);
+
+      if (!response.ok || !featureKeysResponse.ok) {
+        throw new Error('Failed to fetch data');
+      }
+
+      const [rawData, featureKeys] = await Promise.all([
+        response.json(),
+        featureKeysResponse.json()
+      ]);
 
       const speciesFeatures = rawData.find(item => Number(item.species_id) === Number(SPECIES_ID));
       if (!speciesFeatures) throw new Error('Species not found');
 
-      // Fetch feature keys
-      const featureKeysResponse = await fetch(`${baseUrl}/supabase/feature-keys`);
-      if (!featureKeysResponse.ok) throw new Error('Failed to fetch feature keys');
-      const featureKeys = await featureKeysResponse.json();
-      
       const transformedData = {
         categories: Array.from(new Map(
           featureKeys.reduce((acc, key) => {
@@ -222,7 +234,6 @@
       };
       
       await createAccordion(container, transformedData);
-      
       initialized = true;
       
     } catch (error) {
