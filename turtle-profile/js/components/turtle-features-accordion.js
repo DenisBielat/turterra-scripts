@@ -150,8 +150,8 @@
     const headerRow = document.createElement('div');
     headerRow.className = 'feature-row feature-header';
     headerRow.innerHTML = `
-      <div class="feature-name feature-header-text">Feature</div>
-      <div class="feature-value feature-header-text">Value</div>
+      <div class="feature-header-text">Feature</div>
+      <div class="feature-header-text">Value</div>
     `;
     content.appendChild(headerRow);
     
