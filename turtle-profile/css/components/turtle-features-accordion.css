@@ -83,6 +83,20 @@
   align-items: center;
 }
 
+.feature-header {
+  background-color: var(--brand-neutrals--gray-50);
+  border-bottom: 1px solid var(--brand-neutrals--gray-200);
+  font-weight: 600;
+}
+
+.feature-header .feature-name,
+.feature-header .feature-value {
+  color: var(--brand-neutrals--gray-600);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .main-feature {
   background-color: var(--brand-neutrals--brand-white);
   font-weight: 500;
