@@ -10,20 +10,36 @@ const supabase = createClient(
 router.get('/species/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
+    
+    // Add logging to debug
+    console.log('Looking up species with slug:', slug);
+    
     const { data, error } = await supabase
       .from('turtle_species')
-      .select('id')
+      .select('id, species_common_name')  // Added species_common_name for verification
       .eq('slug', slug)
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+    
     if (!data) {
+      console.log('No species found for slug:', slug);
       return res.status(404).json({ error: 'Species not found' });
     }
     
+    // Add logging for successful lookup
+    console.log('Found species:', data);
+    
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Server error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      details: error.message 
+    });
   }
 });
 
