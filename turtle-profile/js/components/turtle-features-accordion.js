@@ -4,6 +4,55 @@
   let initialized = false;
   const SPECIES_ID = '1'; // Hard-coded species ID
 
+  // Transform raw Supabase data into the accordion structure
+  function transformData(rawData, featureKeys) {
+    // Create a map to store categories
+    const categories = new Map();
+    
+    // First, create all main categories from the feature keys
+    featureKeys.forEach(key => {
+      if (!categories.has(key.category)) {
+        categories.set(key.category, {
+          name: key.category,
+          features: []
+        });
+      }
+    });
+
+    // Then, add features to their categories
+    featureKeys.forEach(key => {
+      // Skip sub-features for now
+      if (key.parent_feature) return;
+
+      const feature = {
+        name: key.physical_feature,
+        value: rawData[key.physical_feature.toLowerCase().replace(/\//g, '_')] || 'N/A',
+        subFeatures: []
+      };
+
+      // Find and add any sub-features
+      const subFeatures = featureKeys.filter(k => k.parent_feature === key.id);
+      subFeatures.forEach(sub => {
+        const subFeatureValue = rawData[sub.physical_feature.toLowerCase().replace(/\//g, '_')] || 'N/A';
+        // Handle array values (like colors)
+        const displayValue = Array.isArray(subFeatureValue) 
+          ? subFeatureValue.join(', ')
+          : subFeatureValue;
+
+        feature.subFeatures.push({
+          name: sub.physical_feature,
+          value: displayValue
+        });
+      });
+
+      categories.get(key.category).features.push(feature);
+    });
+
+    return {
+      categories: Array.from(categories.values())
+    };
+  }
+
   async function createAccordion(container, data) {
     data.categories.forEach((category, categoryIndex) => {
       const section = document.createElement('div');
@@ -144,22 +193,36 @@
       // Get the base URL from the global scope if it exists
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
       
-      // Fetch data using hard-coded species ID
-      const response = await fetch(`${baseUrl}/api/species/${SPECIES_ID}/features`);
+      // Fetch data using your existing endpoint
+      const response = await fetch(`${baseUrl}/supabase/data`);
       if (!response.ok) throw new Error('Failed to fetch turtle features');
-      const data = await response.json();
+      const rawData = await response.json();
+      
+      // Find the features data for our species
+      const speciesFeatures = rawData.find(item => item.species_id === SPECIES_ID);
+      if (!speciesFeatures) {
+        throw new Error('Species not found');
+      }
+
+      // Get the feature keys structure
+      const featureKeysResponse = await fetch(`${baseUrl}/supabase/feature-keys`);
+      if (!featureKeysResponse.ok) throw new Error('Failed to fetch feature keys');
+      const featureKeys = await featureKeysResponse.json();
+      
+      // Transform the data into our accordion structure
+      const transformedData = transformData(speciesFeatures, featureKeys);
       
       // Clear loading state
       container.innerHTML = '';
       
       // Handle empty data
-      if (!data.categories || data.categories.length === 0) {
+      if (!transformedData.categories || transformedData.categories.length === 0) {
         await showErrorState(container, 'No physical features are available for this species.');
         return;
       }
       
-      // Create the accordion with the data
-      await createAccordion(container, data);
+      // Create the accordion with the transformed data
+      await createAccordion(container, transformedData);
       
       // Mark as initialized
       initialized = true;
