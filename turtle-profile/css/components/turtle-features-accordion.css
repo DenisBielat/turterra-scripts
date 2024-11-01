@@ -87,6 +87,26 @@
   border-top: 1px solid var(--brand-neutrals--gray-200);
 }
 
+.category-image-container {
+  margin: 1rem 0;
+  display: none;
+}
+
+.category-feature-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* If you have multiple images per category */
+.category-image-container:not(:empty) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 0 1rem;
+}
+
 .species-card-toolbar-icon.icon-before::before {
   margin: 0;
   background-color: var(--brand-orange--orange-600);
