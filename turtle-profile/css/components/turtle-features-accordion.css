@@ -37,7 +37,7 @@
 }
 
 .category-image-container {
-  border-top: 1px solid var(--brand-neutrals--gray-200);
+/*   border-top: 1px solid var(--brand-neutrals--gray-200); */
 }
 
 .category-image-container:not(:empty) {
