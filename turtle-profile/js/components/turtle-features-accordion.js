@@ -4,106 +4,35 @@
   let initialized = false;
   const SPECIES_ID = 1;
 
-  // Default feature keys structure based on your exact CSV
-  const DEFAULT_FEATURE_KEYS = [
-    {
-      id: 1,
-      physical_feature: "Head/Neck Pattern",
-      category: "Head/Neck",
-      parent_feature: null
-    },
-    {
-      id: 2,
-      physical_feature: "Head/Neck Pattern Color",
-      category: "Head/Neck",
-      parent_feature: 1
-    },
-    {
-      id: 3,
-      physical_feature: "Shell Top Pattern",
-      category: "Shell Top",
-      parent_feature: null
-    },
-    {
-      id: 4,
-      physical_feature: "Shell Top Texture",
-      category: "Shell Top",
-      parent_feature: null
-    },
-    {
-      id: 5,
-      physical_feature: "Skin Color",
-      category: "Skin/Limbs",
-      parent_feature: null
-    },
-    {
-      id: 6,
-      physical_feature: "Skin Pattern",
-      category: "Skin/Limbs",
-      parent_feature: null
-    },
-    {
-      id: 7,
-      physical_feature: "Skin Pattern Color",
-      category: "Skin/Limbs",
-      parent_feature: 6
-    },
-    {
-      id: 8,
-      physical_feature: "Shell Top Vertebral Keel",
-      category: "Shell Top",
-      parent_feature: null
-    },
-    {
-      id: 9,
-      physical_feature: "Shell Bottom Scute Number",
-      category: "Shell Bottom",
-      parent_feature: null
-    },
-    {
-      id: 10,
-      physical_feature: "Ear Color",
-      category: "Head/Neck",
-      parent_feature: null
-    },
-    {
-      id: 11,
-      physical_feature: "Eye Color",
-      category: "Head/Neck",
-      parent_feature: null
-    },
-    {
-      id: 12,
-      physical_feature: "Eye Pattern",
-      category: "Head/Neck",
-      parent_feature: null
-    },
-    {
-      id: 13,
-      physical_feature: "Neck Texture",
-      category: "Head/Neck",
-      parent_feature: null
-    },
-    {
-      id: 14,
-      physical_feature: "Chin Barbels Present",
-      category: "Head/Neck",
-      parent_feature: null
-    },
-    {
-      id: 15,
-      physical_feature: "Chin Barbels Size",
-      category: "Head/Neck",
-      parent_feature: 14
-    }
-  ];
-
   // Helper function to convert Title Case to snake_case for data lookup
   function toSnakeCase(str) {
     return str
       .toLowerCase()
       .replace(/\//g, '_')
       .replace(/\s+/g, '_');
+  }
+
+  // Helper function to capitalize the first letter of each word
+  function capitalizeValue(value) {
+    if (!value || value === 'N/A') return value;
+    
+    return value
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
+
+  // Helper function to format feature values
+  function formatFeatureValue(value) {
+    if (!value) return 'N/A';
+    
+    if (Array.isArray(value)) {
+      return value
+        .map(item => capitalizeValue(item.toString()))
+        .join(', ');
+    }
+    
+    return capitalizeValue(value.toString());
   }
 
   // Transform raw Supabase data into the accordion structure
@@ -133,8 +62,8 @@
       console.log(`Looking up data for "${key.physical_feature}" using key "${dataKey}"`);
 
       const feature = {
-        name: key.physical_feature, // Keep original Title Case for display
-        value: rawData[dataKey] || 'N/A',
+        name: key.physical_feature,
+        value: formatFeatureValue(rawData[dataKey]),
         subFeatures: []
       };
 
@@ -144,14 +73,9 @@
         const subFeatureDataKey = toSnakeCase(sub.physical_feature);
         const subFeatureValue = rawData[subFeatureDataKey];
         
-        // Handle array values (like colors)
-        const displayValue = Array.isArray(subFeatureValue) 
-          ? subFeatureValue.join(', ')
-          : subFeatureValue || 'N/A';
-
         feature.subFeatures.push({
-          name: sub.physical_feature, // Keep original Title Case for display
-          value: displayValue
+          name: sub.physical_feature,
+          value: formatFeatureValue(subFeatureValue)
         });
       });
 
@@ -166,6 +90,42 @@
     
     console.log('Transformed data:', result);
     return result;
+  }
+
+  async function showLoadingState(container) {
+    const loadingSection = document.createElement('div');
+    loadingSection.className = 'accordion-section';
+    loadingSection.innerHTML = `
+      <div class="accordion-header">
+        <span class="accordion-title">Loading Features...</span>
+      </div>
+      <div class="accordion-content open">
+        <div class="feature-row main-feature">
+          <div class="feature-name">Please wait while we load the turtle features...</div>
+        </div>
+      </div>
+    `;
+    container.appendChild(loadingSection);
+  }
+
+  async function showErrorState(container, message, isRLSError = false) {
+    container.innerHTML = '';
+    const errorSection = document.createElement('div');
+    errorSection.className = 'accordion-section';
+    errorSection.innerHTML = `
+      <div class="accordion-header">
+        <span class="accordion-title">Error Loading Features</span>
+      </div>
+      <div class="accordion-content open">
+        <div class="feature-row main-feature">
+          <div class="feature-name">
+            ${message}
+            ${isRLSError ? '<br><br>This might be due to a database permissions issue. Please contact the administrator.' : ''}
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(errorSection);
   }
 
   async function createAccordion(container, data) {
@@ -209,7 +169,7 @@
           featureRow.className = `feature-row main-feature ${index > 0 ? 'divider' : ''}`;
           featureRow.innerHTML = `
             <div class="feature-name">${feature.name}</div>
-            <div class="feature-value">${feature.value || '-'}</div>
+            <div class="feature-value">${feature.value}</div>
           `;
           content.appendChild(featureRow);
           
@@ -221,7 +181,7 @@
               <div class="feature-name icon-before icon-ui-line-move-back">
                 ${subFeature.name}
               </div>
-              <div class="feature-value">${subFeature.value || '-'}</div>
+              <div class="feature-value">${subFeature.value}</div>
             `;
             content.appendChild(subFeatureRow);
           });
@@ -254,41 +214,7 @@
     });
   }
 
-  async function showLoadingState(container) {
-    const loadingSection = document.createElement('div');
-    loadingSection.className = 'accordion-section';
-    loadingSection.innerHTML = `
-      <div class="accordion-header">
-        <span class="accordion-title">Loading Features...</span>
-      </div>
-      <div class="accordion-content open">
-        <div class="feature-row main-feature">
-          <div class="feature-name">Please wait while we load the turtle features...</div>
-        </div>
-      </div>
-    `;
-    container.appendChild(loadingSection);
-  }
-
-  async function showErrorState(container, message) {
-    container.innerHTML = '';
-    const errorSection = document.createElement('div');
-    errorSection.className = 'accordion-section';
-    errorSection.innerHTML = `
-      <div class="accordion-header">
-        <span class="accordion-title">Error Loading Features</span>
-      </div>
-      <div class="accordion-content open">
-        <div class="feature-row main-feature">
-          <div class="feature-name">${message}</div>
-        </div>
-      </div>
-    `;
-    container.appendChild(errorSection);
-  }
-
   async function initTurtleFeaturesAccordion() {
-    // Prevent multiple initializations
     if (initialized) {
       console.warn('Turtle features accordion already initialized');
       return;
@@ -301,65 +227,61 @@
     }
 
     try {
-      // Clear existing content
       container.innerHTML = '';
       await showLoadingState(container);
       
-      // Get the base URL from the global scope if it exists
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
       
       // Fetch data using your existing endpoint
       const response = await fetch(`${baseUrl}/supabase/data`);
-      if (!response.ok) throw new Error('Failed to fetch turtle features');
+      if (!response.ok) {
+        throw new Error('Failed to fetch turtle features');
+      }
       const rawData = await response.json();
       
-      // Debug log to see what data we're getting
       console.log('Raw data from Supabase:', rawData);
 
-      // Find the features data for our species, converting both to numbers for comparison
       const speciesFeatures = rawData.find(item => Number(item.species_id) === Number(SPECIES_ID));
-      
-      // Debug log for the found species
-      console.log('Looking for species_id:', SPECIES_ID);
-      console.log('Found species features:', speciesFeatures);
-
       if (!speciesFeatures) {
-        throw new Error(`Species with ID ${SPECIES_ID} not found in data: ${JSON.stringify(rawData.map(item => item.species_id))}`);
+        throw new Error(`Species with ID ${SPECIES_ID} not found`);
       }
 
-      // Get the feature keys structure
+      // Fetch feature keys
       const featureKeysResponse = await fetch(`${baseUrl}/supabase/feature-keys`);
-      if (!featureKeysResponse.ok) throw new Error('Failed to fetch feature keys');
+      if (!featureKeysResponse.ok) {
+        throw new Error('Failed to fetch feature keys structure');
+      }
       const featureKeys = await featureKeysResponse.json();
       
-      // Debug log for feature keys
+      if (!featureKeys || featureKeys.length === 0) {
+        throw new Error('No feature keys found in the database');
+      }
+
       console.log('Feature keys:', featureKeys);
 
-      // Transform the data into our accordion structure
       const transformedData = transformData(speciesFeatures, featureKeys);
       
-      // Debug log for transformed data
-      console.log('Transformed data:', transformedData);
-
-      // Clear loading state
       container.innerHTML = '';
       
-      // Handle empty data
       if (!transformedData.categories || transformedData.categories.length === 0) {
         await showErrorState(container, 'No physical features are available for this species.');
         return;
       }
       
-      // Create the accordion with the transformed data
       await createAccordion(container, transformedData);
       
-      // Mark as initialized
       initialized = true;
       console.log('Turtle features accordion initialized successfully');
       
     } catch (error) {
       console.error('Error initializing turtle features accordion:', error);
-      await showErrorState(container, 'There was an error loading the turtle features. Please try again later.');
+      const isRLSError = error.message.includes('permission denied') || 
+                        error.message.includes('authentication failed');
+      await showErrorState(
+        container, 
+        'There was an error loading the turtle features. Please try again later.',
+        isRLSError
+      );
     }
   }
 
