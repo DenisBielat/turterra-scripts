@@ -5,12 +5,10 @@
   let categoryImages = new Map();
 
   function toCategoryTag(category) {
-    const tag = category
+    return category
       .toLowerCase()
       .replace(/\//, '-and-')
       .replace(/\s+/g, '-');
-    console.log('Converting category to tag:', { category, tag });
-    return tag;
   }
 
   function toSnakeCase(str) {
@@ -38,44 +36,35 @@
     return capitalizeValue(value.toString());
   }
 
-   async function loadCategoryImages() {
+  async function loadCategoryImages() {
+    // Wait for turtle data to be available
     if (!window.currentTurtleCommonName) {
-      console.log('No turtle common name found in window object');
-      return;
+      return new Promise((resolve) => {
+        document.addEventListener('turtleDataLoaded', async () => {
+          if (window.currentTurtleCommonName) {
+            await fetchCategoryImages();
+            resolve();
+          }
+        });
+      });
+    } else {
+      return fetchCategoryImages();
     }
+  }
 
-    console.log('Current turtle common name:', window.currentTurtleCommonName);
+  async function fetchCategoryImages() {
     const encodedCommonName = encodeURIComponent(window.currentTurtleCommonName);
-    console.log('Encoded name:', encodedCommonName);
-
     try {
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
-      const url = `${baseUrl}/cloudinary/${encodedCommonName}/physical-features`;
-      console.log('Fetching images from:', url);
-
-      const response = await fetch(url);
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        console.log('Response not OK:', await response.text());
-        return;
-      }
+      const response = await fetch(`${baseUrl}/cloudinary/${encodedCommonName}/physical-features`);
+      if (!response.ok) return;
       
       const images = await response.json();
-      console.log('Received images:', images);
-      
       categoryImages.clear();
       
       images.forEach(image => {
-        console.log('Processing image:', {
-          url: image.secure_url,
-          tags: image.tags,
-          metadata: image.metadata
-        });
-
         if (image.tags && image.tags.length > 0) {
           image.tags.forEach(tag => {
-            console.log('Processing tag:', tag);
             if (!categoryImages.has(tag)) {
               categoryImages.set(tag, []);
             }
@@ -86,10 +75,8 @@
           });
         }
       });
-
-      console.log('Final category images map:', Object.fromEntries(categoryImages));
     } catch (error) {
-      console.error('Error loading category images:', error);
+      // Silent fail - we'll just not show images if they're not available
     }
   }
 
@@ -238,6 +225,7 @@
       
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
       
+      // First, wait for category images to be loaded
       await loadCategoryImages();
       
       const [response, featureKeysResponse] = await Promise.all([
@@ -305,5 +293,19 @@
     }
   }
 
+  // Initialize when the page loads
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTurtleFeaturesAccordion);
+  } else {
+    initTurtleFeaturesAccordion();
+  }
+
+  // Also reinitialize when turtle data is loaded
+  document.addEventListener('turtleDataLoaded', () => {
+    initialized = false; // Reset initialization flag to allow reinitialization
+    initTurtleFeaturesAccordion();
+  });
+
+  // Export the initialization function
   window.initTurtleFeaturesAccordion = initTurtleFeaturesAccordion;
 })();
