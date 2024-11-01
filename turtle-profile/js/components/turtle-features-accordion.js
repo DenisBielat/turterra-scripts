@@ -37,7 +37,6 @@
   }
 
   async function loadCategoryImages() {
-    // Wait for turtle data to be available
     if (!window.currentTurtleCommonName) {
       return new Promise((resolve) => {
         document.addEventListener('turtleDataLoaded', async () => {
@@ -47,9 +46,8 @@
           }
         });
       });
-    } else {
-      return fetchCategoryImages();
     }
+    return fetchCategoryImages();
   }
 
   async function fetchCategoryImages() {
@@ -63,7 +61,7 @@
       categoryImages.clear();
       
       images.forEach(image => {
-        if (image.tags && image.tags.length > 0) {
+        if (image.tags?.length > 0) {
           image.tags.forEach(tag => {
             if (!categoryImages.has(tag)) {
               categoryImages.set(tag, []);
@@ -226,17 +224,12 @@
 
     try {
       container.innerHTML = '';
-      
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
       
-      // Use the species ID that was set by fetchTurtleNames
       if (!window.currentSpeciesId) {
         throw new Error('Species ID not available');
       }
       
-      console.log('Using species ID:', window.currentSpeciesId);
-      
-      // Wait for category images to be loaded
       await loadCategoryImages();
       
       const [response, featureKeysResponse] = await Promise.all([
@@ -261,7 +254,6 @@
         throw new Error('Species features not found');
       }
 
-      // Transform the data for the accordion
       const transformedData = {
         categories: Array.from(new Map(
           featureKeys.reduce((acc, key) => {
@@ -289,12 +281,10 @@
         ).values())
       };
 
-      // Create the accordion with the transformed data
       await createAccordion(container, transformedData);
       initialized = true;
 
     } catch (error) {
-      console.error('Initialization error:', error);
       container.innerHTML = `
         <div class="accordion-section">
           <div class="accordion-header">
@@ -303,7 +293,7 @@
           <div class="accordion-content open">
             <div class="feature-row main-feature">
               <div class="feature-name">
-                There was an error loading the turtle features: ${error.message}
+                Unable to load turtle features. Please try again later.
               </div>
             </div>
           </div>
@@ -314,7 +304,6 @@
     }
   }
 
-  // Initialize when the document is ready and turtle data is available
   function initialize() {
     if (window.currentTurtleCommonName) {
       initTurtleFeaturesAccordion();
@@ -329,14 +318,12 @@
     }
   }
 
-  // Set up initialization
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initialize, { once: true });
   } else {
     initialize();
   }
 
-  // Export the initialization function
   window.initTurtleFeaturesAccordion = function() {
     if (!initialized) {
       initialize();
