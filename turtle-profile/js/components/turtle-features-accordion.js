@@ -81,138 +81,151 @@
   }
 
   async function createAccordion(container, data) {
-    data.categories.forEach((category, categoryIndex) => {
-      const categoryTag = toCategoryTag(category.name);
-      console.log('Looking for images for category:', {
-        category: category.name,
-        tag: categoryTag,
-        hasImages: categoryImages.has(categoryTag),
-        imagesAvailable: categoryImages.get(categoryTag)
-      });
+  data.categories.forEach((category, categoryIndex) => {
+    const categoryTag = toCategoryTag(category.name);
+    console.log('Looking for images for category:', {
+      category: category.name,
+      tag: categoryTag,
+      hasImages: categoryImages.has(categoryTag),
+      imagesAvailable: categoryImages.get(categoryTag)
+    });
 
-      const section = document.createElement('div');
-      section.className = 'accordion-section';
+    const section = document.createElement('div');
+    section.className = 'accordion-section';
+    
+    const header = document.createElement('button');
+    header.className = 'accordion-header';
+    header.innerHTML = `
+      <span class="accordion-title">${category.name}</span>
+      <svg class="accordion-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    `;
+
+    // Create image container
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'category-image-container';
+    imageContainer.style.display = 'none';
+    
+    if (categoryImages.has(categoryTag)) {
+      const images = categoryImages.get(categoryTag);
+      console.log(`Adding ${images.length} images for category ${category.name}`);
       
-      // Create image container
-      const imageContainer = document.createElement('div');
-      imageContainer.className = 'category-image-container';
-      imageContainer.style.display = 'none';
-      
-      if (categoryImages.has(categoryTag)) {
-        const images = categoryImages.get(categoryTag);
-        console.log(`Adding ${images.length} images for category ${category.name}`);
+      images.forEach(image => {
+        const imgWrapper = document.createElement('div');
+        imgWrapper.className = 'category-image-wrapper';
+
+        const img = document.createElement('img');
+        img.src = image.url;
+        img.alt = `${category.name} feature`;
+        img.className = 'category-feature-image';
         
-        images.forEach(image => {
-          const imgWrapper = document.createElement('div');
-          imgWrapper.className = 'category-image-wrapper';
-
-          const img = document.createElement('img');
-          img.src = image.url;
-          img.alt = `${category.name} feature`;
-          img.className = 'category-feature-image';
-          
-          // Add load event listener to verify image loading
-          img.addEventListener('load', () => {
-            console.log(`Image loaded successfully for ${category.name}:`, image.url);
-          });
-          
-          img.addEventListener('error', (e) => {
-            console.error(`Image failed to load for ${category.name}:`, image.url, e);
-          });
-
-          imgWrapper.appendChild(img);
-
-          if (image.credits) {
-            const credits = document.createElement('div');
-            credits.className = 'category-image-credits';
-            credits.textContent = `Photo: ${image.credits}`;
-            imgWrapper.appendChild(credits);
-          }
-
-          imageContainer.appendChild(imgWrapper);
+        img.addEventListener('load', () => {
+          console.log(`Image loaded successfully for ${category.name}:`, image.url);
         });
-      } else {
-        console.log(`No images found for category ${category.name} with tag ${categoryTag}`);
-      }
-      
-      section.appendChild(imageContainer);
-      
-      const header = document.createElement('button');
-      header.className = 'accordion-header';
-      header.innerHTML = `
-        <span class="accordion-title">${category.name}</span>
-        <svg class="accordion-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
+        
+        img.addEventListener('error', (e) => {
+          console.error(`Image failed to load for ${category.name}:`, image.url, e);
+        });
+
+        imgWrapper.appendChild(img);
+
+        if (image.credits) {
+          const credits = document.createElement('div');
+          credits.className = 'category-image-credits';
+          credits.textContent = `Photo: ${image.credits}`;
+          imgWrapper.appendChild(credits);
+        }
+
+        imageContainer.appendChild(imgWrapper);
+      });
+    } else {
+      console.log(`No images found for category ${category.name} with tag ${categoryTag}`);
+    }
+    
+    const content = document.createElement('div');
+    content.className = 'accordion-content';
+    
+    // Add elements to section in the correct order
+    section.appendChild(header);
+    section.appendChild(imageContainer);
+    section.appendChild(content);
+    
+    if (categoryIndex === 0) {
+      content.classList.add('open');
+      header.querySelector('.accordion-icon').classList.add('open');
+      imageContainer.style.display = 'block';
+    }
+    
+    // Rest of the content creation...
+    if (category.features.length === 0) {
+      const emptyRow = document.createElement('div');
+      emptyRow.className = 'feature-row main-feature';
+      emptyRow.innerHTML = `
+        <div class="feature-name">No features available in this category</div>
+        <div class="feature-value">-</div>
       `;
+      content.appendChild(emptyRow);
+    } else {
+      let lastMainFeature = null;
       
-      const content = document.createElement('div');
-      content.className = 'accordion-content';
+      category.features.forEach((feature, index) => {
+        const featureRow = document.createElement('div');
+        featureRow.className = 'feature-row main-feature';
+        if (index > 0 && !lastMainFeature?.hasSubFeatures) {
+          featureRow.classList.add('with-border');
+        }
+        featureRow.innerHTML = `
+          <div class="feature-name">${feature.name}</div>
+          <div class="feature-value">${feature.value}</div>
+        `;
+        content.appendChild(featureRow);
+        
+        lastMainFeature = {
+          element: featureRow,
+          hasSubFeatures: feature.subFeatures.length > 0
+        };
+        
+        feature.subFeatures.forEach(subFeature => {
+          const subFeatureRow = document.createElement('div');
+          subFeatureRow.className = 'feature-row sub-feature';
+          subFeatureRow.innerHTML = `
+            <div class="feature-name icon-before icon-ui-line-move-back">
+              ${subFeature.name}
+            </div>
+            <div class="feature-value">${subFeature.value}</div>
+          `;
+          content.appendChild(subFeatureRow);
+        });
+      });
+    }
+    
+    header.addEventListener('click', () => {
+      const isOpen = content.classList.contains('open');
+      const icon = header.querySelector('.accordion-icon');
       
-      if (categoryIndex === 0) {
+      // Close all sections
+      document.querySelectorAll('.accordion-content').forEach(el => {
+        el.classList.remove('open');
+      });
+      document.querySelectorAll('.accordion-icon').forEach(el => {
+        el.classList.remove('open');
+      });
+      document.querySelectorAll('.category-image-container').forEach(el => {
+        el.style.display = 'none';
+      });
+      
+      // Open clicked section if it was closed
+      if (!isOpen) {
         content.classList.add('open');
-        header.querySelector('.accordion-icon').classList.add('open');
+        icon.classList.add('open');
         imageContainer.style.display = 'block';
       }
-      
-      if (category.features.length === 0) {
-        const emptyRow = document.createElement('div');
-        emptyRow.className = 'feature-row main-feature';
-        emptyRow.innerHTML = `
-          <div class="feature-name">No features available in this category</div>
-          <div class="feature-value">-</div>
-        `;
-        content.appendChild(emptyRow);
-      } else {
-        category.features.forEach((feature, index) => {
-          const featureRow = document.createElement('div');
-          featureRow.className = `feature-row main-feature ${index > 0 ? 'divider' : ''}`;
-          featureRow.innerHTML = `
-            <div class="feature-name">${feature.name}</div>
-            <div class="feature-value">${feature.value}</div>
-          `;
-          content.appendChild(featureRow);
-          
-          feature.subFeatures.forEach(subFeature => {
-            const subFeatureRow = document.createElement('div');
-            subFeatureRow.className = 'feature-row sub-feature divider';
-            subFeatureRow.innerHTML = `
-              <div class="feature-name icon-before icon-ui-line-move-back">
-                ${subFeature.name}
-              </div>
-              <div class="feature-value">${subFeature.value}</div>
-            `;
-            content.appendChild(subFeatureRow);
-          });
-        });
-      }
-      
-      header.addEventListener('click', () => {
-        const isOpen = content.classList.contains('open');
-        const icon = header.querySelector('.accordion-icon');
-        
-        document.querySelectorAll('.accordion-content').forEach(el => {
-          el.classList.remove('open');
-        });
-        document.querySelectorAll('.accordion-icon').forEach(el => {
-          el.classList.remove('open');
-        });
-        document.querySelectorAll('.category-image-container').forEach(el => {
-          el.style.display = 'none';
-        });
-        
-        if (!isOpen) {
-          content.classList.add('open');
-          icon.classList.add('open');
-          imageContainer.style.display = 'block';
-        }
-      });
-      
-      section.appendChild(header);
-      section.appendChild(content);
-      container.appendChild(section);
     });
-  }
+    
+    container.appendChild(section);
+  });
+}
 
     async function initTurtleFeaturesAccordion() {
     if (initialized || initializing) return;
