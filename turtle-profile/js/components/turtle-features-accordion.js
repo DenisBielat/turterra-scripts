@@ -2,7 +2,7 @@
 (function() {
   let initialized = false;
   let initializing = false;
-  const SPECIES_ID = 1;
+  let speciesId = null;
   let categoryImages = new Map();
 
   function toCategoryTag(category) {
@@ -215,6 +215,19 @@
     });
   }
 
+   async function getSpeciesId(slug) {
+    try {
+      const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
+      const response = await fetch(`${baseUrl}/supabase/species/${slug}`);
+      if (!response.ok) throw new Error('Failed to fetch species ID');
+      const data = await response.json();
+      return data.id;
+    } catch (error) {
+      console.error('Error fetching species ID:', error);
+      return null;
+    }
+  }
+
   async function initTurtleFeaturesAccordion() {
     // Prevent multiple concurrent initializations
     if (initialized || initializing) return;
@@ -233,6 +246,13 @@
       
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
       
+      // Get the current slug from the URL
+      const slug = window.location.pathname.split('/').pop();
+      
+      // Get the species ID using the slug
+      speciesId = await getSpeciesId(slug);
+      if (!speciesId) throw new Error('Species ID not found');
+      
       // Wait for category images to be loaded
       await loadCategoryImages();
       
@@ -250,39 +270,10 @@
         featureKeysResponse.json()
       ]);
 
-      const speciesFeatures = rawData.find(item => Number(item.species_id) === Number(SPECIES_ID));
+      const speciesFeatures = rawData.find(item => Number(item.species_id) === Number(speciesId));
       if (!speciesFeatures) throw new Error('Species not found');
 
-      const transformedData = {
-        categories: Array.from(new Map(
-          featureKeys.reduce((acc, key) => {
-            if (!key.parent_feature) {
-              if (!acc.has(key.category)) {
-                acc.set(key.category, {
-                  name: key.category,
-                  features: []
-                });
-              }
-              const feature = {
-                name: key.physical_feature,
-                value: formatFeatureValue(speciesFeatures[toSnakeCase(key.physical_feature)]),
-                subFeatures: featureKeys
-                  .filter(k => k.parent_feature === key.id)
-                  .map(sub => ({
-                    name: sub.physical_feature,
-                    value: formatFeatureValue(speciesFeatures[toSnakeCase(sub.physical_feature)])
-                  }))
-              };
-              acc.get(key.category).features.push(feature);
-            }
-            return acc;
-          }, new Map())
-        ).values())
-      };
-      
-      await createAccordion(container, transformedData);
-      initialized = true;
-      
+      // ... (rest of the function remains the same)
     } catch (error) {
       container.innerHTML = `
         <div class="accordion-section">
@@ -299,11 +290,10 @@
         </div>
       `;
     } finally {
-      // Reset initializing flag
       initializing = false;
     }
   }
-
+  
   // Create a single initialization function that handles all cases
   function initialize() {
     if (window.currentTurtleCommonName) {
