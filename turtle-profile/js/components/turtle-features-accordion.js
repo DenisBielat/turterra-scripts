@@ -218,21 +218,33 @@
    async function getSpeciesId(slug) {
     try {
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
+      console.log('Fetching species ID for slug:', slug);  // Debug log
+      
       const response = await fetch(`${baseUrl}/supabase/species/${slug}`);
-      if (!response.ok) throw new Error('Failed to fetch species ID');
+      console.log('Response status:', response.status);  // Debug log
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);  // Debug log
+        throw new Error(errorData.error || 'Failed to fetch species ID');
+      }
+      
       const data = await response.json();
+      console.log('Species data received:', data);  // Debug log
+      
+      if (!data || !data.id) {
+        throw new Error('Invalid species data received');
+      }
+      
       return data.id;
     } catch (error) {
       console.error('Error fetching species ID:', error);
-      return null;
+      throw error;  // Re-throw to be handled by the calling function
     }
   }
 
   async function initTurtleFeaturesAccordion() {
-    // Prevent multiple concurrent initializations
     if (initialized || initializing) return;
-    
-    // Set initializing flag
     initializing = true;
 
     const container = document.getElementById('turtle-features');
@@ -246,12 +258,22 @@
       
       const baseUrl = window.baseUrl || 'https://turterra.vercel.app';
       
-      // Get the current slug from the URL
+      // Get the current slug from the URL and clean it
       const slug = window.location.pathname.split('/').pop();
+      console.log('Current slug:', slug);  // Debug log
       
-      // Get the species ID using the slug
-      speciesId = await getSpeciesId(slug);
-      if (!speciesId) throw new Error('Species ID not found');
+      try {
+        // Get the species ID using the slug
+        speciesId = await getSpeciesId(slug);
+        console.log('Retrieved species ID:', speciesId);  // Debug log
+        
+        if (!speciesId) {
+          throw new Error('Species ID not found');
+        }
+      } catch (error) {
+        console.error('Error getting species ID:', error);
+        throw error;
+      }
       
       // Wait for category images to be loaded
       await loadCategoryImages();
@@ -271,10 +293,12 @@
       ]);
 
       const speciesFeatures = rawData.find(item => Number(item.species_id) === Number(speciesId));
-      if (!speciesFeatures) throw new Error('Species not found');
+      if (!speciesFeatures) throw new Error('Species features not found');
 
-      // ... (rest of the function remains the same)
+      // ... (rest of your existing code for creating the accordion)
+
     } catch (error) {
+      console.error('Initialization error:', error);  // Debug log
       container.innerHTML = `
         <div class="accordion-section">
           <div class="accordion-header">
@@ -283,7 +307,7 @@
           <div class="accordion-content open">
             <div class="feature-row main-feature">
               <div class="feature-name">
-                There was an error loading the turtle features. Please try again later.
+                There was an error loading the turtle features: ${error.message}
               </div>
             </div>
           </div>
