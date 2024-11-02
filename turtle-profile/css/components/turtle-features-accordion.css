@@ -96,7 +96,7 @@
 }
 
 .feature-group:nth-child(even) {
-  background-color: var(--brand-neutrals--gray-50);
+  background-color: rgba(14, 14, 14, 0.03);
 }
 
 .feature-header {
