@@ -78,7 +78,7 @@
 
 .accordion-content.open {
   display: block;
-  max-height: max-content;
+  max-height: 2000px;
   opacity: 1;
   border-top: none;
   padding-bottom: 0.5rem;
