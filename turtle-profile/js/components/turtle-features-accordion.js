@@ -156,8 +156,16 @@
     
     // Add elements to section in the correct order
     section.appendChild(header);
+
+    // Create animated content wrapper
+    const animatedContent = document.createElement('div');
+    animatedContent.className = 'accordion-animated-content';
+    
     section.appendChild(imageContainer);
     section.appendChild(content);
+
+    // Add animated wrapper to section
+    section.appendChild(animatedContent);
     
     if (categoryIndex === 0) {
       content.classList.add('open');
