@@ -69,13 +69,11 @@
   margin: 0;
   transform-origin: top;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 0;
+  z-index: 1;
 }
 
 .category-image-wrapper img {
-  position: relative;
   border-radius: 0.5rem;
-  z-index: 0;
 }
 
 .accordion-content {
