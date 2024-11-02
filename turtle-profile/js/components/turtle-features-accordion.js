@@ -97,9 +97,7 @@
     header.className = 'accordion-header';
     header.innerHTML = `
       <span class="accordion-title">${category.name}</span>
-      <svg class="accordion-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
+      <span class="accordion-icon icon-before icon-ui-filled-arrow-right"></span>
     `;
 
     // Create image container
@@ -197,17 +195,17 @@
         previousWasSubFeature = false;
         
         feature.subFeatures.forEach((subFeature, subIndex) => {
-          const subFeatureRow = document.createElement('div');
-          subFeatureRow.className = 'feature-row sub-feature';
-          subFeatureRow.innerHTML = `
-            <div class="feature-name icon-before icon-ui-line-move-back">
-              ${subFeature.name}
-            </div>
-            <div class="feature-value">${subFeature.value}</div>
-          `;
-          content.appendChild(subFeatureRow);
-          previousWasSubFeature = true;
-        });
+        const subFeatureRow = document.createElement('div');
+        subFeatureRow.className = 'feature-row sub-feature';
+        subFeatureRow.innerHTML = `
+          <div class="feature-name icon-before icon-ui-filled-flow-arrow-1">
+            ${subFeature.name}
+          </div>
+          <div class="feature-value">${subFeature.value}</div>
+        `;
+        content.appendChild(subFeatureRow);
+        previousWasSubFeature = true;
+      });
       });
     }
     
