@@ -105,7 +105,6 @@
     // Create image container
     const imageContainer = document.createElement('div');
     imageContainer.className = 'category-image-container';
-    imageContainer.style.display = 'none';
     
     if (categoryImages.has(categoryTag)) {
       const images = categoryImages.get(categoryTag);
@@ -163,7 +162,7 @@
     if (categoryIndex === 0) {
       content.classList.add('open');
       header.querySelector('.accordion-icon').classList.add('open');
-      imageContainer.style.display = 'block';
+      imageContainer.classList.add('visible');
     }
     
     if (category.features.length === 0) {
@@ -226,14 +225,14 @@
         el.classList.remove('open');
       });
       document.querySelectorAll('.category-image-container').forEach(el => {
-        el.style.display = 'none';
+        el.classList.remove('visible');
       });
       
       // Open clicked section if it was closed
       if (!isOpen) {
         content.classList.add('open');
         icon.classList.add('open');
-        imageContainer.style.display = 'block';
+        imageContainer.classList.add('visible');
       }
     });
     
