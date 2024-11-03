@@ -248,12 +248,16 @@
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
-      // Log the button's initial position relative to its container
+      // Get all positions before any changes
+      const headerRect = header.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const headerTopRelativeToContainer = headerRect.top - containerRect.top;
+      
       console.log('Click start positions:', {
-        headerTop: header.offsetTop,
-        containerScroll: container.scrollTop,
-        windowScroll: window.pageYOffset,
-        containerTop: container.getBoundingClientRect().top
+        headerTopRelativeToContainer,
+        headerTopViewport: headerRect.top,
+        containerTopViewport: containerRect.top,
+        windowScroll: window.pageYOffset
       });
       
       // Close all sections
@@ -283,21 +287,17 @@
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
     
-        // Get container's position
-        const containerTop = container.getBoundingClientRect().top + window.pageYOffset;
-        // Get header's position within container
-        const headerOffset = header.offsetTop;
-        // Calculate final position
-        const scrollTarget = containerTop + headerOffset - 20;
+        // Calculate scroll target based on the header's position relative to container
+        const scrollTarget = window.pageYOffset + headerRect.top - 20;
     
-        // Wait a frame for the content to start changing
+        console.log('Scrolling to:', {
+          currentScroll: window.pageYOffset,
+          headerTop: headerRect.top,
+          scrollTarget
+        });
+    
+        // Wait for content to start transitioning
         requestAnimationFrame(() => {
-          console.log('Scrolling to:', {
-            containerTop,
-            headerOffset,
-            scrollTarget
-          });
-          
           window.scrollTo({
             top: scrollTarget,
             behavior: 'smooth'
