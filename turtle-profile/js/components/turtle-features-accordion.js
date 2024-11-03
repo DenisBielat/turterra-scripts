@@ -164,11 +164,9 @@
 
     // Set initial state
     if (categoryIndex === 0) {
-      setTimeout(() => {
-        content.classList.add('open');
-        header.querySelector('.accordion-icon').classList.add('open');
-        imageContainer.classList.add('visible');
-      }, 0);
+      content.classList.add('open');
+      header.querySelector('.accordion-icon').classList.add('open');
+      imageContainer.classList.add('visible');
     }
     
     if (category.features.length === 0) {
@@ -224,11 +222,6 @@
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
-      // First, get the current section's position relative to its parent
-      const sectionRect = section.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-      const relativePosition = sectionRect.top - containerRect.top;
-      
       // Close all sections
       document.querySelectorAll('.accordion-content').forEach(el => {
         el.classList.remove('open');
@@ -248,15 +241,15 @@
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
         
-        // Calculate the final scroll position
-        const headerOffset = 20; // Adjust this value as needed
-        const containerTop = container.getBoundingClientRect().top + window.pageYOffset;
-        const scrollPosition = containerTop + relativePosition - headerOffset;
-        
-        window.scrollTo({
-          top: scrollPosition,
-          behavior: 'smooth'
-        });
+        // Wait for transition to complete before scrolling
+        content.addEventListener('transitionend', function scrollAfterTransition() {
+          const headerOffset = 20; // Adjust this value as needed
+          header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          window.scrollBy(0, -headerOffset); // Apply offset after scroll
+          
+          // Remove the event listener
+          content.removeEventListener('transitionend', scrollAfterTransition);
+        }, { once: true }); // Use once: true to ensure it only fires once
         
         // Update URL
         history.pushState(null, '', `#feature-${categoryTag}`);
