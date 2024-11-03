@@ -248,12 +248,19 @@
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
-      // Store header's initial position
-  const headerTop = header.getBoundingClientRect().top + window.pageYOffset;
+      // Get button position using offsetTop, which gives us distance from top of document
+      let targetElement = header;
+      let offsetTop = 0;
+      
+      // Calculate total offset from the top of the document
+      while (targetElement) {
+        offsetTop += targetElement.offsetTop;
+        targetElement = targetElement.offsetParent;
+      }
       
       console.log('Click positions:', {
-        headerTop,
-        windowScroll: window.pageYOffset
+        offsetTop,
+        windowScroll: window.scrollY
       });
       
       // Close all sections
@@ -283,31 +290,18 @@
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
     
-        // Initial scroll
-        const scrollTarget = headerTop - 20;
+        // Scroll to the calculated offset
+        const scrollTarget = offsetTop - 20;
         
-        console.log('Initial scroll to:', scrollTarget);
+        console.log('Scrolling to:', {
+          offsetTop,
+          scrollTarget
+        });
         
         window.scrollTo({
           top: scrollTarget,
           behavior: 'smooth'
         });
-        
-        // Add a one-time resize observer to adjust scroll after content expands
-        const observer = new ResizeObserver((entries) => {
-          for (const entry of entries) {
-            if (entry.target === animatedContent && entry.contentRect.height > 0) {
-              console.log('Content expanded, adjusting scroll');
-              window.scrollTo({
-                top: headerTop - 20,
-                behavior: 'smooth'
-              });
-              observer.disconnect();
-            }
-          }
-        });
-        
-        observer.observe(animatedContent);
         
         history.pushState(null, '', `#feature-${categoryTag}`);
       } else {
