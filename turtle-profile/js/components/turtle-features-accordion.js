@@ -248,15 +248,11 @@
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
-      // Get all positions before any changes
-      const headerRect = header.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-      const headerTopRelativeToContainer = headerRect.top - containerRect.top;
+      // Store header's initial position
+  const headerTop = header.getBoundingClientRect().top + window.pageYOffset;
       
-      console.log('Click start positions:', {
-        headerTopRelativeToContainer,
-        headerTopViewport: headerRect.top,
-        containerTopViewport: containerRect.top,
+      console.log('Click positions:', {
+        headerTop,
         windowScroll: window.pageYOffset
       });
       
@@ -287,22 +283,31 @@
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
     
-        // Calculate scroll target based on the header's position relative to container
-        const scrollTarget = window.pageYOffset + headerRect.top - 20;
-    
-        console.log('Scrolling to:', {
-          currentScroll: window.pageYOffset,
-          headerTop: headerRect.top,
-          scrollTarget
+        // Initial scroll
+        const scrollTarget = headerTop - 20;
+        
+        console.log('Initial scroll to:', scrollTarget);
+        
+        window.scrollTo({
+          top: scrollTarget,
+          behavior: 'smooth'
         });
-    
-        // Wait for content to start transitioning
-        requestAnimationFrame(() => {
-          window.scrollTo({
-            top: scrollTarget,
-            behavior: 'smooth'
-          });
+        
+        // Add a one-time resize observer to adjust scroll after content expands
+        const observer = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            if (entry.target === animatedContent && entry.contentRect.height > 0) {
+              console.log('Content expanded, adjusting scroll');
+              window.scrollTo({
+                top: headerTop - 20,
+                behavior: 'smooth'
+              });
+              observer.disconnect();
+            }
+          }
         });
+        
+        observer.observe(animatedContent);
         
         history.pushState(null, '', `#feature-${categoryTag}`);
       } else {
