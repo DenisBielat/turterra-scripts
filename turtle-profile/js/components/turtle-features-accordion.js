@@ -222,7 +222,7 @@
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
-      // Close all sections and set all aria-expanded to false
+      // Close all sections
       document.querySelectorAll('.accordion-section').forEach(sect => {
         const sectHeader = sect.querySelector('.accordion-header');
         const sectContent = sect.querySelector('.accordion-content');
@@ -240,20 +240,21 @@
         content.classList.add('open');
         icon.classList.add('open');
         imageContainer.classList.add('visible');
-        header.setAttribute('aria-expanded', 'true'); // Set to true only for the open section
+        header.setAttribute('aria-expanded', 'true');
         
-        // Wait for transition to complete before scrolling
-        content.addEventListener('transitionend', function scrollAfterTransition() {
-          const headerOffset = 20;
-          header.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          window.scrollBy(0, -headerOffset);
-          content.removeEventListener('transitionend', scrollAfterTransition);
-        }, { once: true });
+        // Scroll to header after a brief delay
+        setTimeout(() => {
+          const navbarHeight = 0; // Adjust this value based on your fixed navbar height
+          const headerPosition = header.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+          
+          window.scrollTo({
+            top: headerPosition,
+            behavior: 'smooth'
+          });
+        }, 100); // Small delay to let the content start expanding
         
         history.pushState(null, '', `#feature-${categoryTag}`);
       } else {
-        // When closing, ensure aria-expanded is false
-        header.setAttribute('aria-expanded', 'false');
         history.pushState(null, '', window.location.pathname);
       }
     });
@@ -271,7 +272,7 @@
     }
   }
 }
-
+  
     async function initTurtleFeaturesAccordion() {
     if (initialized || initializing) return;
     initializing = true;
