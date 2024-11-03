@@ -81,6 +81,15 @@
   }
 
   async function createAccordion(container, data) {
+  // Create a single ResizeObserver instance to reuse
+  const resizeObserver = new ResizeObserver(entries => {
+    entries.forEach(entry => {
+      const animatedContent = entry.target;
+      const height = entry.contentRect.height;
+      animatedContent.setAttribute('data-height', height);
+    });
+  });
+
   data.categories.forEach((category, categoryIndex) => {
     const categoryTag = toCategoryTag(category.name);
     
@@ -156,7 +165,9 @@
     const animatedContent = document.createElement('div');
     animatedContent.className = 'accordion-animated-content';
     
-    // Properly nest elements
+    // Start observing this animated content
+    resizeObserver.observe(animatedContent);
+
     section.appendChild(header);
     animatedContent.appendChild(imageContainer);
     animatedContent.appendChild(content);
@@ -222,6 +233,9 @@
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
+      // Store current section's position before any changes
+      const currentPosition = section.getBoundingClientRect().top + window.pageYOffset;
+      
       // Close all sections
       document.querySelectorAll('.accordion-section').forEach(sect => {
         const sectHeader = sect.querySelector('.accordion-header');
@@ -241,23 +255,22 @@
         icon.classList.add('open');
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
-        
-        // Scroll to header after a brief delay
-        setTimeout(() => {
-          const navbarHeight = 0; // Adjust this value based on your fixed navbar height
-          const headerPosition = header.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
-          
+
+        // Wait for content to start expanding
+        requestAnimationFrame(() => {
           window.scrollTo({
-            top: headerPosition,
+            top: currentPosition - 20, // 20px offset from top
             behavior: 'smooth'
           });
-        }, 100); // Small delay to let the content start expanding
+        });
         
         history.pushState(null, '', `#feature-${categoryTag}`);
       } else {
         history.pushState(null, '', window.location.pathname);
       }
     });
+    
+    // Add your existing feature content creation code here...
     
     container.appendChild(section);
   });
