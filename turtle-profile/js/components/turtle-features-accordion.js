@@ -227,40 +227,49 @@
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
+      // Calculate total height of all closed sections
+      const allSections = document.querySelectorAll('.accordion-section');
+      let closedSectionsHeight = 0;
+      allSections.forEach(sect => {
+        if (!sect.querySelector('.accordion-content').classList.contains('open')) {
+          closedSectionsHeight += sect.querySelector('.accordion-header').offsetHeight;
+        }
+      });
+
+      // Close all sections first
+      document.querySelectorAll('.accordion-content').forEach(el => {
+        el.classList.remove('open');
+        el.parentElement.querySelector('.accordion-header')
+          ?.setAttribute('aria-expanded', 'false');
+      });
+      document.querySelectorAll('.accordion-icon').forEach(el => {
+        el.classList.remove('open');
+      });
+      document.querySelectorAll('.category-image-container').forEach(el => {
+        el.classList.remove('visible');
+      });
+      
+      // Toggle clicked section
       if (!isOpen) {
-        // Calculate the target scroll position before making any changes
-        // This gets the position of the header relative to the top of the document
-        const headerRect = header.getBoundingClientRect();
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const targetScrollPosition = scrollTop + headerRect.top - 20; // 20px offset
-        
-        // Now close all sections
-        document.querySelectorAll('.accordion-content').forEach(el => {
-          el.classList.remove('open');
-          el.parentElement.querySelector('.accordion-header')
-            ?.setAttribute('aria-expanded', 'false');
-        });
-        document.querySelectorAll('.accordion-icon').forEach(el => {
-          el.classList.remove('open');
-        });
-        document.querySelectorAll('.category-image-container').forEach(el => {
-          el.classList.remove('visible');
-        });
-        
-        // Open clicked section
         content.classList.add('open');
         icon.classList.add('open');
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
         
-        // Scroll to the previously calculated position
+        // Calculate position based on header position
+        const headerOffset = 20; // Adjust this value as needed
+        const headerTop = section.offsetTop;
+        
         window.scrollTo({
-          top: targetScrollPosition,
+          top: headerTop - headerOffset,
           behavior: 'smooth'
         });
         
-        // Update URL with the section id (without scrolling)
+        // Update URL
         history.pushState(null, '', `#feature-${categoryTag}`);
+      } else {
+        // Remove hash from URL when closing
+        history.pushState(null, '', window.location.pathname);
       }
     });
     
