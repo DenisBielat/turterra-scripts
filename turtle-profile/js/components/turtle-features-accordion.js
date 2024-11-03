@@ -83,13 +83,7 @@
   async function createAccordion(container, data) {
   data.categories.forEach((category, categoryIndex) => {
     const categoryTag = toCategoryTag(category.name);
-    console.log('Looking for images for category:', {
-      category: category.name,
-      tag: categoryTag,
-      hasImages: categoryImages.has(categoryTag),
-      imagesAvailable: categoryImages.get(categoryTag)
-    });
-
+    
     const section = document.createElement('div');
     section.className = 'accordion-section';
     section.id = `feature-${categoryTag}`;
@@ -147,6 +141,7 @@
     
     const content = document.createElement('div');
     content.className = 'accordion-content';
+    content.id = `content-${categoryTag}`;
 
     // Add header row for features table
     const headerRow = document.createElement('div');
@@ -169,9 +164,11 @@
 
     // Set initial state
     if (categoryIndex === 0) {
-      content.classList.add('open');
-      header.querySelector('.accordion-icon').classList.add('open');
-      imageContainer.classList.add('visible');
+      setTimeout(() => {
+        content.classList.add('open');
+        header.querySelector('.accordion-icon').classList.add('open');
+        imageContainer.classList.add('visible');
+      }, 0);
     }
     
     if (category.features.length === 0) {
@@ -227,20 +224,15 @@
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
-      // Calculate total height of all closed sections
-      const allSections = document.querySelectorAll('.accordion-section');
-      let closedSectionsHeight = 0;
-      allSections.forEach(sect => {
-        if (!sect.querySelector('.accordion-content').classList.contains('open')) {
-          closedSectionsHeight += sect.querySelector('.accordion-header').offsetHeight;
-        }
-      });
-
-      // Close all sections first
+      // First, get the current section's position relative to its parent
+      const sectionRect = section.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const relativePosition = sectionRect.top - containerRect.top;
+      
+      // Close all sections
       document.querySelectorAll('.accordion-content').forEach(el => {
         el.classList.remove('open');
-        el.parentElement.querySelector('.accordion-header')
-          ?.setAttribute('aria-expanded', 'false');
+        el.parentElement.querySelector('.accordion-header')?.setAttribute('aria-expanded', 'false');
       });
       document.querySelectorAll('.accordion-icon').forEach(el => {
         el.classList.remove('open');
@@ -256,12 +248,13 @@
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
         
-        // Calculate position based on header position
+        // Calculate the final scroll position
         const headerOffset = 20; // Adjust this value as needed
-        const headerTop = section.offsetTop;
+        const containerTop = container.getBoundingClientRect().top + window.pageYOffset;
+        const scrollPosition = containerTop + relativePosition - headerOffset;
         
         window.scrollTo({
-          top: headerTop - headerOffset,
+          top: scrollPosition,
           behavior: 'smooth'
         });
         
