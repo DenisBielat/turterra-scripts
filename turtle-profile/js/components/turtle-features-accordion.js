@@ -92,9 +92,12 @@
 
     const section = document.createElement('div');
     section.className = 'accordion-section';
+    section.id = `feature-${categoryTag}`;
     
     const header = document.createElement('button');
     header.className = 'accordion-header';
+    header.setAttribute('aria-expanded', categoryIndex === 0 ? 'true' : 'false');
+    header.setAttribute('aria-controls', `content-${categoryTag}`);
     header.innerHTML = `
       <span class="accordion-title">${category.name}</span>
       <svg class="accordion-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -219,13 +222,25 @@
       });
     }
     
-    header.addEventListener('click', () => {
+    header.addEventListener('click', (e) => {
+      e.preventDefault();
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
-      // Close all sections
+      // Calculate total height of all closed sections
+      const allSections = document.querySelectorAll('.accordion-section');
+      let closedSectionsHeight = 0;
+      allSections.forEach(sect => {
+        if (!sect.querySelector('.accordion-content').classList.contains('open')) {
+          closedSectionsHeight += sect.querySelector('.accordion-header').offsetHeight;
+        }
+      });
+
+      // Close all sections first
       document.querySelectorAll('.accordion-content').forEach(el => {
         el.classList.remove('open');
+        el.parentElement.querySelector('.accordion-header')
+          ?.setAttribute('aria-expanded', 'false');
       });
       document.querySelectorAll('.accordion-icon').forEach(el => {
         el.classList.remove('open');
@@ -234,19 +249,42 @@
         el.classList.remove('visible');
       });
       
-      // Open clicked section if it was closed
+      // Toggle clicked section
       if (!isOpen) {
         content.classList.add('open');
         icon.classList.add('open');
         imageContainer.classList.add('visible');
-    
-        // Scroll to the top of the opened section
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        header.setAttribute('aria-expanded', 'true');
+        
+        // Calculate position based on header position
+        const headerOffset = 20; // Adjust this value as needed
+        const headerTop = section.offsetTop;
+        
+        window.scrollTo({
+          top: headerTop - headerOffset,
+          behavior: 'smooth'
+        });
+        
+        // Update URL
+        history.pushState(null, '', `#feature-${categoryTag}`);
+      } else {
+        // Remove hash from URL when closing
+        history.pushState(null, '', window.location.pathname);
       }
     });
     
     container.appendChild(section);
   });
+  
+  // Handle direct link to a section
+  if (window.location.hash) {
+    const sectionId = window.location.hash.substring(1);
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+      const header = targetSection.querySelector('.accordion-header');
+      header?.click();
+    }
+  }
 }
 
     async function initTurtleFeaturesAccordion() {
