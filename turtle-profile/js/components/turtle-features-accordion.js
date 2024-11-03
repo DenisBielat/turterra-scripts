@@ -245,38 +245,15 @@
     
     header.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log('Accordion button clicked:', {
-        category: category.name,
-        tag: categoryTag,
-        timestamp: new Date().toISOString()
-      });
-
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
-      // Log initial positions
-      const initialPositions = {
-        buttonTop: header.getBoundingClientRect().top,
-        pageOffset: window.pageYOffset,
-        sectionTop: section.getBoundingClientRect().top,
+      // Log the button's initial position relative to its container
+      console.log('Click start positions:', {
+        headerTop: header.offsetTop,
+        containerScroll: container.scrollTop,
+        windowScroll: window.pageYOffset,
         containerTop: container.getBoundingClientRect().top
-      };
-      
-      console.log('Initial positions:', initialPositions);
-      
-      // Store current section's position before any changes
-      const currentPosition = section.getBoundingClientRect().top + window.pageYOffset;
-      console.log('Calculated scroll position:', {
-        currentPosition,
-        relativeSectionTop: section.getBoundingClientRect().top,
-        pageOffset: window.pageYOffset
-      });
-      
-      // Log state before closing sections
-      console.log('Current accordion states:', {
-        openSections: Array.from(document.querySelectorAll('.accordion-content.open')).map(el => 
-          el.closest('.accordion-section').id
-        )
       });
       
       // Close all sections
@@ -286,14 +263,6 @@
         const sectIcon = sect.querySelector('.accordion-icon');
         const sectImages = sect.querySelector('.category-image-container');
         
-        const wasOpen = sectContent.classList.contains('open');
-        if (wasOpen) {
-          console.log('Closing section:', {
-            id: sect.id,
-            height: sect.querySelector('.accordion-animated-content').getAttribute('data-height')
-          });
-        }
-        
         sectContent.classList.remove('open');
         sectHeader.setAttribute('aria-expanded', 'false');
         sectIcon.classList.remove('open');
@@ -302,64 +271,37 @@
       
       // Toggle clicked section
       if (!isOpen) {
-        console.log('Opening section:', {
-          category: category.name,
-          currentHeight: animatedContent.getAttribute('data-height')
-        });
-
         content.classList.add('open');
         icon.classList.add('open');
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
-
-        // Wait for content to start expanding
+    
+        // Get container's position
+        const containerTop = container.getBoundingClientRect().top + window.pageYOffset;
+        // Get header's position within container
+        const headerOffset = header.offsetTop;
+        // Calculate final position
+        const scrollTarget = containerTop + headerOffset - 20;
+    
+        // Wait a frame for the content to start changing
         requestAnimationFrame(() => {
-          const finalScrollPosition = currentPosition - 20;
-          console.log('Scrolling to position:', {
-            finalScrollPosition,
-            offset: 20,
-            timestamp: new Date().toISOString()
+          console.log('Scrolling to:', {
+            containerTop,
+            headerOffset,
+            scrollTarget
           });
           
           window.scrollTo({
-            top: finalScrollPosition,
+            top: scrollTarget,
             behavior: 'smooth'
           });
-          
-          // Log position after scroll
-          setTimeout(() => {
-            console.log('Position after scroll:', {
-              pageOffset: window.pageYOffset,
-              buttonTop: header.getBoundingClientRect().top,
-              timestamp: new Date().toISOString()
-            });
-          }, 100);
         });
         
         history.pushState(null, '', `#feature-${categoryTag}`);
       } else {
-        console.log('Closing currently open section:', {
-          category: category.name
-        });
         history.pushState(null, '', window.location.pathname);
       }
     });
-    
-    container.appendChild(section);
-  });
-  
-  // Handle direct link to a section
-  if (window.location.hash) {
-    console.log('Found hash in URL:', window.location.hash);
-    const sectionId = window.location.hash.substring(1);
-    const targetSection = document.getElementById(sectionId);
-    if (targetSection) {
-      console.log('Clicking section from hash:', sectionId);
-      const header = targetSection.querySelector('.accordion-header');
-      header?.click();
-    }
-  }
-}
   
     async function initTurtleFeaturesAccordion() {
     if (initialized || initializing) return;
