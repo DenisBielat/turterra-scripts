@@ -227,32 +227,35 @@
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
-      // Close all sections
-      document.querySelectorAll('.accordion-content').forEach(el => {
-        el.classList.remove('open');
-        el.parentElement.querySelector('.accordion-header')
-          ?.setAttribute('aria-expanded', 'false');
-      });
-      document.querySelectorAll('.accordion-icon').forEach(el => {
-        el.classList.remove('open');
-      });
-      document.querySelectorAll('.category-image-container').forEach(el => {
-        el.classList.remove('visible');
-      });
-      
-      // Open clicked section if it was closed
       if (!isOpen) {
+        // Calculate the target scroll position before making any changes
+        // This gets the position of the header relative to the top of the document
+        const headerRect = header.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const targetScrollPosition = scrollTop + headerRect.top - 20; // 20px offset
+        
+        // Now close all sections
+        document.querySelectorAll('.accordion-content').forEach(el => {
+          el.classList.remove('open');
+          el.parentElement.querySelector('.accordion-header')
+            ?.setAttribute('aria-expanded', 'false');
+        });
+        document.querySelectorAll('.accordion-icon').forEach(el => {
+          el.classList.remove('open');
+        });
+        document.querySelectorAll('.category-image-container').forEach(el => {
+          el.classList.remove('visible');
+        });
+        
+        // Open clicked section
         content.classList.add('open');
         icon.classList.add('open');
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
         
-        // Scroll to the section
-        const offset = 20; // Adjust this value to control the space from the top
-        const sectionTop = section.getBoundingClientRect().top + window.pageYOffset - offset;
-        
+        // Scroll to the previously calculated position
         window.scrollTo({
-          top: sectionTop,
+          top: targetScrollPosition,
           behavior: 'smooth'
         });
         
@@ -263,8 +266,8 @@
     
     container.appendChild(section);
   });
-
-    // Handle direct link to a section
+  
+  // Handle direct link to a section
   if (window.location.hash) {
     const sectionId = window.location.hash.substring(1);
     const targetSection = document.getElementById(sectionId);
