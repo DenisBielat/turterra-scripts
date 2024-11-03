@@ -92,9 +92,12 @@
 
     const section = document.createElement('div');
     section.className = 'accordion-section';
+    section.id = `feature-${categoryTag}`;
     
     const header = document.createElement('button');
     header.className = 'accordion-header';
+    header.setAttribute('aria-expanded', categoryIndex === 0 ? 'true' : 'false');
+    header.setAttribute('aria-controls', `content-${categoryTag}`);
     header.innerHTML = `
       <span class="accordion-title">${category.name}</span>
       <svg class="accordion-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -219,13 +222,16 @@
       });
     }
     
-    header.addEventListener('click', () => {
+    header.addEventListener('click', (e) => {
+      e.preventDefault();
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
       // Close all sections
       document.querySelectorAll('.accordion-content').forEach(el => {
         el.classList.remove('open');
+        el.parentElement.querySelector('.accordion-header')
+          ?.setAttribute('aria-expanded', 'false');
       });
       document.querySelectorAll('.accordion-icon').forEach(el => {
         el.classList.remove('open');
@@ -239,11 +245,34 @@
         content.classList.add('open');
         icon.classList.add('open');
         imageContainer.classList.add('visible');
+        header.setAttribute('aria-expanded', 'true');
+        
+        // Scroll to the section
+        const offset = 20; // Adjust this value to control the space from the top
+        const sectionTop = section.getBoundingClientRect().top + window.pageYOffset - offset;
+        
+        window.scrollTo({
+          top: sectionTop,
+          behavior: 'smooth'
+        });
+        
+        // Update URL with the section id (without scrolling)
+        history.pushState(null, '', `#feature-${categoryTag}`);
       }
     });
     
     container.appendChild(section);
   });
+
+    // Handle direct link to a section
+  if (window.location.hash) {
+    const sectionId = window.location.hash.substring(1);
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+      const header = targetSection.querySelector('.accordion-header');
+      header?.click();
+    }
+  }
 }
 
     async function initTurtleFeaturesAccordion() {
