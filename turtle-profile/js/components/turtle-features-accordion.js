@@ -222,16 +222,17 @@
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
       
-      // Close all sections
-      document.querySelectorAll('.accordion-content').forEach(el => {
-        el.classList.remove('open');
-        el.parentElement.querySelector('.accordion-header')?.setAttribute('aria-expanded', 'false');
-      });
-      document.querySelectorAll('.accordion-icon').forEach(el => {
-        el.classList.remove('open');
-      });
-      document.querySelectorAll('.category-image-container').forEach(el => {
-        el.classList.remove('visible');
+      // Close all sections and set all aria-expanded to false
+      document.querySelectorAll('.accordion-section').forEach(sect => {
+        const sectHeader = sect.querySelector('.accordion-header');
+        const sectContent = sect.querySelector('.accordion-content');
+        const sectIcon = sect.querySelector('.accordion-icon');
+        const sectImages = sect.querySelector('.category-image-container');
+        
+        sectContent.classList.remove('open');
+        sectHeader.setAttribute('aria-expanded', 'false');
+        sectIcon.classList.remove('open');
+        sectImages.classList.remove('visible');
       });
       
       // Toggle clicked section
@@ -239,22 +240,20 @@
         content.classList.add('open');
         icon.classList.add('open');
         imageContainer.classList.add('visible');
-        header.setAttribute('aria-expanded', 'true');
+        header.setAttribute('aria-expanded', 'true'); // Set to true only for the open section
         
         // Wait for transition to complete before scrolling
         content.addEventListener('transitionend', function scrollAfterTransition() {
-          const headerOffset = 20; // Adjust this value as needed
+          const headerOffset = 20;
           header.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          window.scrollBy(0, -headerOffset); // Apply offset after scroll
-          
-          // Remove the event listener
+          window.scrollBy(0, -headerOffset);
           content.removeEventListener('transitionend', scrollAfterTransition);
-        }, { once: true }); // Use once: true to ensure it only fires once
+        }, { once: true });
         
-        // Update URL
         history.pushState(null, '', `#feature-${categoryTag}`);
       } else {
-        // Remove hash from URL when closing
+        // When closing, ensure aria-expanded is false
+        header.setAttribute('aria-expanded', 'false');
         history.pushState(null, '', window.location.pathname);
       }
     });
