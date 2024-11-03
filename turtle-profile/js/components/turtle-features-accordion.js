@@ -269,6 +269,13 @@
         sectImages.classList.remove('visible');
       });
       
+      // Log state before closing sections
+      console.log('Current accordion states:', {
+        openSections: Array.from(document.querySelectorAll('.accordion-content.open')).map(el => 
+          el.closest('.accordion-section').id
+        )
+      });
+      
       // Toggle clicked section
       if (!isOpen) {
         content.classList.add('open');
@@ -302,6 +309,22 @@
         history.pushState(null, '', window.location.pathname);
       }
     });
+    
+    container.appendChild(section);
+  });
+  
+  // Handle direct link to a section
+  if (window.location.hash) {
+    console.log('Found hash in URL:', window.location.hash);
+    const sectionId = window.location.hash.substring(1);
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+      console.log('Clicking section from hash:', sectionId);
+      const header = targetSection.querySelector('.accordion-header');
+      header?.click();
+    }
+  }
+}
   
     async function initTurtleFeaturesAccordion() {
     if (initialized || initializing) return;
