@@ -326,13 +326,6 @@
       });
     }
   }
-
-  content.addEventListener('transitionend', function onTransitionEnd(event) {
-    if (event.propertyName === 'max-height') {
-      content.removeEventListener('transitionend', onTransitionEnd);
-      scrollToSection(header);
-    }
-  });
   
     async function initTurtleFeaturesAccordion() {
     if (initialized || initializing) return;
