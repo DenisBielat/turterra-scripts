@@ -114,7 +114,6 @@ html {
   opacity: 1;
   transform: translateY(0);
   border-top: none;
-  padding-bottom: 0.5rem;
 }
 
 .feature-row {
@@ -136,6 +135,10 @@ html {
 
 .feature-group:nth-child(even) {
   background-color: rgba(14, 14, 14, 0.03);
+}
+
+.feature-group:last-child {
+  padding-bottom: 0.5rem;
 }
 
 .feature-header {
