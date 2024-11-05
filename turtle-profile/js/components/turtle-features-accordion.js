@@ -246,28 +246,28 @@
     header.addEventListener('click', (e) => {
       e.preventDefault();
       const isOpen = content.classList.contains('open');
-      const icon = header.querySelector('.accordion-icon');
-    
+      const icon = header.querySelector('.accordion-icon");
+
       // Close all sections
       document.querySelectorAll('.accordion-section').forEach(sect => {
         const sectHeader = sect.querySelector('.accordion-header');
         const sectContent = sect.querySelector('.accordion-content');
         const sectIcon = sect.querySelector('.accordion-icon');
         const sectImages = sect.querySelector('.category-image-container');
-    
+
         sectContent.classList.remove('open');
         sectHeader.setAttribute('aria-expanded', 'false');
         sectIcon.classList.remove('open');
         sectImages.classList.remove('visible');
       });
-    
+
       // Toggle clicked section
       if (!isOpen) {
         content.classList.add('open');
         icon.classList.add('open');
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
-    
+
         // Wait for the transition to complete before scrolling
         content.addEventListener('transitionend', function onTransitionEnd(event) {
           if (event.propertyName === 'max-height') {
@@ -275,34 +275,33 @@
             scrollToSection(header);
           }
         });
-    
+
         history.pushState(null, '', `#feature-${categoryTag}`);
       } else {
         history.pushState(null, '', window.location.pathname);
       }
     });
-    
+
     container.appendChild(section);
   });
 
   function scrollToSection(targetElement) {
     let offsetTop = 0;
-  
+
     // Calculate total offset from the top of the document
     while (targetElement) {
       offsetTop += targetElement.offsetTop;
       targetElement = targetElement.offsetParent;
     }
-  
+
     const scrollTarget = offsetTop - 20;
-  
+
     window.scrollTo({
       top: scrollTarget,
       behavior: 'smooth'
     });
   }
-    
-  // After creating the accordion sections
+
   // Handle direct link to a section
   if (window.location.hash) {
     const sectionId = window.location.hash.substring(1);
@@ -312,13 +311,13 @@
       const content = targetSection.querySelector('.accordion-content');
       const icon = header.querySelector('.accordion-icon');
       const imageContainer = targetSection.querySelector('.category-image-container');
-  
+
       // Open the section
       content.classList.add('open');
       icon.classList.add('open');
       imageContainer.classList.add('visible');
       header.setAttribute('aria-expanded', 'true');
-  
+
       // Wait for the transition to complete before scrolling
       content.addEventListener('transitionend', function onTransitionEnd() {
         content.removeEventListener('transitionend', onTransitionEnd);
