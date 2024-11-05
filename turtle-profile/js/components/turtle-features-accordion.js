@@ -247,42 +247,20 @@
       e.preventDefault();
       const isOpen = content.classList.contains('open');
       const icon = header.querySelector('.accordion-icon');
-      
-      // Get button position using offsetTop, which gives us distance from top of document
-      let targetElement = header;
-      let offsetTop = 0;
-      
-      // Calculate total offset from the top of the document
-      while (targetElement) {
-        offsetTop += targetElement.offsetTop;
-        targetElement = targetElement.offsetParent;
-      }
-      
-      console.log('Click positions:', {
-        offsetTop,
-        windowScroll: window.scrollY
-      });
-      
+    
       // Close all sections
       document.querySelectorAll('.accordion-section').forEach(sect => {
         const sectHeader = sect.querySelector('.accordion-header');
         const sectContent = sect.querySelector('.accordion-content');
         const sectIcon = sect.querySelector('.accordion-icon');
         const sectImages = sect.querySelector('.category-image-container');
-        
+    
         sectContent.classList.remove('open');
         sectHeader.setAttribute('aria-expanded', 'false');
         sectIcon.classList.remove('open');
         sectImages.classList.remove('visible');
       });
-      
-      // Log state before closing sections
-      console.log('Current accordion states:', {
-        openSections: Array.from(document.querySelectorAll('.accordion-content.open')).map(el => 
-          el.closest('.accordion-section').id
-        )
-      });
-      
+    
       // Toggle clicked section
       if (!isOpen) {
         content.classList.add('open');
@@ -290,19 +268,14 @@
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
     
-        // Scroll to the calculated offset
-        const scrollTarget = offsetTop - 20;
-        
-        console.log('Scrolling to:', {
-          offsetTop,
-          scrollTarget
+        // Wait for the transition to complete before scrolling
+        content.addEventListener('transitionend', function onTransitionEnd(event) {
+          if (event.propertyName === 'max-height') {
+            content.removeEventListener('transitionend', onTransitionEnd);
+            scrollToSection(header);
+          }
         });
-        
-        window.scrollTo({
-          top: scrollTarget,
-          behavior: 'smooth'
-        });
-        
+    
         history.pushState(null, '', `#feature-${categoryTag}`);
       } else {
         history.pushState(null, '', window.location.pathname);
@@ -311,19 +284,55 @@
     
     container.appendChild(section);
   });
+
+  function scrollToSection(targetElement) {
+    let offsetTop = 0;
   
+    // Calculate total offset from the top of the document
+    while (targetElement) {
+      offsetTop += targetElement.offsetTop;
+      targetElement = targetElement.offsetParent;
+    }
+  
+    const scrollTarget = offsetTop - 20;
+  
+    window.scrollTo({
+      top: scrollTarget,
+      behavior: 'smooth'
+    });
+  }
+    
+  // After creating the accordion sections
   // Handle direct link to a section
   if (window.location.hash) {
-    console.log('Found hash in URL:', window.location.hash);
     const sectionId = window.location.hash.substring(1);
     const targetSection = document.getElementById(sectionId);
     if (targetSection) {
-      console.log('Clicking section from hash:', sectionId);
       const header = targetSection.querySelector('.accordion-header');
-      header?.click();
+      const content = targetSection.querySelector('.accordion-content');
+      const icon = header.querySelector('.accordion-icon');
+      const imageContainer = targetSection.querySelector('.category-image-container');
+  
+      // Open the section
+      content.classList.add('open');
+      icon.classList.add('open');
+      imageContainer.classList.add('visible');
+      header.setAttribute('aria-expanded', 'true');
+  
+      // Wait for the transition to complete before scrolling
+      content.addEventListener('transitionend', function onTransitionEnd() {
+        content.removeEventListener('transitionend', onTransitionEnd);
+        scrollToSection(header);
+      });
     }
   }
-}
+
+  content.addEventListener('transitionend', function onTransitionEnd(event) {
+    if (event.propertyName === 'max-height') {
+      content.removeEventListener('transitionend', onTransitionEnd);
+      scrollToSection(header);
+    }
+  });
   
     async function initTurtleFeaturesAccordion() {
     if (initialized || initializing) return;
