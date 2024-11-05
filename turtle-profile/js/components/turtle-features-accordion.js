@@ -325,6 +325,7 @@
       });
     }
   }
+  }
   
     async function initTurtleFeaturesAccordion() {
     if (initialized || initializing) return;
