@@ -1,4 +1,3 @@
-// turtle-features-accordion.js
 (function() {
   let initialized = false;
   let initializing = false;
