@@ -246,7 +246,7 @@
     header.addEventListener('click', (e) => {
       e.preventDefault();
       const isOpen = content.classList.contains('open');
-      const icon = header.querySelector('.accordion-icon");
+      const icon = header.querySelector('.accordion-icon');
 
       // Close all sections
       document.querySelectorAll('.accordion-section').forEach(sect => {
