@@ -9,7 +9,7 @@
   function toCategoryTag(category) {
     return category
       .toLowerCase()
-      .replace(/\//, '-and-')
+      .replace(/\//g, '-and-')
       .replace(/\s+/g, '-');
   }
 
@@ -76,258 +76,219 @@
         }
       });
     } catch (error) {
-      // Silent fail - we'll just not show images if they're not available
+      // Silent fail - images won't be displayed if unavailable
     }
   }
 
   async function createAccordion(container, data) {
-  // Create a single ResizeObserver instance to reuse
-  const resizeObserver = new ResizeObserver(entries => {
-    entries.forEach(entry => {
-      const animatedContent = entry.target;
-      const height = entry.contentRect.height;
-      const previousHeight = animatedContent.getAttribute('data-height');
+    data.categories.forEach((category, categoryIndex) => {
+      const categoryTag = toCategoryTag(category.name);
       
-      console.log('ResizeObserver:', {
-        previousHeight,
-        newHeight: height,
-        element: animatedContent,
-        hasOpenContent: !!animatedContent.querySelector('.accordion-content.open'),
-        timestamp: new Date().toISOString()
-      });
+      const section = document.createElement('div');
+      section.className = 'accordion-section';
+      section.id = `feature-${categoryTag}`;
       
-      animatedContent.setAttribute('data-height', height);
-    });
-  });
-
-  data.categories.forEach((category, categoryIndex) => {
-    const categoryTag = toCategoryTag(category.name);
-    console.log('Creating accordion section:', {
-      category: category.name,
-      tag: categoryTag,
-      index: categoryIndex
-    });
-    
-    const section = document.createElement('div');
-    section.className = 'accordion-section';
-    section.id = `feature-${categoryTag}`;
-    
-    const header = document.createElement('button');
-    header.className = 'accordion-header';
-    header.setAttribute('aria-expanded', categoryIndex === 0 ? 'true' : 'false');
-    header.setAttribute('aria-controls', `content-${categoryTag}`);
-    header.innerHTML = `
-      <span class="accordion-title">${category.name}</span>
-      <svg class="accordion-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
-    `;
-
-    // Create image container
-    const imageContainer = document.createElement('div');
-    imageContainer.className = 'category-image-container';
-    
-    if (categoryImages.has(categoryTag)) {
-      const images = categoryImages.get(categoryTag);
-      console.log(`Adding ${images.length} images for category ${category.name}`);
-      
-      images.forEach(image => {
-        const imgWrapper = document.createElement('div');
-        imgWrapper.className = 'category-image-wrapper';
-
-        const img = document.createElement('img');
-        img.src = image.url;
-        img.alt = `${category.name} feature`;
-        img.className = 'category-feature-image';
-        
-        img.addEventListener('load', () => {
-          console.log(`Image loaded successfully for ${category.name}:`, image.url);
-        });
-        
-        img.addEventListener('error', (e) => {
-          console.error(`Image failed to load for ${category.name}:`, image.url, e);
-        });
-
-        imgWrapper.appendChild(img);
-
-        if (image.credits) {
-          const credits = document.createElement('div');
-          credits.className = 'category-image-credits';
-          credits.textContent = `Photo: ${image.credits}`;
-          imgWrapper.appendChild(credits);
-        }
-
-        imageContainer.appendChild(imgWrapper);
-      });
-    } else {
-      console.log(`No images found for category ${category.name} with tag ${categoryTag}`);
-    }
-    
-    const content = document.createElement('div');
-    content.className = 'accordion-content';
-    content.id = `content-${categoryTag}`;
-
-    // Add header row for features table
-    const headerRow = document.createElement('div');
-    headerRow.className = 'feature-row feature-header';
-    headerRow.innerHTML = `
-      <div class="feature-header-text">Feature</div>
-      <div class="feature-header-text">Value</div>
-    `;
-    content.appendChild(headerRow);
-
-    // Create animated content wrapper
-    const animatedContent = document.createElement('div');
-    animatedContent.className = 'accordion-animated-content';
-    
-    // Start observing this animated content
-    resizeObserver.observe(animatedContent);
-
-    section.appendChild(header);
-    animatedContent.appendChild(imageContainer);
-    animatedContent.appendChild(content);
-    section.appendChild(animatedContent);
-
-    // Set initial state
-    if (categoryIndex === 0) {
-      content.classList.add('open');
-      header.querySelector('.accordion-icon').classList.add('open');
-      imageContainer.classList.add('visible');
-    }
-    
-    if (category.features.length === 0) {
-      const emptyRow = document.createElement('div');
-      emptyRow.className = 'feature-row main-feature';
-      emptyRow.innerHTML = `
-        <div class="feature-name">No features available in this category</div>
-        <div class="feature-value">-</div>
+      const header = document.createElement('button');
+      header.className = 'accordion-header';
+      header.setAttribute('aria-expanded', categoryIndex === 0 ? 'true' : 'false');
+      header.setAttribute('aria-controls', `content-${categoryTag}`);
+      header.innerHTML = `
+        <span class="accordion-title">${category.name}</span>
+        <svg class="accordion-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
       `;
-      content.appendChild(emptyRow);
-    } else {
-      let previousWasSubFeature = false;
+
+      // Create image container
+      const imageContainer = document.createElement('div');
+      imageContainer.className = 'category-image-container';
       
-      category.features.forEach((feature, index) => {
-        // Create a group container for each main feature and its sub-features
-        const featureGroup = document.createElement('div');
-        featureGroup.className = 'feature-group';
-        
-        const featureRow = document.createElement('div');
-        featureRow.className = 'feature-row main-feature';
-        
-        if (index > 0 || previousWasSubFeature) {
-          featureRow.classList.add('with-border');
-        }
-        
-        featureRow.innerHTML = `
-          <div class="feature-name">${feature.name}</div>
-          <div class="feature-value">${feature.value}</div>
-        `;
-        featureGroup.appendChild(featureRow);
-        
-        previousWasSubFeature = false;
-        
-        feature.subFeatures.forEach((subFeature, subIndex) => {
-          const subFeatureRow = document.createElement('div');
-          subFeatureRow.className = 'feature-row sub-feature';
-          subFeatureRow.innerHTML = `
-            <div class="feature-name icon-before icon-ui-filled-flow-arrow-1">
-              ${subFeature.name}
-            </div>
-            <div class="feature-value">${subFeature.value}</div>
-          `;
-          featureGroup.appendChild(subFeatureRow);
-          previousWasSubFeature = true;
+      if (categoryImages.has(categoryTag)) {
+        const images = categoryImages.get(categoryTag);
+        images.forEach(image => {
+          const imgWrapper = document.createElement('div');
+          imgWrapper.className = 'category-image-wrapper';
+
+          const img = document.createElement('img');
+          img.src = image.url;
+          img.alt = `${category.name} feature`;
+          img.className = 'category-feature-image';
+          
+          imgWrapper.appendChild(img);
+
+          if (image.credits) {
+            const credits = document.createElement('div');
+            credits.className = 'category-image-credits';
+            credits.textContent = `Photo: ${image.credits}`;
+            imgWrapper.appendChild(credits);
+          }
+
+          imageContainer.appendChild(imgWrapper);
         });
+      }
+      
+      const content = document.createElement('div');
+      content.className = 'accordion-content';
+      content.id = `content-${categoryTag}`;
+
+      // Add header row for features table
+      const headerRow = document.createElement('div');
+      headerRow.className = 'feature-row feature-header';
+      headerRow.innerHTML = `
+        <div class="feature-header-text">Feature</div>
+        <div class="feature-header-text">Value</div>
+      `;
+      content.appendChild(headerRow);
+
+      // Create animated content wrapper
+      const animatedContent = document.createElement('div');
+      animatedContent.className = 'accordion-animated-content';
+
+      section.appendChild(header);
+      animatedContent.appendChild(imageContainer);
+      animatedContent.appendChild(content);
+      section.appendChild(animatedContent);
+
+      // Set initial state
+      if (categoryIndex === 0) {
+        content.classList.add('open');
+        header.querySelector('.accordion-icon').classList.add('open');
+        imageContainer.classList.add('visible');
+      }
+      
+      if (category.features.length === 0) {
+        const emptyRow = document.createElement('div');
+        emptyRow.className = 'feature-row main-feature';
+        emptyRow.innerHTML = `
+          <div class="feature-name">No features available in this category</div>
+          <div class="feature-value">-</div>
+        `;
+        content.appendChild(emptyRow);
+      } else {
+        let previousWasSubFeature = false;
         
-        content.appendChild(featureGroup);
+        category.features.forEach((feature, index) => {
+          // Create a group container for each main feature and its sub-features
+          const featureGroup = document.createElement('div');
+          featureGroup.className = 'feature-group';
+          
+          const featureRow = document.createElement('div');
+          featureRow.className = 'feature-row main-feature';
+          
+          if (index > 0 || previousWasSubFeature) {
+            featureRow.classList.add('with-border');
+          }
+          
+          featureRow.innerHTML = `
+            <div class="feature-name">${feature.name}</div>
+            <div class="feature-value">${feature.value}</div>
+          `;
+          featureGroup.appendChild(featureRow);
+          
+          previousWasSubFeature = false;
+          
+          feature.subFeatures.forEach(subFeature => {
+            const subFeatureRow = document.createElement('div');
+            subFeatureRow.className = 'feature-row sub-feature';
+            subFeatureRow.innerHTML = `
+              <div class="feature-name icon-before icon-ui-filled-flow-arrow-1">
+                ${subFeature.name}
+              </div>
+              <div class="feature-value">${subFeature.value}</div>
+            `;
+            featureGroup.appendChild(subFeatureRow);
+            previousWasSubFeature = true;
+          });
+          
+          content.appendChild(featureGroup);
+        });
+      }
+      
+      header.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isOpen = content.classList.contains('open');
+        const icon = header.querySelector('.accordion-icon');
+
+        // Close all sections
+        document.querySelectorAll('.accordion-section').forEach(sect => {
+          const sectHeader = sect.querySelector('.accordion-header');
+          const sectContent = sect.querySelector('.accordion-content');
+          const sectIcon = sect.querySelector('.accordion-icon');
+          const sectImages = sect.querySelector('.category-image-container');
+
+          sectContent.classList.remove('open');
+          sectHeader.setAttribute('aria-expanded', 'false');
+          sectIcon.classList.remove('open');
+          sectImages.classList.remove('visible');
+        });
+
+        // Toggle clicked section
+        if (!isOpen) {
+          content.classList.add('open');
+          icon.classList.add('open');
+          imageContainer.classList.add('visible');
+          header.setAttribute('aria-expanded', 'true');
+
+          // Wait for the transition to complete before scrolling
+          content.addEventListener('transitionend', function onTransitionEnd(event) {
+            if (event.propertyName === 'max-height') {
+              content.removeEventListener('transitionend', onTransitionEnd);
+              scrollToSection(header);
+            }
+          });
+
+          history.pushState(null, '', `#feature-${categoryTag}`);
+        } else {
+          history.pushState(null, '', window.location.pathname);
+        }
+      });
+
+      container.appendChild(section);
+    });
+
+    function scrollToSection(targetElement) {
+      let offsetTop = 0;
+
+      // Calculate total offset from the top of the document
+      while (targetElement) {
+        offsetTop += targetElement.offsetTop;
+        targetElement = targetElement.offsetParent;
+      }
+
+      const scrollTarget = offsetTop - 20;
+
+      window.scrollTo({
+        top: scrollTarget,
+        behavior: 'smooth'
       });
     }
-    
-    header.addEventListener('click', (e) => {
-      e.preventDefault();
-      const isOpen = content.classList.contains('open');
-      const icon = header.querySelector('.accordion-icon');
 
-      // Close all sections
-      document.querySelectorAll('.accordion-section').forEach(sect => {
-        const sectHeader = sect.querySelector('.accordion-header');
-        const sectContent = sect.querySelector('.accordion-content');
-        const sectIcon = sect.querySelector('.accordion-icon');
-        const sectImages = sect.querySelector('.category-image-container');
+    // Handle direct link to a section
+    if (window.location.hash) {
+      const sectionId = window.location.hash.substring(1);
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        const header = targetSection.querySelector('.accordion-header');
+        const content = targetSection.querySelector('.accordion-content');
+        const icon = header.querySelector('.accordion-icon');
+        const imageContainer = targetSection.querySelector('.category-image-container');
 
-        sectContent.classList.remove('open');
-        sectHeader.setAttribute('aria-expanded', 'false');
-        sectIcon.classList.remove('open');
-        sectImages.classList.remove('visible');
-      });
-
-      // Toggle clicked section
-      if (!isOpen) {
+        // Open the section
         content.classList.add('open');
         icon.classList.add('open');
         imageContainer.classList.add('visible');
         header.setAttribute('aria-expanded', 'true');
 
         // Wait for the transition to complete before scrolling
-        content.addEventListener('transitionend', function onTransitionEnd(event) {
-          if (event.propertyName === 'max-height') {
-            content.removeEventListener('transitionend', onTransitionEnd);
-            scrollToSection(header);
-          }
+        content.addEventListener('transitionend', function onTransitionEnd() {
+          content.removeEventListener('transitionend', onTransitionEnd);
+          scrollToSection(header);
         });
-
-        history.pushState(null, '', `#feature-${categoryTag}`);
-      } else {
-        history.pushState(null, '', window.location.pathname);
       }
-    });
-
-    container.appendChild(section);
-  });
-
-  function scrollToSection(targetElement) {
-    let offsetTop = 0;
-
-    // Calculate total offset from the top of the document
-    while (targetElement) {
-      offsetTop += targetElement.offsetTop;
-      targetElement = targetElement.offsetParent;
-    }
-
-    const scrollTarget = offsetTop - 20;
-
-    window.scrollTo({
-      top: scrollTarget,
-      behavior: 'smooth'
-    });
-  }
-
-  // Handle direct link to a section
-  if (window.location.hash) {
-    const sectionId = window.location.hash.substring(1);
-    const targetSection = document.getElementById(sectionId);
-    if (targetSection) {
-      const header = targetSection.querySelector('.accordion-header');
-      const content = targetSection.querySelector('.accordion-content');
-      const icon = header.querySelector('.accordion-icon');
-      const imageContainer = targetSection.querySelector('.category-image-container');
-
-      // Open the section
-      content.classList.add('open');
-      icon.classList.add('open');
-      imageContainer.classList.add('visible');
-      header.setAttribute('aria-expanded', 'true');
-
-      // Wait for the transition to complete before scrolling
-      content.addEventListener('transitionend', function onTransitionEnd() {
-        content.removeEventListener('transitionend', onTransitionEnd);
-        scrollToSection(header);
-      });
     }
   }
-  }
-  
-    async function initTurtleFeaturesAccordion() {
+
+  async function initTurtleFeaturesAccordion() {
     if (initialized || initializing) return;
     initializing = true;
 
@@ -370,6 +331,7 @@
       currentVariant = defaultVariant;
       allVariants = variants;
 
+      // Transform data into categories with features
       const transformedData = {
         categories: Array.from(new Map(
           featureKeys.reduce((acc, key) => {
