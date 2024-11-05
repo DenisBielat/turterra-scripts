@@ -125,6 +125,10 @@ html {
   align-items: center;
 }
 
+.feature-row.sub-feature {
+  padding-top: 0;
+}
+
 /* Create feature groups that include main feature and its sub-features */
 .feature-group {
   background-color: var(--brand-neutrals--brand-white);
