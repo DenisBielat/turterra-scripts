@@ -2,6 +2,20 @@
 const navAnchors = document.querySelectorAll('.nav-anchor');
 const navItems = document.querySelectorAll('.profile-nav-item');
 
+// Simple throttle function
+function throttle(func, limit) {
+  let inThrottle;
+  return function() {
+    const args = arguments;
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  }
+}
+
 // Function to get the current section in view
 function getCurrentSection() {
   let currentSection = '';
@@ -36,7 +50,7 @@ function updateActiveNavItem() {
 }
 
 // Add scroll event listener with throttling to improve performance
-window.addEventListener('scroll', _.throttle(updateActiveNavItem, 100));
+window.addEventListener('scroll', throttle(updateActiveNavItem, 100));
 
 // Initial call to set active nav item on page load
 document.addEventListener('DOMContentLoaded', updateActiveNavItem);
