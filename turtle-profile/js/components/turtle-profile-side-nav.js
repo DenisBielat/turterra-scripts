@@ -21,12 +21,12 @@ function getCurrentSection() {
   let currentSection = '';
   
   navAnchors.forEach(anchor => {
-    const anchorTop = anchor.offsetTop - 100; // Adjust offset based on your header height
-    const anchorHeight = anchor.offsetHeight;
-    const scrollPosition = window.scrollY;
-
-    if (scrollPosition >= anchorTop && scrollPosition < anchorTop + anchorHeight) {
-      currentSection = anchor.id; // Use the ID of the anchor element
+    const rect = anchor.getBoundingClientRect();
+    // Check if element is in viewport (with some offset for better UX)
+    // Adjusted to consider elements near the top of the viewport
+    if (rect.top <= 150 && rect.bottom >= 150) {
+      currentSection = anchor.id;
+      console.log('Current section:', currentSection); // Debug log
     }
   });
   
@@ -37,16 +37,21 @@ function getCurrentSection() {
 function updateActiveNavItem() {
   const currentSection = getCurrentSection();
   
-  navItems.forEach(item => {
-    // Remove active class from all items
-    item.classList.remove('active');
-    
-    // Add active class to current section's nav item
-    const navValue = item.getAttribute('nav-value');
-    if (navValue === currentSection) {
-      item.classList.add('active');
-    }
-  });
+  if (currentSection) { // Only update if we found a current section
+    navItems.forEach(item => {
+      const navValue = item.getAttribute('nav-value');
+      console.log('Comparing nav-value:', navValue, 'with current section:', currentSection); // Debug log
+      
+      // Remove active class
+      item.classList.remove('active');
+      
+      // Add active class if this is the current section
+      if (navValue === currentSection) {
+        item.classList.add('active');
+        console.log('Setting active:', navValue); // Debug log
+      }
+    });
+  }
 }
 
 // Add scroll event listener with throttling to improve performance
@@ -55,15 +60,32 @@ window.addEventListener('scroll', throttle(updateActiveNavItem, 100));
 // Initial call to set active nav item on page load
 document.addEventListener('DOMContentLoaded', updateActiveNavItem);
 
-// Optional: Add click handlers for smooth scrolling
+// Click handlers for navigation
 navItems.forEach(item => {
   item.addEventListener('click', (e) => {
     const navValue = item.getAttribute('nav-value');
-    const targetAnchor = document.getElementById(navValue);
     
+    // Special handling for "top" button
+    if (navValue === 'top') {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+      return;
+    }
+    
+    // Normal section navigation
+    const targetAnchor = document.getElementById(navValue);
     if (targetAnchor) {
       e.preventDefault();
       targetAnchor.scrollIntoView({ behavior: 'smooth' });
     }
   });
 });
+
+// Log initial setup info
+console.log('Nav anchors found:', navAnchors.length);
+console.log('Nav items found:', navItems.length);
+navAnchors.forEach(anchor => console.log('Anchor ID:', anchor.id));
+navItems.forEach(item => console.log('Nav value:', item.getAttribute('nav-value')));
