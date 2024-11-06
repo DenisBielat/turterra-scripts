@@ -2,6 +2,9 @@
 const navAnchors = document.querySelectorAll('.nav-anchor');
 const navItems = document.querySelectorAll('.profile-nav-item');
 
+// Configure scroll offset (adjust this value to change the margin from top)
+const SCROLL_OFFSET = 100; // 100px from top
+
 // Simple throttle function
 function throttle(func, limit) {
   let inThrottle;
@@ -16,6 +19,17 @@ function throttle(func, limit) {
   }
 }
 
+// Function to scroll to element with offset
+function scrollToElementWithOffset(element) {
+  const elementPosition = element.getBoundingClientRect().top;
+  const offsetPosition = elementPosition + window.pageYOffset - SCROLL_OFFSET;
+
+  window.scrollTo({
+    top: offsetPosition,
+    behavior: 'smooth'
+  });
+}
+
 // Function to get the current section in view
 function getCurrentSection() {
   let currentSection = '';
@@ -23,8 +37,8 @@ function getCurrentSection() {
   
   navAnchors.forEach(anchor => {
     const rect = anchor.getBoundingClientRect();
-    // Calculate distance from top of viewport
-    const distance = Math.abs(rect.top);
+    // Calculate distance from top of viewport (accounting for offset)
+    const distance = Math.abs(rect.top - SCROLL_OFFSET);
     
     // If this element is closer to the top of the viewport than our previous best match
     if (distance < minDistance) {
@@ -34,7 +48,7 @@ function getCurrentSection() {
   });
   
   // If we're very close to the top of the page, consider it the "intro" section
-  if (window.scrollY < 100) {
+  if (window.scrollY < SCROLL_OFFSET) {
     currentSection = 'intro';
   }
   
@@ -84,7 +98,7 @@ navItems.forEach(item => {
     // Normal section navigation
     const targetAnchor = document.getElementById(navValue);
     if (targetAnchor) {
-      targetAnchor.scrollIntoView({ behavior: 'smooth' });
+      scrollToElementWithOffset(targetAnchor);
     }
   });
 });
