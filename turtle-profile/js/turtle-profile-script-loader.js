@@ -16,7 +16,8 @@
         '/css/components/turtle-profile-search-bar.css',
         '/css/sections/turtle-profile-content-at-a-glance.css',
         '/css/sections/turtle-profile-id-section.css',
-        '/css/components/turtle-features-accordion.css', 
+        '/css/components/turtle-features-accordion.css',
+        '/css/components/turtle-profile-side-nav.css',
       ],
       js: [
         '/js/page/fetch-turtle-species.js',
