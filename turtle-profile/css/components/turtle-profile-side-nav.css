@@ -1,0 +1,4 @@
+.profile-nav-item.active {
+    background-color: var(--brand-green--green-800);
+    color: var(--brand-neutrals--brand-white);
+}
