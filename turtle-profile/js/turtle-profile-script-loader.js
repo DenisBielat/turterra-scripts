@@ -25,6 +25,7 @@
         '/js/components/turtle-profile-search-bar.js',
         '/js/components/populate-taxonomy.js',
         '/js/components/turtle-features-accordion.js',
+        '/js/components/turtle-profile-side-nav.js',
         '/js/page/init-turtle-profile.js',
         '/js/page/init-breakout-containers.js',
       ]
