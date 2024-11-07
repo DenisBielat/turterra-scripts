@@ -3,7 +3,7 @@ const navAnchors = document.querySelectorAll('.nav-anchor');
 const navItems = document.querySelectorAll('.profile-nav-item');
 
 // Configure scroll offset (adjust this value to change the margin from top)
-const SCROLL_OFFSET = 250; // 100px from top
+const SCROLL_OFFSET = 100; // 100px from top
 
 // Simple throttle function
 function throttle(func, limit) {
