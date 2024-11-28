@@ -188,7 +188,7 @@ html {
   vertical-align: baseline;
 }
 
-.add-species-icon .icon-before::before {
+.add-related-species_btn-icon.icon-before::before {
   margin: 0;
   vertical-align: baseline;
 }
