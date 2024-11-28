@@ -192,7 +192,7 @@ html {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  margin-right: 8px;
+  margin: 0;
 }
 
 .add-related-species_btn-icon.icon-before::before {
