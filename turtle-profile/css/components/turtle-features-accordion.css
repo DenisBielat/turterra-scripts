@@ -190,7 +190,9 @@ html {
 
 .add-related-species_btn-icon.icon-before::before {
   margin: 0;
-  vertical-align: baseline;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .content-wrapper {
