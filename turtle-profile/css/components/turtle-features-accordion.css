@@ -195,6 +195,10 @@ html {
   transform: translateY(-50%);
 }
 
+.btn_add-related-species:hover .add-related-species_btn-icon.icon-before::before {
+  color: var(--brand-green--green-500);
+}
+
 .content-wrapper {
   position: relative;
   z-index: 1;
