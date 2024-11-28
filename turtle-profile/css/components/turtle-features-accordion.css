@@ -189,6 +189,7 @@ html {
 }
 
 .variants-sex-icon.icon-before::before {
+  position: absolute;
   top: 50%;
   transform: translateY(-50%);
 }
