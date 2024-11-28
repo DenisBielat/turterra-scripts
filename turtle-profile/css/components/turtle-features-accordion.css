@@ -189,21 +189,17 @@ html {
 }
 
 .variants-sex-icon.icon-before::before {
-  margin: 0;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
 }
 
 .add-related-species_btn-icon.icon-before::before {
+  color: var(--brand-green--green-950);
   margin: 0;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-}
-
-.btn_add-related-species:hover .add-related-species_btn-icon.icon-before::before {
-  color: var(--brand-neutrals--brand-white);
 }
 
 .content-wrapper {
